@@ -160,6 +160,8 @@ class BuscarLlantaView(TemplateView):
 
         comentario = ""
 
+        busqueda_llantas = ""
+
         texto = request.POST.get('q', '') + " "
 
         genai.configure(api_key=settings.APIKEY_GOOGLE)
@@ -215,23 +217,20 @@ class BuscarLlantaView(TemplateView):
                 if 'ancho' == columna and dato:
                     medida1 = True
                     ancho = dato
-                    print ('Ancho de  : ' +  valor)
                 if 'alto' == columna and dato:
                     medida2 = True
                     alto = dato
-                    print ('Alto de : ' + valor)
                 if 'rin' == columna and dato:
                     medida3 = True
                     rin = dato
-                    print ('Rin de : ' + valor)
-                if 'marca' == columna and dato:
-                    print ('Marca : ' + dato)
-                if 'modelo' == columna and dato:
-                    print ('Modelo : ' + valor)
-                if 'año' == columna and dato:
-                    print ('Año : ' + valor)
-                if 'comentario' == columna and dato:
-                    print ('comentario : ' + dato)
+#                if 'marca' == columna and dato:
+#                    print ('Marca : ' + dato)
+#                if 'modelo' == columna and dato:
+#                    print ('Modelo : ' + valor)
+#                if 'año' == columna and dato:
+#                    print ('Año : ' + valor)
+#                if 'comentario' == columna and dato:
+#                    print ('comentario : ' + dato)
 
         presenta = False
 
