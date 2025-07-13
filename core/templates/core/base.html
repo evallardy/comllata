@@ -1,0 +1,387 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LlantaCom{% endblock %}</title>
+    <link href="{% static 'core/css/bootstrap.min.css' %}" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="{% static 'core/css/nvoEstilo.css' %}" />
+
+    <script src="{% static 'core/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'core/js/popper.min.js' %}"></script>
+    <script src="{% static 'core/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'core/js/funciones.js' %}"></script>
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .hero {
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            position: relative;
+            color: rgb(5, 195, 243);
+        }
+
+        .hero-text {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body style="font-family: Bogle, 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+    <div id="__next">
+        <div data-testid="layout-container" class="flex flex-column min-vh-100 shadow-2"
+            style="transform:none;transition:transform .2s">
+            {% block aviso %}
+            {% endblock %}
+            <span data-pcss-show="true" data-testid="global-header"
+                data-dca-id="ui_global_header:header:module" data-dca-name="UiGlobalHeader" data-dca-type="module"
+                class="bg-secondary w-100 top-0 z-1 sticky" style="transition:top 0.65s">
+                <a link-identifier="Generic Name" class="o-0 absolute" tabindex="-1"></a>
+                <a link-identifier="Generic Name" class="slider skip-main bg-white-90" href="#maincontent">
+                    Ir a contenido principal
+                </a>
+                <header class="flex items-center justify-center pa3 center-hdkp ph3-hdkp nav-clickable-padded"
+                    data-testid="responsiveHeader" data-dca-id="ui_global_header:responsive_header"
+                    data-dca-name="UiGlobalHeaderResponsiveHeaderPrimary" data-dca-type="module">
+                    <div class="flex items-center justify-center dn-hdkp" style="transition:opacity .3s"><button
+                            type="button"
+                            class="flex items-center b--none bg-transparent mr3 pa0 pointer h3 w3 no-underline white"
+                            aria-hidden="false" aria-label="Menú" aria-expanded="false" data-testid="Menu"><i
+                                class="ld ld-Menu" aria-hidden="true"
+                                style="font-size: 1.5rem; vertical-align: -0.25em; width: 24px; height: 24px; box-sizing: content-box;"></i></button><a
+                            link-identifier="walmartLogoMobile" class="gold h3 w3 dn-hdkp" aria-hidden="false"
+                            aria-label="Página de inicio de Walmart" data-automation-id="header-link-walmartLogo"
+                            href="/inicio"><i class="ld ld-Spark" aria-hidden="true"
+                                style="font-size: 2rem; vertical-align: -0.325em; width: 2rem; height: 2rem; box-sizing: content-box;"></i></a>
+                    </div><a link-identifier="walmartLogoDesktop"
+                        class="dn db-hdkp flex-none pa3 hover-bg-dark-primary pt2"
+                        aria-label="Página de inicio de Walmart"
+                        data-dca-id="ui_global_header:responsive_header:walmart_logo"
+                        data-dca-name="UiGlobalHeaderResponsiveHeaderWalmartLogo" href="/inicio"
+                        style="border-radius: 100px; transition: 100ms cubic-bezier(0.77, 0, 0.175, 1); height: 48px;">
+                        <img loading="lazy" alt="Walmart" class="db" height="32"
+                            src="{% static 'core/img/logo-iag.jpg' %}"
+                            data-automation-id="header-walmartLogo" width="130"></a>
+                    <div class="dn db-hdkp ml3 relative"><button type="button"
+                            class="flex items-center no-underline desktop-header-trigger lh-title lh-solid ph3 white pointer sans-serif bg-transparent ba b--transparent"
+                            style="border-radius:100px;height:48px;transition:all 100ms cubic-bezier(0.77, 0, 0.175, 1)"
+                            aria-haspopup="true" aria-expanded="false" data-dca-name="switcher"
+                            data-dca-id="ui_global_header:flyout_button:button">
+                            <i class="ld ld-Car mr2" style="font-size:1rem;vertical-align:-0.175em;width:1rem;height:1rem;box-sizing:content-box"
+                                aria-hidden="true"></i>
+                            <div class="ml2 tl nowrap">
+                                <div class="f7 lh-title">¿A que carro quieres</div>
+                                <div class="b">comprar llantas?</div>
+                            </div>
+                        </button>
+                    </div>
+                    <form action="{% url 'buscar_llanta' %}" autocomplete="off" aria-label="En todo el sitio de Walmart" role="search"
+                        class="flex flex-auto items-center justify-center pl3 justify-start-hdkp pa0-hdkp ml3-hdkp  relative"
+                        data-testid="search-form" data-gtm-form-interact-id="0" method="post">
+                         {% csrf_token %}
+                        <div class="flex flex-auto items-center relative">
+                            <input aria-label="Buscar"
+                                aria-activedescendant=""
+                                class="flex-auto lh-solid sans-serif search-bar br-pill f5 b--none" name="q" id="id_q"
+                                placeholder="Buscar llantas con marca el modelo y año del vehículo (ejemplo: ford fiesta 1980) o Ancho, alto y rin (ejemplo 275/60 R16)" style="padding-left: 1.5rem; padding-right: 2.5rem;"
+                                type="search" aria-autocomplete="list" aria-haspopup="listbox" autocomplete="off"
+                                data-automation-id="header-input-search" value=""
+                                data-gtm-form-interact-field-id="0">
+                            <button aria-label="Borrar texto del campo de búsqueda"
+                                class="absolute bn bg-transparent h-100 right-2"
+                                style="padding: 0px 0.75rem; cursor: pointer; opacity: 0;" type="reset" tabindex="-1"
+                                aria-hidden="true">
+                                <i class="ld ld-Close"
+                                style="font-size:1rem;vertical-align:-0.175em;width:1rem;height:1rem;box-sizing:content-box">
+                                </i>
+                            </button>
+                            <button aria-label="Búsqueda" class="absolute bn br-100 hover-bg-navy search-icon"
+                                style="cursor:pointer">
+                                <i class="ld ld-Search absolute"
+                                    style="font-size:1rem;vertical-align:-0.175em;top:50%;left:50%;transform:translate(-50%, -50%);width:1rem;height:1rem;box-sizing:content-box"
+                                    data-automation-id="search-icon" aria-hidden="true">
+                                </i>
+                            </button>
+                        </div>
+                        <button
+                            aria-hidden="true" aria-label="Cancelar"
+                            class="bn bg-transparent mh1 ph2 pv2 pointer sans-serif underline z-1 dn-hdkp clip o-0 white"
+                            style="transition:opacity .3s" type="button" tabindex="-1">
+                            Cancelar
+                        </button>
+                    </form>
+                    <nav aria-label="Carrito">
+                        <ul class="flex ma0 pa0 list">
+                            <li class="dn db-hdkp ml3 relative">
+                                <a link-identifier="Account"
+                                    class="flex items-center no-underline desktop-header-trigger lh-title lh-solid ph3 white"
+                                    aria-haspopup="true" aria-expanded="false" data-dca-name="Account" role="button"
+                                    data-dca-id="ui_global_header:flyout_button:link" href="#"
+                                    style="border-radius: 100px; height: 48px; transition: 100ms cubic-bezier(0.77, 0, 0.175, 1);">
+                                    <i class="ld ld-User" aria-hidden="true"
+                                        style="font-size: 16px; vertical-align: -0.175em; width: 16px; height: 16px; box-sizing: content-box;">
+                                    </i>
+                                    <div class="ml2 nowrap" data-automation-id="headerSignIn">
+                                        <div class="mw3 mw4-hdkp truncate lh-title f7">Iniciar sesión</div>
+                                        <div class="b">Cuenta</div>
+                                    </div>
+                                </a>
+                                <div class="absolute bg-white br3 br--bottom left-0 lh-copy mt3 shadow-1 dn"
+                                    data-testid="account-flyout"
+                                    style="margin-top: 12px; left: 50%; transform: translateX(-50%);">
+                                    <div class="flex flex-row-reverse">
+                                        <div class="pa4"><button class="w_eEg0 w_OoNT w_w8Y1 db mb3 w-100" type="button"
+                                                data-testid="sign-in"
+                                                data-dca-id="ui_global_header:desktop_flyout:button:sign_in"
+                                                data-dca-name="SignIn">Inicia sesión o crea una cuenta</button>
+                                            <div class="mb3">
+                                                <hr aria-hidden="true" class="w_qUHG">
+                                            </div>
+                                            <a link-identifier="Purchase History"
+                                                class="dark-gray db f6 no-underline nowrap desktop-header-flyout-link"
+                                                data-automation-id="headerPurchaseHistory"
+                                                data-dca-id="ui_global_header:desktop_flyout:link:purchase_history"
+                                                data-dca-name="PurchaseHistory" href="#">
+                                                <i class="ld ld-Receipt mr2"
+                                                    style="font-size:1rem;vertical-align:-0.175em;width:1rem;height:1rem;box-sizing:content-box">
+                                                </i>
+                                                Pedidos
+                                            </a>
+                                            <a link-identifier="Help"
+                                                class="dark-gray db f6 no-underline nowrap desktop-header-flyout-link mt3"
+                                                data-dca-id="ui_global_header:desktop_flyout:link:help"
+                                                data-dca-name="Help" href="#">
+                                                <i class="ld ld-QuestionCircle mr2"
+                                                    style="font-size:1rem;vertical-align:-0.175em;width:1rem;height:1rem;box-sizing:content-box">
+                                                </i>
+                                                Ayuda
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li aria-hidden="false" class="undefined" style="transition: opacity 0.3s;">
+                                <div class="relative">
+                                    <div
+                                        class="cart-button ml2 flex justify-center db-hdkp justify-start-hdkp h-auto-hdkp mr4-hdkp flex-column">
+                                        <button type="button"
+                                            class="bn bg-transparent br2 flex flex-column items-center pa0 pointer relative sans-serif pa3 justify-center white hover-bg-dark-primary"
+                                            id="cart-button-header" data-automation-id="cart-button-header"
+                                            aria-label="El carrito tiene 0 artículos Monto total $0.00"
+                                            style="border-radius: 100px; transition: 100ms cubic-bezier(0.77, 0, 0.175, 1); height: 48px;"><i
+                                                class="ld ld-Cart mr1 white"
+                                                style="font-size: 1.5rem; vertical-align: -0.25em; width: 24px; height: 24px; box-sizing: content-box;"></i><span
+                                                class="w_J7sw w_Ku2e w_n1JR w_MVZZ absolute cart-badge" id="cart-badge"
+                                                style="padding: 0px 4px;">0</span><span
+                                                class="db nowrap cart-total">$0.00</span></button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+            </span>
+            <div class="flex flex-column flex-auto relative z-0" aria-hidden="false">
+                <section data-testid="location-banner" data-automation-id="location-banner"
+                    class="bg-dark-primary white pv1">
+                    <div class="center items-center flex flex-auto ph3 ph4-m" style="line-height: 2;">
+                        <section class="sub-nav-links-main-container hidesb hidesb-wk"
+                            data-testid="sub-nav-links-container" data-dca-guid="9d2b5930-6480-2bd1-8fe7-34ef34e25139">
+                            <nav aria-label="Secundario">
+                                <ul
+                                    class="sub-nav-link-container flex-auto list pa0 ma0 h2 f6-m b overflow-visible sub-nav-link-container-mobile">
+                                    <li>
+                                        <div class="flex flex-row items-center ml-auto flex-shrink-0 dark-grey">
+                                            <span class="b mh2"></span>
+                                            <div class="w_5Mln flex-shrink-0">
+                                                <div class="dropdown">
+                                                    <button id="dropdownButton1" class="btn btn-transparent dropdown-toggle" type="button"
+                                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Autos
+                                                    </button>
+                                                    <ul class="dropdown-menu mt-3 dropdown-menu-arrow" id="dropdownMenu1" aria-labelledby="dropdownButton1">
+                                                        {% for vehiculo in context.vehiculos %}
+                                                        <li><a class="dropdown-item" href="#">{{ vehiculo.nombre }}</a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>                                        
+<!--                                        <a link-identifier="Outlet"
+                                            class="no-underline sub-nav-link white ph2 sub-nav-link-focus"
+                                            data-dca-id="ui_location_banner_nav_menu_links_list:subnav_link"
+                                            data-dca-name="outlet"
+                                            href="/content/especiales/outlet/360013_280012">
+                                            Categorías
+                                        </a>
+-->
+                                    </li>
+<!--                                    <li><a link-identifier="Precios Bajos"
+                                            class="no-underline sub-nav-link white ph2 sub-nav-link-focus"
+                                            data-dca-id="ui_location_banner_nav_menu_links_list:subnav_link"
+                                            data-dca-name="preciosBajos"
+                                            href="/content/especiales/ofertas-walmart/360013_300279">Servicios</a>
+                                    </li>
+                                    <li><a link-identifier="Moda"
+                                            class="no-underline sub-nav-link white ph2 sub-nav-link-focus"
+                                            data-dca-id="ui_location_banner_nav_menu_links_list:subnav_link"
+                                            data-dca-name="moda"
+                                            href="/content/especiales/moda-y-accesorios/360013_1450001">Moda</a></li>
+                                    <li><a link-identifier="Mundo Gamer"
+                                            class="no-underline sub-nav-link white ph2 sub-nav-link-focus"
+                                            data-dca-id="ui_location_banner_nav_menu_links_list:subnav_link"
+                                            data-dca-name="mundoGamer"
+                                            href="/content/especiales/mundo-gamer/360013_430028">Mundo Gamer</a></li>
+                                    <li><a link-identifier="Promociones"
+                                            class="no-underline sub-nav-link white ph2 sub-nav-link-focus"
+                                            data-dca-id="ui_location_banner_nav_menu_links_list:subnav_link"
+                                            data-dca-name="promociones"
+                                            href="/content/especiales/beneficios-walmart/360013_2480003">Promociones</a>
+                                    </li>  -->
+                                    <li><a link-identifier="Ayuda"
+                                            class="no-underline sub-nav-link white ph2 sub-nav-link-focus"
+                                            data-dca-id="ui_location_banner_nav_menu_links_list:subnav_link"
+                                            data-dca-name="ayuda" href="{% url 'actualizar_llantas' %}">Actualiza</a></li>
+                                    <li><a link-identifier="Ayuda"
+                                            class="no-underline sub-nav-link white ph2 sub-nav-link-focus"
+                                            data-dca-id="ui_location_banner_nav_menu_links_list:subnav_link"
+                                            data-dca-name="ayuda" href="{% url 'buscar_llanta' %}">Busca llanta</a></li>
+                                </ul>
+                            </nav>
+                        </section>
+                    </div>
+                </section>
+                {% block content %}
+                {% endblock %}
+                    <span class="mt-8">
+                    <footer class="db pt5-hdkp lh-copy relative z-0">
+                        <section class="flex flex-column flex-row-hdkp justify-center bg-white">
+                            <section class="">
+                                <div class="pb4 pt3 pa0-hdkp footer-wrapper ph3 tc"
+                                    style="padding-top:2rem;padding-bottom:2rem">
+                                    <p class="f5 mt0">Queremos mejorar para ti, cuéntanos sobre tu experiencia de
+                                        compra.
+                                    </p><button class="w_eEg0 w_lXwD w_4QgR" type="button"
+                                        data-dca-id="global_nav_footer:footer:button">Dar comentarios</button>
+                                </div>
+                            </section>
+                        </section>
+                        <div class="bw2 bt-0 bl-0 br-0 b--solid b--near-white b--none-hdkp"></div>
+                        <section>
+                            <ul class="list ma0 mt3 ph3 pt1 ma0-hdkp ph4-hdkp pb4-hdkp pt3-hdkp flex-hdkp flex-wrap-hdkp justify-center-hdkp footer-list"
+                                data-testid="responsive-footer-list"
+                                data-dca-id="global_nav_footer:responsive_footer:undefined" data-dca-type="module">
+                                <li><a link-identifier="Centro de Ayuda"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="centroDeAyuda" href="/ayuda">Centro de Ayuda</a></li>
+                                <li><a link-identifier="Aviso de Privacidad Integral"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="avisoDePrivacidadIntegral"
+                                        href="/ayuda/articulo/politica-de-privacidad-integral/8f699e293eb3430cbfdf034fa760130d">Aviso
+                                        de Privacidad Integral</a></li>
+                                <li><a link-identifier="Términos y Condiciones"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="trminosYCondiciones"
+                                        href="/ayuda/articulo/terminos-y-condiciones/a1ddb40a57834d2485c773a918ab66e5">Términos
+                                        y Condiciones</a></li>
+                                <li><a link-identifier="Propiedad Intelectual"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="propiedadIntelectual"
+                                        href="https://www.walmartmexico.com/propiedad-intelectual">Propiedad
+                                        Intelectual</a>
+                                </li>
+                                <li><a link-identifier="Legales"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="legales"
+                                        href="/ayuda/channel/legales-promociones/5a48c47b454846e7aa3b11ce748bc514">Legales</a>
+                                </li>
+                                <li><a link-identifier="Facturación Electrónica"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="facturacinElectrnica"
+                                        href="/ayuda/articulo/como-facturar/65749f80ef2747b6be423145ea310c0b">Facturación
+                                        Electrónica</a></li>
+                                <li><a link-identifier="Rastrear mi Pedido"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="rastrearMiPedido" href="/tu-cuenta/pedidos">Rastrear mi Pedido</a>
+                                </li>
+                                <li><a link-identifier="Devoluciones"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="devoluciones"
+                                        href="/ayuda/articulo/politica-de-devoluciones/dcaa77bfd72b4eb1bc9c179bc98e4918">Devoluciones</a>
+                                </li>
+                                <li><a link-identifier="Suscríbete al Newsletter"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="suscrbeteAlNewsletter"
+                                        href="https://especiales.walmart.com.mx/newsletter">Suscríbete al Newsletter</a>
+                                </li>
+                                <li><a link-identifier="Walmart México y Centroamérica"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="walmartMxicoYCentroamrica"
+                                        href="https://www.walmartmexico.com/">Walmart México y Centroamérica</a></li>
+                                <li><a link-identifier="Bait"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db" data-dca-id="bait"
+                                        href="https://mibait.com/">Bait</a></li>
+                                <li><a link-identifier="Cashi"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db" data-dca-id="cashi"
+                                        href="https://cashi.com.mx/">Cashi</a></li>
+                                <li><a link-identifier="Beneficios"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="beneficios" href="/beneficios">Beneficios</a></li>
+                                <li><a link-identifier="Proveedores"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="proveedores"
+                                        href="https://www.walmartmexico.com/proveedores">Proveedores</a></li>
+                                <li><a link-identifier="Empleo en Walmart"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="empleoEnWalmart"
+                                        href="https://www.walmartmexico.com/unete-al-equipo">Empleo en Walmart</a></li>
+                                <li><a link-identifier="Vende con Nosotros"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="vendeConNosotros"
+                                        href="https://seller.walmart.com/signup?onboardingmart=7&amp;locale=es-MX">Vende
+                                        con
+                                        Nosotros</a></li>
+                                <li><a link-identifier="Walmart US"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link mr4-hdkp db"
+                                        data-dca-id="walmartUS" aria-label="Walmart US - Abrir en nueva ventana"
+                                        target="_blank" rel="noopener noreferrer"
+                                        href="https://www.walmart.com/?country=US">Walmart US</a>
+                                </li>
+                                <li><a link-identifier="Solicitud de eliminación de cuenta"
+                                        class="f6 no-underline mb3 ma0-hdkp footer-link db"
+                                        data-dca-id="solicitudDeEliminacinDeCuenta"
+                                        href="/tu-cuenta/borrar-cuenta">Solicitud de eliminación de cuenta</a></li>
+                            </ul>
+                            <div
+                                class="f7 lh-title mt6 pb5 ph3 pt1 tc-hdkp pa0-hdkp pt2-hdkp ma0-hdkp pb5-hdkp footer-copyright">
+                                © 2025 Walmart México y Centroamérica. Todos los derechos reservados.</div>
+                        </section>
+                    </footer>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
+<script src="{% static 'core/js/pro-01-com-01.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        
+        
+    });
+</script>

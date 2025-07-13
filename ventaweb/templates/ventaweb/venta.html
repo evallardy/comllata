@@ -1,0 +1,358 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-text {
+    flex-grow: 1;
+}
+
+.card .btn {
+    margin-top: auto;
+}
+</style>
+<div class="container">
+    <input type="text" name="maxima_seleccion" id="id_maxima_seleccion" value="{{ maxima_seleccion }}" hidden>
+    <div class="col-12 row d-flex align-items-center">
+        <div class="col-4 text-center text-bg-dark" style="border-radius: 15px;"> 
+            Selección:    <label id="id_cantidad_productos">{{ cantidad_productos }}</label>
+        </div>
+    </div>
+    <div class="col-12 row d-flex align-items-center mt-2">
+        <div class="col-2">
+            Ancho : 
+            <input type="text" name="seleccion_ancho" id="id_seleccion_ancho" value="{{ seleccion_ancho }}" hidden>
+            <select class="p-2" name="ancho" id="id_ancho" style="margin-left: 10px; border-radius: 8px;">
+                <option value="0" class="text-start"></option>
+                {% for ancho in ancho_distintos %}
+                <option value="{{ ancho }}" class="text-start">{{ ancho }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-2">
+            Alto : 
+            <input type="text" name="seleccion_alto" id="id_seleccion_alto" value="{{ seleccion_alto }}" hidden>
+            <select class="p-2" name="alto" id="id_alto" style="margin-left: 10px; border-radius: 8px;">
+                <option value="0" class="text-start"></option>
+                {% for alto in alto_distintos %}
+                <option value="{{ alto }}" class="text-start">{{ alto }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-2">
+            Rin : 
+            <input type="text" name="seleccion_rin" id="id_seleccion_rin" value="{{ seleccion_rin }}" hidden>
+            <select class="p-2" name="rin" id="id_rin" style="margin-left: 10px; border-radius: 8px;">
+                <option value="0" class="text-start"></option>
+                {% for rin in rin_distintos %}
+                <option value="{{ rin }}" class="text-start">{{ rin }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-2">
+            <form action="{% url 'venta' %}" method="get">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success" id="btn_limpia">Limpiar</button>
+            </form>
+        </div>
+        <div class="col-2">
+            <button class="btn btn-success" id="btn_busca" onclick="ejecuta_buscar()">Busca</button>
+            <input type="text" name="campo1" id="id_campo1" value="" hidden>
+            <input type="text" name="campo2" id="id_campo2" value="" hidden>
+            <input type="text" name="campo3" id="id_campo3" value="" hidden>
+            <input type="text" name="campo11" id="id_campo11" value="" hidden>
+            <input type="text" name="campo22" id="id_campo22" value="" hidden>
+            <input type="text" name="campo33" id="id_campo33" value="" hidden>
+        </div>
+    </div>
+    <!--
+    <div id="listadoFiltrados">
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th>Descripcion</th>
+                    <th class='text-end'>Precio</th>
+                    <th class='text-end'>Existencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                { for producto in productos }
+                <tr>
+                    <td>{{ producto.descripcion }}</td>
+                    <td class="text-end">{ producto.precio }</td>
+                    <td class="text-end">{ producto.existencia }</td>
+                </tr>
+                { endfor }
+            </tbody>
+        </table>
+    </div>
+    -->
+    <div class="row" id="productosFiltrados">
+        {% for producto in productos %}
+            {% include "ventaweb/_card.html" with producto=producto %}
+        {% endfor %}
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.boton_1').addClass('active');
+        valida_valores();
+
+        function busca_campo(campo) {
+            campo1=$("#id_campo1");
+            campo2=$("#id_campo2");
+            campo3=$("#id_campo3");
+            if (campo1.val()==campo.attr('name')) {
+                return 1;
+            }
+            if (campo2.val()==campo.attr('name')) {
+                return 2;
+            }
+            if (campo3.val()==campo.attr('name')) {
+                return 3;
+            }
+            return 0;
+        }
+
+        function guarda_valor(campo) {
+            campo1=$("#id_campo1");
+            campo2=$("#id_campo2");
+            campo3=$("#id_campo3");
+            campo11=$("#id_campo11");
+            campo22=$("#id_campo22");
+            campo33=$("#id_campo33");
+            if (campo1.val()=="") {
+                campo1.val(campo.attr('name'));
+                campo11.val(campo.val());
+            } else
+            if (campo2.val()=="") {
+                campo2.val(campo.attr('name'));
+                campo22.val(campo.val());
+            } else
+            if (campo3.val()=="") {
+                campo3.val(campo.attr('name'));
+                campo33.val(campo.val());
+            }
+        }
+
+        function borra_valores(secuencia) {
+            campo1=$("#id_campo1");
+            campo2=$("#id_campo2");
+            campo3=$("#id_campo3");
+            if (secuencia==1) {
+                campo1.val('');
+                campo11.val('');
+            }
+            if (secuencia<=2) {
+                campo2.val('');
+                campo22.val('');
+            }
+            if (secuencia<=3) {
+                campo3.val('');
+                campo33.val('');
+            }
+        }
+
+        function valida_valores() {
+            campo1=$("#id_campo1");
+            campo2=$("#id_campo2");
+            campo3=$("#id_campo3");
+            boton_limpia=$("#btn_limpia");
+            btn_busca=$("#btn_busca");
+            
+            if (campo1.val()==""&&campo2.val()==""&&campo3.val()=="") {
+                boton_limpia.prop('disabled', true);
+                btn_busca.prop('disabled', true);
+            } else {
+                boton_limpia.prop('disabled', false);
+                btn_busca.prop('disabled', false);
+            }
+        }
+
+        $('#id_alto, #id_ancho, #id_rin').change(function () {
+            let campo = $(this);
+            if (busca_campo(campo)==0) {
+                guarda_valor(campo);
+            } else if (busca_campo(campo)==1) {
+                borra_valores(1);
+                if (campo.val()!='0'&&campo.val()!='') {
+                    guarda_valor(campo);
+                }
+            } else if (busca_campo(campo)==2) {
+                borra_valores(2);
+                if (campo.val()!='0'&&campo.val()!='') {
+                    guarda_valor(campo);
+                }
+            } else {
+                borra_valores(3);
+                if (campo.val()!='0'&&campo.val()!='') {
+                    guarda_valor(campo);
+                }
+            }
+            valida_valores();
+            enviaDatos();
+        });
+
+        function enviaDatos() {
+            let campo1 = $('#id_campo1').val() || "";
+            let campo2 = $('#id_campo2').val() || "";
+            let campo3 = $('#id_campo3').val() || "";
+            let campo11 = $('#id_campo11').val() || "";
+            let campo22 = $('#id_campo22').val() || "";
+            let campo33 = $('#id_campo33').val() || "";
+
+            $.ajax({
+                url: "{% url 'filtrar_combos' %}",  // Asegúrate de que la vista tiene `name='datos'`
+                type: 'GET',
+                data: {
+                    'campo1': campo1,
+                    'campo2': campo2,
+                    'campo3': campo3,
+                    'campo11': campo11,
+                    'campo22': campo22,
+                    'campo33': campo33,
+                },
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                dataType: 'json',
+                success: function (data) {
+                    // Si la respuesta incluye listas de opciones actualizadas, las reemplaza en los selects
+                    actualizarOpciones('#id_alto', data.altos);
+                    actualizarOpciones('#id_ancho', data.anchos);
+                    actualizarOpciones('#id_rin', data.rines);
+
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error en AJAX:", error);
+                }
+            });
+        }
+
+        function ejecuta_buscar() {
+            let campo1 = $('#campo1').val() || "";
+            let campo2 = $('#campo2').val() || "";
+            let campo3 = $('#campo3').val() || "";
+            let campo11 = $('#campo11').val() || "";
+            let campo22 = $('#campo22').val() || "";
+            let campo33 = $('#campo33').val() || "";
+
+            $.ajax({
+                url: "{% url 'filtrar_llantas' %}",  // Asegúrate de que la vista tiene `name='datos'`
+                type: 'GET',
+                data: {
+                    'campo1': campo1,
+                    'campo2': campo2,
+                    'campo3': campo3,
+                    'campo11': campo11,
+                    'campo22': campo22,
+                    'campo33': campo33,
+                },
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                dataType: 'json',
+                success: function (data) {
+                    $("#id_cantidad_productos").text( data.cantidad_productos );
+                    contenedor.empty();
+
+                    if (data.html_tarjetas.length === 0) {
+                        contenedor.append('<p class="text-center">No se encontraron productos.</p>');
+                    } else {
+                        data.html_tarjetas.forEach(html => {
+                            contenedor.append(html);
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error en AJAX:", error);
+                }
+            });
+        }
+
+        function actualizarOpciones(selector, opciones) {
+            if (opciones && opciones.length > 0) {
+                let select = $(selector);
+                let valorActual = select.val();
+                select.empty();
+                select.append('<option value="">Seleccione</option>');
+                $.each(opciones, function (index, value) {
+                    if ( value != '0' ) {
+                        select.append(`<option value="${value}" ${value == valorActual ? 'selected' : ''}>${value}</option>`);
+                    }
+                });
+            }
+        }
+        function actualizaProductos(productos) {
+            let contenedor = $("#productosFiltrados"); // Selecciona la div donde se mostrarán los productos
+            let contenedorl = $("#listadoFiltrados"); // Selecciona la div donde se mostrarán los productos
+            
+            contenedor.empty(); // Limpia el contenido actual
+            contenedorl.empty(); // Limpia el contenido actual
+
+            if (productos.length === 0) {
+                contenedor.append('<p class="text-center">No se encontraron productos.</p>');
+                contenedorl.append('<p class="text-center">No se encontraron productos.</p>');
+                return;
+            }
+
+            // Iterar sobre los productos recibidos y construir las tarjetas
+            let card0 = `
+                <table class="table table-borderless col-12">
+                    <thead>
+                        <tr>
+                            <th>Descripcion</th>
+                            <th class='text-end'>Precio</th>
+                            <th class='text-end'>Existencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            productos.forEach(producto => {
+                card0 += `
+                            <tr>
+                                <td>${producto.descripcion}</td>
+                                <td class='text-end'>${producto.precio}</td>
+                                <td class='text-end'>${producto.existencia}</td>
+                            </tr>
+                `;
+            });
+            card0 += `
+                    </tbody>
+                </table>
+            `;
+            contenedorl.append(card0);
+            productos.forEach(producto => {
+                let card1 = `
+                    <div class="mt-3 col-md-4 col-sm-6 col-xxl-2 col-xl-2 col-lg-3 d-flex align-items-stretch">
+                        <div class="card mb-8 d-flex flex-column tarjetas">
+                            ${producto.imagen_principal ? `<img src="/media/${producto.imagen_principal}" class="card-img-top" alt="${producto.nombre}">` : ""}
+                            <div class="card-body d-flex flex-column">
+                                <label class="card-text flex-grow-1">${producto.ancho}/${producto.alto} R${producto.rin}</label>
+                                <p class="card-text">Precio: ${producto.precio}</p>
+                                <div class="row">
+                                    <a href="#" class="btn btn-info mt-auto ms-1" style="width: 30px; padding: 0;">
+                                        <img src="/static/core/img/detalles.svg" width="20" />
+                                    </a>
+                                    <a href="#" class="btn btn-info mt-auto ms-2" style="width: 30px; padding: 0;">
+                                        <img src="/static/core/img/carrito.svg" width="20" />
+                                    </a>
+                                    <input type="number" class="form-control ms-2" style="width: 60px;" min="1" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                contenedor.append(card1);
+            });
+        }
+    });
+</script>
+{% endblock %}

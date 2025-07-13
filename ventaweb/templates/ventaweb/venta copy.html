@@ -1,0 +1,276 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-text {
+    flex-grow: 1;
+}
+
+.card .btn {
+    margin-top: auto;
+}
+</style>
+<div class="container">
+    <input type="text" name="maxima_seleccion" id="id_maxima_seleccion" value="{{ maxima_seleccion }}" hidden>
+    <form action="" method="post">
+        <div class="col-12 row d-flex align-items-center">
+            <div class="col-4 text-center text-bg-dark" style="border-radius: 15px;"> 
+                Selección:    <label id="id_cantidad_productos">{{ cantidad_productos }}</label>
+            </div>
+        </div>
+        <div class="col-12 row d-flex align-items-center mt-2">
+            <div class="col-3">
+                Ancho : 
+                <input type="text" name="seleccion_ancho" id="id_seleccion_ancho" value="{{ seleccion_ancho }}" hidden>
+                <select class="p-2" name="ancho" id="id_ancho" style="margin-left: 10px; border-radius: 8px;">
+                    <option value="" class="text-start"></option>
+                    {% for ancho in ancho_distintos %}
+                    <option value="{{ ancho }}" class="text-start">{{ ancho }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-3">
+                Alto : 
+                <input type="text" name="seleccion_alto" id="id_seleccion_alto" value="{{ seleccion_alto }}" hidden>
+                <select class="p-2" name="alto" id="id_alto" style="margin-left: 10px; border-radius: 8px;">
+                    <option value="" class="text-start"></option>
+                    {% for alto in alto_distintos %}
+                    <option value="{{ alto }}" class="text-start">{{ alto }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-3">
+                Rin : 
+                <input type="text" name="seleccion_rin" id="id_seleccion_rin" value="{{ seleccion_rin }}" hidden>
+                <select class="p-2" name="rin" id="id_rin" style="margin-left: 10px; border-radius: 8px;">
+                    <option value="" class="text-start"></option>
+                    {% for rin in rin_distintos %}
+                    <option value="{{ rin }}" class="text-start">{{ rin }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-3">
+                <a href="{% url 'venta' %}" class="btn btn-success">Limpiar</a>
+            </div>
+        </div>
+    </form>
+    <!--
+    <div id="listadoFiltrados">
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th>Descripcion</th>
+                    <th class='text-end'>Precio</th>
+                    <th class='text-end'>Existencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                { for producto in productos }
+                <tr>
+                    <td>{{ producto.descripcion }}</td>
+                    <td class="text-end">{ producto.precio }</td>
+                    <td class="text-end">{ producto.existencia }</td>
+                </tr>
+                { endfor }
+            </tbody>
+        </table>
+    </div>
+    -->
+    <div class="row" id="productosFiltrados">
+        {% for producto in productos %}
+        <div class="mt-3 col-md-4 col-sm-6 col-xxl-2 col-xl-2 col-lg-3 d-flex align-items-stretch"> <!-- Hace que todas las cards tengan la misma altura -->
+            <div class="card mb-8 d-flex flex-column tarjetas">
+                <div class="card-body d-flex flex-column">
+                    {% if producto.imagen_principal %}
+                    <img src="{{ producto.imagen_principal.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+                    {% endif %}
+                    <p class="card-text">$ {{ producto.precio }}<br>
+                    Existencia: {{ producto.existencia }}</p>
+                    <label class="card-text flex-grow-1">{{ producto.descripcion }}</label>
+                    <label class="card-title text-bg-dark text-center" >{{ producto.marca }}</label>
+                    <div class="row">
+                        <a href="#" class="btn btn-info mt-auto ms-1" style="width: 30px; padding: 0;">
+                            <img src="{% static 'core/img/detalles.svg' %}" width="20" />
+                        </a>
+                        <a href="#" class="btn btn-info mt-auto ms-2" style="width: 30px; padding: 0;">
+                            + Agregar
+                        </a>
+                        <input type="number" class="form-control ms-2" style="width: 60px;" min="1" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.boton_1').addClass('active');
+
+        $('#id_marca, #id_modelo, #id_alto, #id_ancho, #id_rin').change(function () {
+            let cambioInformacion = $(this).attr('name');
+            let seleccionElemento = $('#id_seleccion_' + cambioInformacion);
+            if (seleccionElemento.length && seleccionElemento.val() == '0') {
+                let maxSeleccion = parseInt($('#id_maxima_seleccion').val(), 10) || 0;
+                let nuevoValor = maxSeleccion + 1;
+                seleccionElemento.val(nuevoValor);
+                $('#id_maxima_seleccion').val(nuevoValor);
+            }
+            enviaDatos(cambioInformacion);
+        });
+
+        function enviaDatos(cambioInformacion) {
+            let marca = $('#id_marca').val() || "";
+            let modelo = $('#id_modelo').val() || "";
+            let alto = $('#id_alto').val() || "";
+            let ancho = $('#id_ancho').val() || "";
+            let rin = $('#id_rin').val() || "";
+
+            let maxima_seleccion = $('#id_maxima_seleccion').val() || "";
+            let seleccion_marca = $('#id_seleccion_marca').val() || "";
+            let seleccion_modelo = $('#id_seleccion_modelo').val() || "";
+            let seleccion_alto = $('#id_seleccion_alto').val() || "";
+            let seleccion_ancho = $('#id_seleccion_ancho').val() || "";
+            let seleccion_rin = $('#id_seleccion_rin').val() || "";
+
+            $.ajax({
+                url: "{% url 'datos' %}",  // Asegúrate de que la vista tiene `name='datos'`
+                type: 'GET',
+                data: {
+                    'marca': marca,
+                    'modelo': modelo,
+                    'alto': alto,
+                    'ancho': ancho,
+                    'rin': rin,
+                    'cambioInformacion': cambioInformacion,
+                    'maxima_seleccion': maxima_seleccion,
+                    'seleccion_marca': seleccion_marca,
+                    'seleccion_modelo': seleccion_modelo,
+                    'seleccion_alto': seleccion_alto,
+                    'seleccion_ancho': seleccion_ancho,
+                    'seleccion_rin': seleccion_rin
+                },
+                dataType: 'json',
+                success: function (data) {
+
+                    // Si la respuesta incluye listas de opciones actualizadas, las reemplaza en los selects
+                    if (cambioInformacion!='marca') {actualizarOpciones('#id_marca', data.marcas);}
+                    if (cambioInformacion!='modelo') {actualizarOpciones('#id_modelo', data.modelos);}
+                    if (cambioInformacion!='alto') {actualizarOpciones('#id_alto', data.altos);}
+                    if (cambioInformacion!='ancho') {actualizarOpciones('#id_ancho', data.anchos);}
+                    if (cambioInformacion!='rin') {actualizarOpciones('#id_rin', data.rines);}
+                    $('#id_maxima_seleccion').val( data.maxima_seleccion );
+                    $('#id_seleccion_marca').val( data.seleccion_marca );
+                    $('#id_seleccion_modelo').val( data.seleccion_modelo );
+                    $('#id_seleccion_alto').val( data.seleccion_alto );
+                    $('#id_seleccion_ancho').val( data.seleccion_ancho );
+                    $('#id_seleccion_rin').val( data.seleccion_rin );
+                    $('#id_marca').val( data.marca );
+                    $('#id_modelo').val( data.modelo );
+                    $('#id_alto').val( data.alto );
+                    $('#id_ancho').val( data.ancho );
+                    $('#id_rin').val( data.rin );
+                    $("#id_cantidad_productos").text( data.cantidad_productos );
+                    actualizaProductos( data.productos_filtrados );
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error en AJAX:", error);
+                }
+            });
+        }
+
+        function actualizarOpciones(selector, opciones) {
+            if (opciones && opciones.length > 0) {
+                let select = $(selector);
+                let valorActual = select.val();
+                select.empty();
+                select.append('<option value="">Seleccione</option>');
+                $.each(opciones, function (index, value) {
+                    if ( value != '0' ) {
+                        select.append(`<option value="${value}" ${value == valorActual ? 'selected' : ''}>${value}</option>`);
+                    }
+                });
+            }
+        }
+        function actualizaProductos(productos) {
+            let contenedor = $("#productosFiltrados"); // Selecciona la div donde se mostrarán los productos
+            let contenedorl = $("#listadoFiltrados"); // Selecciona la div donde se mostrarán los productos
+            
+            contenedor.empty(); // Limpia el contenido actual
+            contenedorl.empty(); // Limpia el contenido actual
+
+            if (productos.length === 0) {
+                contenedor.append('<p class="text-center">No se encontraron productos.</p>');
+                contenedorl.append('<p class="text-center">No se encontraron productos.</p>');
+                return;
+            }
+
+            // Iterar sobre los productos recibidos y construir las tarjetas
+            let card0 = `
+                <table class="table table-borderless col-12">
+                    <thead>
+                        <tr>
+                            <th>Marca</th>
+                            <th>Descripcion</th>
+                            <th class='text-end'>Precio</th>
+                            <th class='text-end'>Existencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            productos.forEach(producto => {
+                card0 += `
+                            <tr>
+                                <td>${producto.marca}</td>
+                                <td>${producto.descripcion}</td>
+                                <td class='text-end'>${producto.precio}</td>
+                                <td class='text-end'>${producto.existencia}</td>
+                            </tr>
+                `;
+            });
+            card0 += `
+                    </tbody>
+                </table>
+            `;
+            contenedorl.append(card0);
+            productos.forEach(producto => {
+                let card1 = `
+                    <div class="mt-3 col-md-4 col-sm-6 col-xxl-2 col-xl-2 col-lg-3 d-flex align-items-stretch">
+                        <div class="card mb-8 d-flex flex-column tarjetas">
+                            ${producto.imagen_principal ? `<img src="/media/${producto.imagen_principal}" class="card-img-top" alt="${producto.nombre}">` : ""}
+                            <div class="card-body d-flex flex-column">
+                                <label class="card-title text-bg-dark text-center" style="border-radius: 10px;">${producto.marca}</label>
+                                <label class="card-text flex-grow-1">${producto.modelo}</label>
+                                <label class="card-text flex-grow-1">${producto.ancho}/${producto.alto} R${producto.rin}</label>
+                                <p class="card-text">Precio: ${producto.precio}</p>
+                                <div class="row">
+                                    <a href="#" class="btn btn-info mt-auto ms-1" style="width: 30px; padding: 0;">
+                                        <img src="/static/core/img/detalles.svg" width="20" />
+                                    </a>
+                                    <a href="#" class="btn btn-info mt-auto ms-2" style="width: 30px; padding: 0;">
+                                        <img src="/static/core/img/carrito.svg" width="20" />
+                                    </a>
+                                    <input type="number" class="form-control ms-2" style="width: 60px;" min="1" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                contenedor.append(card1);
+            });
+        }
+    });
+</script>
+{% endblock %}

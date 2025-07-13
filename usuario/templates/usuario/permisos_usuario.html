@@ -1,0 +1,96 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block blcss %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% endblock %}
+{% block content %}
+{% if user.is_authenticated and accesos_perm %}
+<div class="container mt-4">
+  <div class="text-center">
+    <h2>Accesos</h2>
+  </div>
+</div>
+<div class="container col-11 col-xs-7 col-sm-7 col-md-7 col-lg-6 col-xl-5 col-xxl-4">
+  <form method="post" action="{% url 'accesos' %}">
+    {% csrf_token %}
+    <div class="row d-flex justify-content-start">
+      <a href="{% url 'index'  %}" class="btn btn-secondary col-2">Regresar</a>
+      {% if accesos_modificar_perm %}
+      <button type="submit" id="boton_guarda" class="btn btn-success col-2 ms-3">Guardar</button>
+      {% endif %}
+    </div>
+    <div class="mt-3">
+      <select class="form-select" name="usuario" id="id_usuario">
+        <option value="0">Seleccione usuario</option>
+        {% for user in users %}
+        <option value="{{ user.id }}">{{ user.username }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12 col-xs-7 col-sm-7 col-md-7 col-lg-6 col-xl-5 col-xxl-4 mt-3"></div>
+    <table class="table cuadro table-striped col-12">
+      <tbody id="todos_permisos">
+      </tbody>
+    </table>
+  </form>
+</div>
+<script>
+  $("#boton_guarda").hide()
+  $('#id_usuario').change(function () {
+    var id = $(this).val();
+    if (id == 0) {
+      $("#todos_permisos").empty();
+      $("#boton_guarda").hide()
+    } else {
+      $("#boton_guarda").show()
+      $.ajax({
+        url: '/usuario/todos_permisos/' + id + '/',
+        type: 'GET',
+        dataType: 'json',
+        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+        success: function (data) {
+          // Obtener los permisos del usuario del objeto de datos recibido
+          var userPermissions = data.usuario_permisos;
+
+          // Generar la tabla de permisos dinámicamente
+          var tableBody = $('#todos_permisos');
+          tableBody.empty();
+
+          // Iterar sobre los permisos y generar las filas de la tabla
+          var row = $('<tr class="col-12"></tr>');
+          $.each(data.permisos, function (index, permission) {
+            var cell = $('<td class="col-4"></td>');
+            {% if accesos_modificar_perm %}
+            var checkbox = $('<input type="checkbox" name="permissions" id="permission_' + permission.id + '" value="' + permission.id + '">');
+            {% else %}
+            var checkbox = $('<input type="checkbox" disabled name="permissions" style="opacity: 0.9; background-color: black;" id="permission_' + permission.id + '" value="' + permission.id + '">');
+      {% endif %}
+      var label = $('<label style="margin-left: 5px;" for="permission_' + permission.id + '">' + permission.name + '</label>');
+
+      // Verificar si el permiso está asignado al usuario y marcar el checkbox en consecuencia
+      if (userPermissions.includes(permission.id)) {
+        checkbox.prop('checked', true);
+      }
+
+      cell.append(checkbox);
+      cell.append(label);
+      row.append(cell);
+
+      // Agregar una nueva fila cada 4 permisos
+      if ((index + 1) % 2 === 0 || (index + 1) === data.permisos.length) {
+        tableBody.append(row);
+        row = $('<tr class="col-12"></tr>');
+      }
+    });
+        },
+  error: function (xhr, textStatus, errorThrown) {
+    console.log('Error:', errorThrown);
+  }
+      });
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <p style="display: flex; grid-auto-flow: column; max-height: fit-content;">
+        {% for dato in opcion_seleccionada %}
+        {% if dato.comentario %}
+        {{ dato.comentario  }} <br>
+        {% endif %}
+        {% if dato.marca %}
+        El auto que encontré con las caracteristicas que me pides son : <br>
+        La marca {{ dato.marca }}
+        {% endif %}
+        {% if dato.modelo %}
+        y modelo {{ dato.modelo }}
+        {% endif %}
+        {% if dato.año %}
+        del año {{ dato.año }} <br>
+        {% endif %}
+        {% if dato.ancho and dato.marca%}
+        Este tiene una llanta de ancho {{ dato.ancho }},
+        {% endif %}
+        {% if dato.ancho and not dato.marca%}
+        La llanta que pides con las medidas, ancho {{ dato.ancho }},
+        {% endif %}
+        {% if dato.alto %}
+        alto de {{ dato.alto }}
+        {% endif %}
+        {% if dato.rin %}
+        y rin de {{ dato.rin }} pulgadas <br>
+        {% endif %}
+        {% if dato.ancho and dato.alto and dato.rin and dato.marca%}
+        A continuación te muestro las opciones que tengo de llanta para el auto.
+        {% endif %}
+        {% if dato.ancho and dato.alto and dato.rin and not dato.marca%}
+        Te muestro las opciones que tengo.
+        {% endif %}
+        {% endfor %}
+    </p>
+
+    {% if presenta %}
+    <section>
+        <div class="flex flex-wrap w-100 flex-grow-0 flex-shrink-0 ph2 pr0-xl pl4-xl mt0-xl"
+            data-testid="item-stack">
+        {{ busqueda_llantas }}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

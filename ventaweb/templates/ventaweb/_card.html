@@ -1,0 +1,24 @@
+{% load static %}
+<div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 d-flex align-items-stretch mt-2">
+    <div class="card shadow-sm w-100">
+        {% if producto.imagen_principal %}
+        <img src="{{ producto.imagen_principal.url }}" class="card-img-top producto-imagen" alt="{{ producto.nombre }}">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+            <h6 class="card-title text-center text-bg-dark py-1 rounded">{{ producto.marca }}</h6>
+            <p class="card-text producto-info text-center">{{ producto.descripcion }}</p>
+            <p class="card-text producto-info text-center">{{ producto.ancho }}/{{ producto.alto }} R{{ producto.rin }}</p>
+            <p class="card-text text-center"><strong>${{ producto.precio }}</strong></p>
+            <p class="card-text text-center">Existencia: {{ producto.existencia }}</p>
+            <div class="row justify-content-center mt-auto">
+                <a href="#" class="btn btn-outline-info btn-sm me-1" title="Ver detalles">
+                    <img src="{% static 'core/img/detalles.svg' %}" width="20" />
+                </a>
+                <a href="#" class="btn btn-outline-success btn-sm me-1" title="Agregar">
+                    <img src="{% static 'core/img/carrito.svg' %}" width="20" />
+                </a>
+                <input type="number" class="form-control form-control-sm" style="width: 60px;" min="1" step="1" oninput="this.value = this.value.replace(/\D/g, '')">
+            </div>
+        </div>
+    </div>
+</div>

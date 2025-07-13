@@ -1,0 +1,46 @@
+{% load static %}
+{% for menu in menu_anchos %}
+<li class="flex flex-column items-center" data-slide="0" style="scroll-snap-align: start;">
+    <a link-identifier="Paquetes de llantas click" class="w5 pointer tc linkClass link" role="link" aria-current="false"
+        href="#" style="width: 104px;">
+        <div class="overflow-hidden relative tc mh3" data-testid="image-chip-container" style="height: 72px;">
+            <img loading="lazy" class="left-0 bottom-0 absolute mw-100"
+                src="{% static menu.imagen %}"
+                alt="" height="100%" width="100%" style="object-fit: contain;">
+        </div>
+        <div class="black mt2 mb1 lh-solid ph1" style="color: rgb(0, 0, 0);">
+            {{ menu.descripcion }}
+        </div>
+    </a>
+</li>
+{% endfor %}
+{% for menu in menu_alto %}
+<li class="flex flex-column items-center" data-slide="0" style="scroll-snap-align: start;">
+    <a link-identifier="Paquetes de llantas click" class="w5 pointer tc linkClass link" role="link" aria-current="false"
+        href="#" style="width: 104px;">
+        <div class="overflow-hidden relative tc mh3" data-testid="image-chip-container" style="height: 72px;">
+            <img loading="lazy" class="left-0 bottom-0 absolute mw-100"
+                src="{% static menu.imagen %}"
+                alt="" height="100%" width="100%" style="object-fit: contain;">
+        </div>
+        <div class="black mt2 mb1 lh-solid ph1" style="color: rgb(0, 0, 0);">
+            {{ menu.descripcion }}
+        </div>
+    </a>
+</li>
+{% endfor %}
+{% for menu in menu_rines %}
+<li class="flex flex-column items-center" data-slide="0" style="scroll-snap-align: start;">
+    <a link-identifier="Paquetes de llantas click" class="w5 pointer tc linkClass link" role="link" aria-current="false"
+        href="#" style="width: 104px;">
+        <div class="overflow-hidden relative tc mh3" data-testid="image-chip-container" style="height: 72px;">
+            <img loading="lazy" class="left-0 bottom-0 absolute mw-100"
+                src="{% static menu.imagen %}"
+                alt="" height="100%" width="100%" style="object-fit: contain;">
+        </div>
+        <div class="black mt2 mb1 lh-solid ph1" style="color: rgb(0, 0, 0);">
+            {{ menu.descripcion }}
+        </div>
+    </a>
+</li>
+{% endfor %}

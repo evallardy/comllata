@@ -1,0 +1,64 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block blcss %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% endblock %}
+{% block content %}
+{% if user.is_authenticated %}
+{% if modifica_usuario_perm %}
+<div class="container mt-4">
+    <h2 class="text-center">Usuario <strong>{{ usuario }}</strong></h2>
+    <form method="POST" class="row g-3">
+        {% csrf_token %}
+        <div class="d-flex justify-content-start mb-3">
+            <a href="{% url 'usuarios' %}" class="btn btn-secondary">Regresar</a>
+            <button type="submit" class="btn btn-success ms-3">Guarda</button>
+        </div>
+        <div class="row d-flex justify-content-around text-center">
+            <h4 style="color: rgb(11, 125, 231);">{{accion}}</h4>
+        </div>
+        <div class="col-12">
+            {{ form.first_name.label }}
+            {{ form.first_name }}
+        </div>
+        <div class="col-12">
+            {{ form.last_name.label }}
+            {{ form.last_name }}
+        </div>
+        <div class="col-6">
+            {{ form.celular.label }}
+            {{ form.celular }}
+        </div>
+        <div class="col-1 text-center">
+            Activo
+            <div class="col-12" style="margin-left: 7px; margin-top: 5px;">
+                {{ form.is_active }}
+            </div>
+        </div>
+        <div class="col-1 text-center" >
+            Cliente
+            <div class="col-12" style="margin-left: 7px; margin-top: 5px;">
+                {{ form.cliente }}
+            </div>
+        </div>
+        <div class="col-12">
+            {{ form.email.label }}
+            {{ form.email }}
+        </div>
+        <div class="col-12">
+            {{form.password.label }}
+            {{form.password }}
+        </div>
+        <div class="row d-flex justify-content-around">
+        </div>
+    </form>
+</div>
+<script>
+    $("#id_cliente").addClass('checkbox-large');
+    $("#id_is_active").addClass('checkbox-large');
+</script>
+{% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<h2>Importación de información</h2>
+
+<button class="btn btn-primary" onclick="actualiza_talleres()">Talleres</button>
+<button class="btn btn-primary" onclick="actualiza_llantas()">Inventario</button>
+<button class="btn btn-primary">Promociones</button>
+
+<hr>
+    <h4>Importando <label id="lbl_importa"></label></h4>
+    <table class="table table-striped" id="tabla-resultado">
+    </table>
+<script>
+    function actualiza_talleres() {
+        $.ajax({
+            url: "{% url 'importa_talleres' %}",
+            type: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            success: function (response) {
+                $("#lbl_importa").html('Talleres');
+                let tabla = $("#tabla-resultado");
+                tabla.empty();
+                if (response.talleres.length > 0) {
+                    response.talleres.forEach(taller => {
+                        tabla.append(`
+                            <tr>
+                                <td>${taller.razon_social}</td>
+                                <td>${taller.estatus}</td>
+                            </tr>
+                        `);
+                    });
+                }
+                else {
+                    tabla.append(`
+                        <tr>
+                            <td>Sin Modificaciones</td>
+                        </tr>
+                    `);
+                }
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Leidos</td>
+                        <td>${response.leidos}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Actualizados</td>
+                        <td>${response.actualizados}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+
+                        <td>Nuevos</td>
+                        <td>${response.nuevos}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Sin Modificación</td>
+                        <td>${response.sin_modificacion}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Sin recepción</td>
+                        <td>${response.total_sin_recepcion}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Total</td>
+                        <td>${response.total}</td>
+                    </tr>
+                `);
+            },
+            error: function () {
+                alert("Error al importar talleres");
+            }
+        });
+    }
+    function actualiza_llantas() {
+        $.ajax({
+            url: "{% url 'importa_llantas' %}",
+            type: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            success: function (response) {
+                $("#lbl_importa").html('Llantas');
+                let tabla = $("#tabla-resultado");
+                tabla.empty();
+                if (response.llantas.length > 0) {
+                    response.llantas.forEach(llanta => {
+                        tabla.append(`
+                            <tr>
+                                <td>${llanta.razon_social}</td>
+                                <td>${llanta.llanta}</td>
+                                <td>${llanta.estatus}</td>
+                            </tr>
+                        `);
+                    });
+                }
+                else {
+                    tabla.append(`
+                        <tr>
+                            <td></td>
+                            <td>Sin Modificaciones</td>
+                        </tr>
+                    `);
+                }
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>${response.leidos}</td>
+                        <td>Leidos</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>${response.actualizados}</td>
+                        <td>Actualizados</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>${response.nuevos}</td>
+                        <td>Nuevos</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>${response.sin_modificacion}</td>
+                        <td>Sin modificación</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>${response.sin_recepcion}</td>
+                        <td>Sin recepción</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>${response.total}</td>
+                        <td>Total</td>
+                    </tr>
+                `);
+            },
+            error: function () {
+                alert("Error al importar llantas");
+            }
+        });
+    }
+</script>
+
+{% endblock %}

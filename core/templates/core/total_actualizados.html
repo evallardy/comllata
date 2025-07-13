@@ -1,0 +1,34 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Actualizar Llantas desde Inventario</h2>
+
+    <form method="post" class="text-center">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary btn-lg">Ejecutar actualización</button>
+    </form>
+
+    {% if procesado %}
+    <div class="mt-5">
+        <h4 class="text-center">Resultado de la actualización</h4>
+        <table class="table table-bordered text-center mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>Total procesados</th>
+                    <th>Actualizados correctamente</th>
+                    <th>No actualizados</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ total_procesados }}</td>
+                    <td class="table-success">{{ total_actualizados }}</td>
+                    <td class="table-danger">{{ total_fallidos }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

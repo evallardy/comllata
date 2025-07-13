@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block blcss %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center">Registro Usuario</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="d-flex justify-content-start mb-3">
+      <a href="{% url 'usuarios' %}" class="btn btn-secondary cuadro-boton">Regresar</a>
+      <button class="btn btn-success ms-3" type="submit">Guardar</button>
+    </div>
+    <table id="tabla">
+      {{form.as_table}}
+    </table>
+  </form>
+</div>
+<script>
+  $(document).ready(function () {
+    var $tdElements1 = $('table tr');
+    $tdElements1.addClass('align-text-top');
+    $('label[for="id_password2"]').text('Confirmación:');
+  });
+</script>
+{% endblock %}

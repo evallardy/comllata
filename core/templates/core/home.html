@@ -1,0 +1,371 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Inicio - MiBooking{% endblock %}
+
+{% block aviso %}
+{{ context.aviso_template }}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* Botón transparente sin sombra */
+  .btn-transparent {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: inherit;
+  }
+  .btn-transparent:focus,
+  .btn-transparent:active,
+  .btn-transparent.show,
+  .btn-transparent.dropdown-toggle:focus {
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  /* FLECHA tipo globo, centrada */
+  .dropdown-menu-arrow::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white; /* color del fondo del menú */
+    z-index: 1000;
+  }
+</style>
+<div class="flex-auto relative z-1" data-testid="main-content-container">
+    <div class="main-content mw1600 center" id="maincontent" data-testid="maincontent" data-dca-type="page">
+        <main
+            data-sis-url="https://preso.intl.prod.walmart.com/v2/search?query=llantas&amp;facet=&amp;stores=0000005468&amp;cat_id=&amp;sort=best_match&amp;page=1&amp;min_price=&amp;max_price=&amp;spelling=true&amp;ptss=&amp;trsp=&amp;isMoreOptionsTileEnabled=true&amp;autoOptIn=false&amp;multiStoreIds=&amp;prg=desktop&amp;storeSlotBooked=&amp;stateOrProvinceCode=CDMX&amp;ps=44&amp;zipcode=07780&amp;recall_set=&amp;pageType=SearchPage&amp;inCatchment=false&amp;extended_zipcode=07780&amp;addressId=&amp;customerContext=%7B%22customerId%22%3Anull%2C%22isPaidMember%22%3Afalse%2C%22isActiveMember%22%3Afalse%2C%22purseTags%22%3A%5B%5D%7D&amp;pickupStore=3769&amp;deliveryStore=&amp;subIntentSource=LS&amp;isDefaulted=false&amp;ffAwareSearchOptOut=false&amp;isGenAiEnabled=true"
+            data-ads-url="https://ads-flyer.walmart.com/ads/sponsored-products">
+            <div data-testid="flex-container" class="flex flex-column h-100">
+                <div class="h-100 relative">
+                    <div data-testid="flex-container" class="flex flex-column h-100">
+                        <div class="h-100 relative">
+                            <div data-testid="skyline-ad" style="height: auto; margin: 0px; overflow: hidden;">
+                                <div class="mt3 mt4-xl mb3 ph3 ph4-l w-100 overflow-hidden" data-testid="top"
+                                    style="aspect-ratio: 16 / 1.2; min-height: 90px; display: none;">
+                                    <div class="w_oz0G pa0" id="top-SEARCH-SkylineDisplayAd-skylineZone-wrapper-lazy">
+                                        <span data-testid="lazy-render" data-rendered="true">
+                                            <div data-testid="top-SEARCH-SkylineDisplayAd-skylineZone-wrapper"
+                                                class="tc">
+                                                <div id="top-SEARCH-SkylineDisplayAd-skylineZone"
+                                                    data-google-query-id="CN-K4KefoY4DFd67pgQdci8erQ"
+                                                    style="min-height: 80px; display: none;">
+                                                    <div id="google_ads_iframe_149821986/WMMGWeb/search_1__container__"
+                                                        style="border: 0pt none; width: 320px; height: 0px;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </span></div>
+                                </div>
+                            </div>
+                            <section>
+                                <span>
+                                    <span
+                                        data-module-data="{&quot;__typename&quot;:&quot;TempoWM_GLASSWWWBrandAmplifierAdConfigs&quot;,&quot;_rawConfigs&quot;:{&quot;moduleLocation&quot;:&quot;top&quot;},&quot;moduleLocation&quot;:&quot;top&quot;,&quot;ad&quot;:{&quot;status&quot;:&quot;SUCCESS&quot;,&quot;moduleType&quot;:&quot;BrandAmplifierAd&quot;,&quot;platform&quot;:&quot;MOBILE_WEB&quot;,&quot;pageId&quot;:&quot;llantas&quot;,&quot;pageType&quot;:&quot;SEARCH&quot;,&quot;storeId&quot;:&quot;0000005468&quot;,&quot;stateCode&quot;:&quot;CDMX&quot;,&quot;zipCode&quot;:&quot;07780&quot;,&quot;pageContext&quot;:{&quot;searchNormalize&quot;:null,&quot;customerContext&quot;:{&quot;customerId&quot;:null,&quot;isPaidMember&quot;:false,&quot;isActiveMember&quot;:false,&quot;purseTags&quot;:[],&quot;paymentMethodMetaData&quot;:[]}},&quot;moduleConfigs&quot;:{&quot;moduleLocation&quot;:&quot;top&quot;,&quot;isSppEnabled&quot;:true},&quot;adsContext&quot;:null,&quot;adRequestComposite&quot;:{&quot;adsConfig&quot;:&quot;{}&quot;,&quot;categoryId&quot;:&quot;&quot;,&quot;keyword&quot;:&quot;&quot;,&quot;isDebug&quot;:false,&quot;isManualShelf&quot;:false},&quot;adContent&quot;:{&quot;type&quot;:&quot;SPONSORED_PRODUCTS&quot;,&quot;data&quot;:{&quot;__typename&quot;:&quot;SponsoredProducts&quot;}}}}">
+                                    </span>
+                                </span>
+                            </section>
+                            <section>
+                                <section aria-label="Sección de ordenar y filtrar"
+                                    class="w-100 flex flex-shrink-0 hidesb hidesb-wk pl3 ph4-xl relative z-10 pv3"
+                                    style="min-height: 64px; overflow-x: auto;">
+                                    <!--
+                                    <div class="w_5Mln flex-shrink-0 facet-popover">
+                                        <div class="flex flex-row flex-shrink-0 items-center br-pill"
+                                            data-testid="filter_chip_brand">
+                                            <button type="button" class="f6 pv2 br-pill normal sans-serif flex  filter-chip-hover-state 
+                                                    bn bg-near-white dark-gray pointer" aria-label="Marca" aria-expanded="false">
+                                                <span class="flex pointer pl3" aria-hidden="true">
+                                                    Marca
+                                                </span>
+                                                <i class="ld ld-ChevronDown mh2"
+                                                    style="font-size: 1rem; vertical-align: -0.175em; width: 1rem; height: 1rem; box-sizing: content-box;">
+                                                </i>
+                                            </button>
+                                        </div>
+                                        <div id="react-aria5754225888-:rb:"></div>
+                                    </div>
+                                    -->
+                                    <div class="flex flex-row items-center ml-auto flex-shrink-0 dark-grey">
+                                        <span class="b mh2">Marca</span>|
+                                        <div class="w_5Mln flex-shrink-0">
+                                            <div class="dropdown">
+                                                <button id="dropdownButton2" class="btn btn-transparent dropdown-toggle" type="button"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                    {{ primera_marca }}
+                                                </button>
+                                                <ul class="dropdown-menu mt-3 dropdown-menu-arrow" id="dropdownMenu2" aria-labelledby="dropdownButton2">
+                                                    {% for marca in marcas %}
+                                                    <li><a class="dropdown-item" href="#">{{ marca.nombre }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </section>
+                            <hr aria-hidden="true" class="w_qUHG">
+                            <section class="pv3" aria-label="Mejoras rápidas">
+                                <div class="flex flex-column justify-center relative"
+                                    data-testid="horizontal-scroller-chipModuleWithImages"
+                                    data-dca-id="8e5443c6-0bb0-4756-b81f-998c10d36298"
+                                    data-dca-name="ui_horizontal_scroller:chipModuleWithImages" data-dca-type="module">
+                                    <a link-identifier="horizontalScrollerPrevious"
+                                        class="absolute dn z-5 bg-white br-100 pa0 pointer br-100 nav-control left-1"
+                                        aria-label="Diapositiva anterior para la lista chipModuleWithImages"
+                                        aria-disabled="true" data-testid="horizontal-scroller-previous"
+                                        data-dca-id="ui_horizontal_scroller:previous_button"
+                                        data-dca-intent="chevronPreviousButton"
+                                        data-dca-name="ItemCarouselPreviousButton" tabindex="0" role="button">
+                                        <i
+                                            class="ld ld-ChevronLeft"
+                                            style="font-size: 1.5rem; vertical-align: -0.25em; padding: 12px; width: 1.5rem; height: 1.5rem; box-sizing: content-box;">
+                                        </i>
+                                    </a>
+                                    <ul data-testid="carousel-container"
+                                        class="list ma0 pl0 overflow-x-scroll hidesb hidesb-wk relative overflow-y-hidden pl3 spl3 pl4-xl"
+                                        style="display: flex; grid-auto-flow: column; max-height: fit-content;">
+                                        {{ context.menu_rines_template }}
+                                    </ul>
+                                    <a link-identifier="horizontalScrollerNext"
+                                        class="absolute dn z-5 bg-white br-100 pa0 pointer db-l br-100 nav-control right-1 db"
+                                        aria-label="Siguiente diapositiva para la lista chipModuleWithImages"
+                                        aria-disabled="false" data-testid="horizontal-scroller-next"
+                                        data-dca-id="ui_horizontal_scroller:next_button"
+                                        data-dca-intent="chevronNextButton" data-dca-name="ItemCarouselNextButton"
+                                        tabindex="0" role="button">
+                                        <i class="ld ld-ChevronRight"
+                                            style="font-size: 1.5rem; vertical-align: -0.25em; padding: 12px; width: 1.5rem; height: 1.5rem; box-sizing: content-box;">
+                                        </i>
+                                    </a>
+                                </div>
+<!--                                
+                                <div class="dn"><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/llantas-y-rines/paquetes-de-llantas/265356_265377_350079">Paquetes
+                                        de llantas</a><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/destacados-autos/destacados-autos/265356_300013_300018">Lo
+                                        más vendido</a><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/llantas-y-rines/llantas-rin-13/265356_265377_265379">Rin
+                                        13</a><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/llantas-y-rines/llantas-rin-14/265356_265377_265380">Rin
+                                        14</a><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/llantas-y-rines/llantas-rin-15/265356_265377_265381">Rin
+                                        15</a><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/llantas-y-rines/llantas-rin-16/265356_265377_265382">Rin
+                                        16</a><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/llantas-y-rines/llantas-rin-17/265356_265377_265383">Rin
+                                        17</a><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/llantas-y-rines/llantas-rin-18/265356_265377_265384">Rin
+                                        18</a><a link-identifier="Generic Name"
+                                        href="/browse/autos-y-llantas/limpieza-y-estetica-automotriz/hidrolavadoras/265356_265409_265412">Hidrolavadoras</a><a
+                                        link-identifier="Generic Name"
+                                        href="/content/audio/audio-para-autos/264733_264748">Audio para
+                                        auto</a></div>
+-->                                        
+                            </section>
+                            <hr aria-hidden="true" class="w_qUHG">
+                        </div>
+                    </div>
+                </div>
+                <div class="h-100 relative">
+                    <div data-testid="flex-container" class="flex flex-column h-100">
+                        <div class="h-100 relative">
+                            <div class="w-100 relative-m pl4 pr4 flex pt2 search-outer-container">
+ <!--
+                                <div class="fl w-20 dn br b--black-10 flex-grow-0 flex-shrink-0 db-m" data-testid="lhn">
+                                    <section class="overflow-y-auto overflow-x-hidden"
+                                        style="position: sticky; top: 128px; height: 86vh;">
+                                        <div class="pb6 pr3">
+                                          
+                                            <section class="expand-collapse-section">
+                                                <div data-testid="expand-section-Departamento" class="nl3 nr3 relative">
+                                                    <div class="ma0 f4"><button type="button"
+                                                            class="bg-white bw0 flex items-center justify-between ph3 pointer sans-serif w-100"
+                                                            aria-expanded="false"><span
+                                                                class="dib b dark-gray f4 lh-copy tl w-100 pv3">Departamento</span><i
+                                                                class="ld ld-ChevronDown pa0 black" aria-hidden="true"
+                                                                role="img"
+                                                                style="font-size: 1rem; vertical-align: -0.175em; width: 1rem; height: 1rem; box-sizing: content-box;"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr aria-hidden="true" class="w_qUHG">
+                                            </section>
+                                            <section class="expand-collapse-section">
+                                                <div data-testid="expand-section-Vendido por" class="nl3 nr3 relative">
+                                                    <div class="ma0 f4"><button type="button"
+                                                            class="bg-white bw0 flex items-center justify-between ph3 pointer sans-serif w-100"
+                                                            aria-expanded="false"><span
+                                                                class="dib b dark-gray f4 lh-copy tl w-100 pv3">Vendido
+                                                                por</span><i class="ld ld-ChevronDown pa0 black"
+                                                                aria-hidden="true" role="img"
+                                                                style="font-size: 1rem; vertical-align: -0.175em; width: 1rem; height: 1rem; box-sizing: content-box;"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr aria-hidden="true" class="w_qUHG">
+                                            </section>
+                                            <section class="expand-collapse-section">
+                                                <div data-testid="expand-section-Reacondicionado"
+                                                    class="nl3 nr3 relative">
+                                                    <div class="ma0 f4"><button type="button"
+                                                            class="bg-white bw0 flex items-center justify-between ph3 pointer sans-serif w-100"
+                                                            aria-expanded="false"><span
+                                                                class="dib b dark-gray f4 lh-copy tl w-100 pv3">Reacondicionado</span><i
+                                                                class="ld ld-ChevronDown pa0 black" aria-hidden="true"
+                                                                role="img"
+                                                                style="font-size: 1rem; vertical-align: -0.175em; width: 1rem; height: 1rem; box-sizing: content-box;"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr aria-hidden="true" class="w_qUHG">
+                                            </section>
+                                            <section class="expand-collapse-section">
+                                                <div data-testid="expand-section-Promociones especiales"
+                                                    class="nl3 nr3 relative">
+                                                    <div class="ma0 f4"><button type="button"
+                                                            class="bg-white bw0 flex items-center justify-between ph3 pointer sans-serif w-100"
+                                                            aria-expanded="false"><span
+                                                                class="dib b dark-gray f4 lh-copy tl w-100 pv3">Promociones
+                                                                especiales</span><i class="ld ld-ChevronDown pa0 black"
+                                                                aria-hidden="true" role="img"
+                                                                style="font-size: 1rem; vertical-align: -0.175em; width: 1rem; height: 1rem; box-sizing: content-box;"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr aria-hidden="true" class="w_qUHG">
+                                            </section>
+                                            <section class="expand-collapse-section">
+                                                <div data-testid="expand-section-Opiniones" class="nl3 nr3 relative">
+                                                    <div class="ma0 f4"><button type="button"
+                                                            class="bg-white bw0 flex items-center justify-between ph3 pointer sans-serif w-100"
+                                                            aria-expanded="false"><span
+                                                                class="dib b dark-gray f4 lh-copy tl w-100 pv3">Opiniones</span><i
+                                                                class="ld ld-ChevronDown pa0 black" aria-hidden="true"
+                                                                role="img"
+                                                                style="font-size: 1rem; vertical-align: -0.175em; width: 1rem; height: 1rem; box-sizing: content-box;"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr aria-hidden="true" class="w_qUHG">
+                                            </section>
+                                            <section class="expand-collapse-section">
+                                                <div data-testid="expand-section-Marca" class="nl3 nr3 relative">
+                                                    <div class="ma0 f4"><button type="button"
+                                                            class="bg-white bw0 flex items-center justify-between ph3 pointer sans-serif w-100"
+                                                            aria-expanded="false"><span
+                                                                class="dib b dark-gray f4 lh-copy tl w-100 pv3">Marca</span><i
+                                                                class="ld ld-ChevronDown pa0 black" aria-hidden="true"
+                                                                role="img"
+                                                                style="font-size: 1rem; vertical-align: -0.175em; width: 1rem; height: 1rem; box-sizing: content-box;"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr aria-hidden="true" class="w_qUHG">
+                                            </section>
+                                            <section class="expand-collapse-section">
+                                                <div data-testid="expand-section-Precio" class="nl3 nr3 relative">
+                                                    <div class="ma0 f4"><button type="button"
+                                                            class="bg-white bw0 flex items-center justify-between ph3 pointer sans-serif w-100"
+                                                            aria-expanded="false"><span
+                                                                class="dib b dark-gray f4 lh-copy tl w-100 pv3">Precio</span><i
+                                                                class="ld ld-ChevronDown pa0 black" aria-hidden="true"
+                                                                role="img"
+                                                                style="font-size: 1rem; vertical-align: -0.175em; width: 1rem; height: 1rem; box-sizing: content-box;"></i></button>
+                                                    </div>
+                                                </div>
+                                                <hr aria-hidden="true" class="w_qUHG">
+                                            </section>
+                                        </div>
+                                    </section>
+                                </div>
+-->
+                                <div class="relative w-80">
+                                    <div data-stack-index="0" class="flex flex-column justify-center" id="0"
+                                        tabindex="-1">
+                                        <div id="results-container" class="flex flex-row flex-shrink-0">
+                                            <div class="flex flex-column w-100">
+                                                <section style="flex: 1 1 0%;">
+                                                    <div>
+                                                        <div class="">
+                                                            <div>
+                                                                <div class="inline-flex mr1 db mv3 ml3 ml4-xl">
+                                                                    <h2 class="f4 f3-m lh-title ma0 di">
+                                                                        Resultados para "llantas"<span
+                                                                            class="f6 f5-m fw3 ml1 mt1-xl gray normal self-center">(1000+)</span>
+                                                                    </h2>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </section>
+                                            </div>
+                                            <div></div>
+                                        </div>
+                                        <section>
+                                            <div class="flex flex-wrap w-100 flex-grow-0 flex-shrink-0 ph2 pr0-xl pl4-xl mt0-xl"
+                                                data-testid="item-stack">
+                                            {{ busqueda_llantas }}
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="min-height: 48px;">
+                                <nav aria-label="paginación" class="mt6 mb5">
+                                    <ul class="list flex items-center justify-center pa0">
+                                        <li aria-hidden="true">
+                                            <div class="w4 h4"></div>
+                                        </li>
+                                        <li><a link-identifier="Generic Name"
+                                                class="sans-serif ph1 pv2 w4 h4 lh-copy border-box br-100 b--solid mh2-m db tc no-underline black bg-white b b--primary"
+                                                aria-current="page" data-automation-id="page-number"
+                                                href="/search?q=llantas&amp;affinityOverride=default">1</a>
+                                        </li>
+                                        <li><a link-identifier="Generic Name"
+                                                class="sans-serif ph1 pv2 w4 h4 lh-copy border-box br-100 b--solid mh2-m db tc no-underline black bg-white b--white-90"
+                                                aria-label="Ir a la página 2" data-automation-id="page-number"
+                                                href="/search?q=llantas&amp;page=2&amp;affinityOverride=default">2</a>
+                                        </li>
+                                        <li><a link-identifier="Generic Name"
+                                                class="sans-serif ph1 pv2 w4 h4 lh-copy border-box br-100 b--solid mh2-m db tc no-underline black bg-white b--white-90"
+                                                aria-label="Ir a la página 3" data-automation-id="page-number"
+                                                href="/search?q=llantas&amp;page=3&amp;affinityOverride=default">3</a>
+                                        </li>
+                                        <li>
+                                            <div class="sans-serif pa1 lh-copy border-box bg-white">...
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div
+                                                class="sans-serif ph1 pv2 w4 h4 lh-copy border-box br-100 b--solid mh2-m db tc no-underline gray bg-white b--white-90">
+                                                23</div>
+                                        </li>
+                                        <li><a link-identifier="Generic Name"
+                                                class="sans-serif ph1 pv2 w4 h4 border-box bg-white br-100 b--solid ba mh2-m db tc no-underline b--light-gray"
+                                                data-testid="NextPage" aria-label="Página siguiente"
+                                                href="/search?q=llantas&amp;page=2&amp;affinityOverride=default"><i
+                                                    class="ld ld-ChevronRight pv1 primary"
+                                                    style="font-size: 1.5rem; vertical-align: -0.25em; width: 1.5rem; height: 1.5rem; box-sizing: content-box;"></i></a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            <div class="pt3">
+                                <div class="w_oz0G pa0" id="SEARCH-SponsoredProductCarousel-bottom-llantas-"><span
+                                        data-testid="lazy-render" data-rendered="false"></span></div>
+                            </div>
+                            <div class="mt3 mt4-xl mb3 mh3 mh4-l" data-testid="marquee2">
+                                <div class="w_oz0G pa0" id="marquee2-SEARCH-MarqueeDisplayAd-bottomZone5-wrapper-lazy">
+                                    <span data-testid="lazy-render" data-rendered="false"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="third-party-cookie-detection" style="display:none"></div>
+</div>
+<script src="{% static 'core/js/pro-02-com-01.js' %}"></script>
+{% endblock %}
