@@ -26,6 +26,10 @@ class Llanta(models.Model):
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
     modificado = models.DateTimeField("Actualizado", auto_now=True)
 
+    def __str__(self):
+        return '%s %s %s/%s R%s' % (self.marca, self.modelo, self.ancho, self.alto, self.rin,)
+
+
     class Meta:
         verbose_name = 'Llanta' 
         verbose_name_plural = 'Llantas' 
@@ -50,6 +54,9 @@ class Inventario(models.Model):
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
     modificado = models.DateTimeField("Actualizado", auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.descripcion)
 
     @property
     def estatus_nombre(self):

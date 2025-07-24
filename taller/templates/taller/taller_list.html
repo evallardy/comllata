@@ -1,0 +1,34 @@
+{% extends 'core/base_adminis.html' %}
+
+{% block content %}
+<h2 class="mb-4">Talleres registrados</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Razón Social</th>
+      <th>Dirección</th>
+      <th>Municipio</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for taller in talleres %}
+      <tr>
+        <td>{{ taller.id }}</td>
+        <td>{{ taller.razon_social|default_if_none:"" }}</td>
+        <td>{{ taller.direccion|default_if_none:"" }}</td>
+        <td>{{ taller.municipio|default_if_none:"" }}</td>
+        <td>{{ taller.estado|default_if_none:"" }}</td>
+        <td>
+          <a href="{% url 'taller_update' taller.pk %}" class="btn btn-primary btn-sm">Editar</a>
+          <a href="{% url 'taller_delete' taller.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="text-center">No hay talleres registrados</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

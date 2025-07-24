@@ -1,0 +1,205 @@
+{% extends 'core/base_adminis.html' %}
+{% load static %}
+
+{% block aviso %}
+<!-- Aqui enviar los mensajes al principio de la pagina -->
+ <div class="d-flex justify-content-center align-items-center text-center bg-warning text-danger">
+    <div >
+        {{ mensaje_administracion }}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="__next">
+  <div data-testid="layout-container" class="d-flex flex-column min-vh- shadow" style="transform:none; transition: transform 0.2s;">
+    <main id="maincontent" data-testid="maincontent" class="container-fluid">
+      <!-- Zona de anuncios opcional -->
+      <div class="d-none" style="aspect-ratio: 16/1.2; min-height: 90px;"></div>
+      <!-- Resultados de búsqueda -->
+      <section class="container">
+        <div class="row">
+          <div class="col-12">
+            <h2>Importación de información</h2>
+
+            <button class="btn btn-primary" onclick="actualiza_talleres()">Talleres</button>
+            <button class="btn btn-primary" onclick="actualiza_llantas()">Inventario</button>
+            <button class="btn btn-primary">Promociones</button>
+          </div>
+        </div>
+      </section>
+      <section class="col-12 mt-4" id="empieza-proceso">
+        <h4>Procesando importación de 
+          <label id="lbl_importa">
+
+          </label>
+        <div class="spinner-border text-primary spinner-border-sm ms-2 align-middle" role="status" aria-hidden="true"></div>
+        </h4>
+      </section>
+      <section class="col-12 mt-4" id="termina-proceso">
+        <div class="mx-auto" style="width: 50%;">
+          <h4 class="text-center">
+            Cifras finales de la importación de <label id="lbl_importa"></label>
+          </h4>
+          <div class="table-responsive">
+            <table class="table table-striped w-100" id="tabla-resultado">
+              <!-- contenido de la tabla -->
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script>
+    $('#empieza-proceso').hide();
+    $('#termina-proceso').hide();
+    function actualiza_talleres() {
+        $('#empieza-proceso').show();
+        $('#termina-proceso').hide();
+        $("#lbl_importa").html('Talleres');
+        $.ajax({
+            url: "{% url 'importa_talleres' %}",
+            type: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            success: function (response) {
+              $('#empieza-proceso').hide();
+              $('#termina-proceso').show();
+                let tabla = $("#tabla-resultado");
+                tabla.empty();
+                if (response.talleres.length > 0) {
+                    response.talleres.forEach(taller => {
+                        tabla.append(`
+                            <tr style='border'>
+                                <td>${taller.razon_social}</td>
+                                <td>${taller.estatus}</td>
+                            </tr>
+                        `);
+                    });
+                }
+                else {
+                    tabla.append(`
+                        <tr style="border-bottom: 1px solid rgb(129, 121, 121)">
+                            <td>Registros</td>
+                            <td class='text-center'>Cantidad</td>
+                        </tr>
+                    `);
+                }
+                tabla.append(`
+                    <tr style="font-weight: bold; background-color: #EBEBEB">
+                        <td>Leidos</td>
+                        <td class='text-center'>${parseInt(response.leidos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Actualizados</td>
+                        <td class='text-center'>${parseInt(response.actualizados).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold; background-color: #EBEBEB">
+                        <td>Nuevos</td>
+                        <td class='text-center'>${parseInt(response.nuevos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Sin Modificación</td>
+                        <td class='text-center'>${parseInt(response.sin_modificacion).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold; background-color: #EBEBEB">
+                        <td>Sin recepción</td>
+                        <td class='text-center'>${parseInt(response.total_sin_recepcion).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Total</td>
+                        <td class='text-center'>${parseInt(response.total).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+            },
+            error: function () {
+                alert("Error al importar talleres");
+            }
+        });
+    }
+    function actualiza_llantas() {
+        $('#empieza-proceso').show();
+        $('#termina-proceso').hide();
+        $("#lbl_importa").html('Llantas');
+        $.ajax({
+            url: "{% url 'importa_llantas' %}",
+            type: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            success: function (response) {
+              $('#empieza-proceso').hide();
+              $('#termina-proceso').show();
+                let tabla = $("#tabla-resultado");
+                tabla.empty();
+                if (response.llantas.length > 0) {
+                    response.llantas.forEach(llanta => {
+                        tabla.append(`
+                            <tr>
+                                <td>${llanta.razon_social}</td>
+                                <td>${llanta.llanta}</td>
+                                <td>${llanta.estatus}</td>
+                            </tr>
+                        `);
+                    });
+                }
+                else {
+                    tabla.append(`
+                        <tr style="border-bottom: 1px solid rgb(129, 121, 121)">
+                            <td>Registros</td>
+                            <td class='text-center'>Cantidad</td>
+                        </tr>
+                    `);
+                }
+                tabla.append(`
+                    <tr style="font-weight: bold; background-color: #EBEBEB"">
+                        <td>Leidos</td>
+                        <td class='text-center'>${parseInt(response.leidos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Actualizados</td>
+                        <td class='text-center'>${parseInt(response.actualizados).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold; background-color: #EBEBEB"">
+                        <td>Nuevos</td>
+                        <td class='text-center'>${parseInt(response.nuevos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Sin modificación</td>
+                        <td class='text-center'>${parseInt(response.sin_modificacion).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold; background-color: #EBEBEB"">
+                        <td>Sin recepción</td>
+                        <td class='text-center'>${parseInt(response.sin_recepcion).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold;">
+                        <td>Total</td>
+                        <td class='text-center'>${parseInt(response.total).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+            },
+            error: function () {
+                alert("Error al importar llantas");
+            }
+        });
+    }
+</script>
+{% endblock %}

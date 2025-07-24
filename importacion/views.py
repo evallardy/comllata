@@ -241,8 +241,9 @@ def llantas(request):
         context["actualizados"] = actualizados
         context["nuevos"] = nuevos
         context["sin_modificacion"] = sin_modificacion
-#            context["sin_recepcion"] = sin_recepcion
+        context["sin_recepcion"] = sin_recepcion
         context["total"] = total
+    else:
 
         return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
 

@@ -4948,38 +4948,6 @@
     vertical-align: bottom
 }
 
-@font-face {
-    font-display: swap;
-    font-family: Bogle;
-    font-style: normal;
-    font-weight: 700;
-    src: url(https://i5.walmartimages.com/dfw/63fd9f59-a78c/fcfae9b6-2f69-4f89-beed-f0eeb4237946/v1/BogleWeb_subset-Bold.woff2) format("woff2")
-}
-
-@font-face {
-    font-display: swap;
-    font-family: Bogle;
-    font-style: normal;
-    font-weight: 400;
-    src: url(https://i5.walmartimages.com/dfw/63fd9f59-a78c/fcfae9b6-2f69-4f89-beed-f0eeb4237946/v1/BogleWeb_subset-Regular.woff2) format("woff2")
-}
-
-@font-face {
-    font-display: swap;
-    font-family: EverydaySans;
-    font-style: normal;
-    font-weight: 700;
-    src: url(https://i5.walmartimages.com/dfw/63fd9f59-581c/294cde33-8d74-4638-a582-6a0f942c0c18/v1/ESB.woff2) format("woff2"),url(https://i5.walmartimages.com/dfw/63fd9f59-3aae/d676f7c9-1cd0-42d5-8c69-8716fc3cfac6/v1/ESB.woff) format("woff")
-}
-
-@font-face {
-    font-display: swap;
-    font-family: EverydaySans;
-    font-style: normal;
-    font-weight: 400;
-    src: url(https://i5.walmartimages.com/dfw/63fd9f59-7d95/36d53a64-d69e-4b5d-aec5-5205e3b975f5/v1/ES.woff2) format("woff2"),url(https://i5.walmartimages.com/dfw/63fd9f59-c69a/e5fb3359-b4fe-4603-88f7-451f2aa96e9a/v1/ES.woff) format("woff")
-}
-
 html html {
     line-height: 1.15;
     -ms-text-size-adjust: 100%;
@@ -19361,31 +19329,6 @@ html .dark-gray-placeholder::placeholder {
     border-radius: 10px
 }
 
-.walmart-express {
-    background: #eaf3e6!important;
-    color: #1d5f02!important
-}
-
-.bodega-aurrera {
-    background: #177e0e!important;
-    color: #fff!important
-}
-
-.bodega-aurrera-express {
-    background: #e7f5e5!important;
-    color: #2e2f32!important
-}
-
-.mi-bodega-aurrera {
-    background: #9cd493!important;
-    color: #2e2f32!important
-}
-
-.walmart {
-    background: #e6f1fc!important;
-    color: #004f9a!important
-}
-
 .video-carousel-container .video-carousel {
     grid-gap: 16px
 }
@@ -21313,13 +21256,6 @@ button:focus-visible.outline-onfocus:-moz-focusring {
     box-sizing: initial
 }
 
-.wplus-account-page-background {
-    background-color: var(--color-core-blue-100,#0071dc);
-    background-image: url(https://i5.walmartimages.com/dfw/63fd9f59-bce3/1d66a836-8cf0-4f1a-a028-996a803cd63f/v1/wplus_mweb_bg_mask.svg);
-    background-position: right 330px;
-    background-repeat: no-repeat
-}
-
 @media print {
     .gic-wrapper,footer,header {
         display: none!important
@@ -21374,12 +21310,6 @@ html {
 
 *,:after,:before {
     box-sizing: inherit
-}
-
-@font-face {
-    font-display: swap;
-    font-family: ui-icons;
-    src: url(https://i5-mx.walmartimages.com/dfw/63fd9f59-1490/914a0f0d-98e1-4b00-857d-76e928fa730e/v2/es-MX/_next/static/media/ui-icons.784a77df.woff2) format("woff2"),url(https://i5-mx.walmartimages.com/dfw/63fd9f59-1490/914a0f0d-98e1-4b00-857d-76e928fa730e/v2/es-MX/_next/static/media/ui-icons.8efe8770.woff) format("woff")
 }
 
 .ld {
@@ -22352,26 +22282,6 @@ html {
 
 .ld.ld-Wallet:before {
     content: "\f1f1"
-}
-
-.ld.ld-WalmartPay:before {
-    content: "\f1f2"
-}
-
-.ld.ld-WalmartPlus:before {
-    content: "\f1f3"
-}
-
-.ld.ld-WalmartPlusAccount:before {
-    content: "\f1f4"
-}
-
-.ld.ld-WalmartProtectionPlan:before {
-    content: "\f1f5"
-}
-
-.ld.ld-WalmartShield:before {
-    content: "\f1f6"
 }
 
 .ld.ld-Warning:before {
@@ -23516,66 +23426,6 @@ html {
     height: 10px
 }
 
-.w_KSaG::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 50px;
-    height: 50px;
-    background-color: initial;
-    background-size: cover;
-    box-shadow: none;
-    border: none;
-    content: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_neutral_face_emoji.png) url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_slightly_smiling_face_emoji.png) url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_smiley_face_emoji.png) url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_heart_eyes_emoji.png) url(//i5.walmartimages.com/dfw/63fd9f59-4188/d11fea13-530e-49c7-9639-8339c1cae17c/v1/etexp_star_eyes_emoji.png)
-}
-
-.w_KSaG::-moz-range-thumb {
-    width: 50px;
-    height: 50px;
-    background-color: initial;
-    background-size: cover;
-    border: none;
-    content: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_neutral_face_emoji.png) url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_slightly_smiling_face_emoji.png) url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_smiley_face_emoji.png) url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_heart_eyes_emoji.png) url(//i5.walmartimages.com/dfw/63fd9f59-4188/d11fea13-530e-49c7-9639-8339c1cae17c/v1/etexp_star_eyes_emoji.png)
-}
-
-.w_HnAw::-webkit-slider-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_neutral_face_emoji.png)
-}
-
-.w_HnAw::-moz-range-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_neutral_face_emoji.png)
-}
-
-.w_wX5Z::-webkit-slider-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_slightly_smiling_face_emoji.png)
-}
-
-.w_wX5Z::-moz-range-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_slightly_smiling_face_emoji.png)
-}
-
-.w_ZQIm::-webkit-slider-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_smiley_face_emoji.png)
-}
-
-.w_ZQIm::-moz-range-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_smiley_face_emoji.png)
-}
-
-.w_MzeM::-webkit-slider-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_heart_eyes_emoji.png)
-}
-
-.w_MzeM::-moz-range-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4a2e/587a39f4-fa04-49c6-b70f-ed494f49ff69/v1/etexp_heart_eyes_emoji.png)
-}
-
-.w_RJQ6::-webkit-slider-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4188/d11fea13-530e-49c7-9639-8339c1cae17c/v1/etexp_star_eyes_emoji.png)
-}
-
-.w_RJQ6::-moz-range-thumb {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-4188/d11fea13-530e-49c7-9639-8339c1cae17c/v1/etexp_star_eyes_emoji.png)
-}
-
 .w_rZT0 {
     opacity: 0;
     max-height: 0;
@@ -23607,12 +23457,6 @@ html {
     display: flex;
     justify-content: center;
     align-items: center
-}
-
-.w_aAVW {
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-8699/75a6bd80-6b51-4d85-9d0c-c98eded70c0a/v1/etexp_share_thank_you_banner_bg.png);
-    background-size: 100%;
-    background-repeat: no-repeat
 }
 
 .w_7Zv6 {
@@ -26659,21 +26503,6 @@ html {
     width: 140px
 }
 
-.w_yAms::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    margin-top: -13px;
-    height: 32px;
-    width: 32px;
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-c1de/f4be5bcf-65a8-4910-80d3-bc141024a8cc/v1/glasses-button.svg);
-    background-position: 50%;
-    cursor: pointer;
-    transform: rotate(90deg);
-    -webkit-transition: filter .3s;
-    transition: filter .3s;
-    border: none;
-    box-shadow: none
-}
-
 .w_yAms::-webkit-slider-thumb:hover {
     filter: brightness(.8)
 }
@@ -26687,19 +26516,6 @@ html {
     height: 6px;
     background: #949494;
     border-radius: 10px
-}
-
-.w_yAms::-moz-range-thumb {
-    height: 32px;
-    width: 32px;
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-c1de/f4be5bcf-65a8-4910-80d3-bc141024a8cc/v1/glasses-button.svg);
-    background-position: 50%;
-    cursor: pointer;
-    transform: rotate(90deg);
-    -moz-transition: filter .3s;
-    transition: filter .3s;
-    border: none;
-    box-shadow: none
 }
 
 .w_yAms::-moz-range-thumb:hover {
@@ -26721,19 +26537,6 @@ html {
     width: 100%;
     background: #949494;
     border-radius: 10px
-}
-
-.w_yAms::-ms-thumb {
-    height: 32px;
-    width: 32px;
-    background-image: url(//i5.walmartimages.com/dfw/63fd9f59-c1de/f4be5bcf-65a8-4910-80d3-bc141024a8cc/v1/glasses-button.svg);
-    background-position: 50%;
-    cursor: pointer;
-    transform: rotate(90deg);
-    -ms-transition: filter .3s;
-    transition: filter .3s;
-    border: none;
-    box-shadow: none
 }
 
 .w_yAms::-ms-thumb:hover {
@@ -28376,10 +28179,6 @@ html {
         right: 0;
         height: 300px
     }
-}
-
-.w_EEjj {
-    background-image: "//i5.walmartimages.com/dfw/63fd9f59-81a6/855bf8f4-9cb7-4272-bcec-4c0b31acb041/v1/holiday-banner-background.png"
 }
 
 .w_I9w0 {

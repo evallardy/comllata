@@ -1,0 +1,89 @@
+{% extends 'core/base_adminis.html' %}
+{% load static %}
+
+{% block title %}Inicio - ComLlanta Aminis{% endblock %}
+
+{% block content %}
+<div id="__next">
+  <div data-testid="layout-container" class="d-flex flex-column min-vh- shadow" style="transform:none; transition: transform 0.2s;">
+    <main id="maincontent" data-testid="maincontent" class="container-fluid">
+      <!-- Zona de anuncios opcional -->
+      <div class="d-none" style="aspect-ratio: 16/1.2; min-height: 90px;"></div>
+      <!-- Resultados de búsqueda -->
+      <section class="container">
+        <div class="row">
+          <div class="col-12">
+            <h2>Actualiza catálogo</h2>
+            <button class="btn btn-primary" onclick="actualiza_catalogo()">Confirma</button>
+          </div>
+        </div>
+      </section>
+      <section class="col-12 mt-4" id="empieza-proceso">
+        <h4>Procesando actualización de catálogo
+          <label id="lbl_importa">
+
+          </label>
+        <div class="spinner-border text-primary spinner-border-sm ms-2 align-middle" role="status" aria-hidden="true"></div>
+        </h4>
+      </section>
+      <section class="col-12 mt-4" id="termina-proceso">
+        <div class="mx-auto" style="width: 50%;">
+          <h4 class="text-center">
+            Cifras finales de la actualización
+          </h4>
+          <div class="table-responsive">
+            <table class="table table-striped w-100" id="tabla-resultado">
+              <!-- contenido de la tabla -->
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script>
+  $('#empieza-proceso').hide();
+  $('#termina-proceso').hide();
+  function actualiza_catalogo() {
+    $('#empieza-proceso').show();
+    $.ajax({
+      url: "{% url 'actualiza' %}",
+      type: "POST",
+      headers: { "X-CSRFToken": "{{ csrf_token }}" },
+      success: function (response) {
+        $('#empieza-proceso').hide();
+        $('#termina-proceso').show();
+        let tabla = $("#tabla-resultado");
+        tabla.empty();
+        tabla.append(`
+          <tr style="border-bottom: 1px solid rgb(129, 121, 121)">
+              <td>Registros</td>
+              <td class='text-center'>Cantidad</td>
+          </tr>
+        `);
+        tabla.append(`
+          <tr style="font-weight: bold; background-color: #EBEBEB">
+              <td>Procesados</td>
+              <td class='text-center'>${parseInt(response.total_procesados).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+          </tr>
+        `);
+        tabla.append(`
+          <tr style="font-weight: bold;">
+              <td>Actualizados</td>
+              <td class='text-center'>${parseInt(response.total_actualizados).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+          </tr>
+        `);
+        tabla.append(`
+          <tr style="font-weight: bold; background-color: #EBEBEB">
+              <td>Fallidos</td>
+              <td class='text-center'>${parseInt(response.total_fallidos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+          </tr>
+        `);
+      },
+      error: function () {
+        alert("Error al actializar las llantas a la nueva base de datos");
+      }
+    });
+  }
+</script>
+{% endblock %}

@@ -1,55 +1,23 @@
 {% load static %}
 {% for llanta in llantas %}
-<div class="mb0 ph0-xl pt0-xl bb b--near-white w-25 pb3-m ph1">
-    <div class="h-100 pr4-xl pb1-xl pv1 ph1" io-id="00046812261037"
-        style="contain-intrinsic-size: 198px 340px;">
-        <div role="group" data-item-id="00046812261037"
-            data-dca-guid="00046812261037" data-dca-id="00046812261037"
-            data-dca-name="ui_product_tile:vertical_index"
-            data-dca-type="module"
-            class="sans-serif mid-gray relative flex flex-column w-100 hide-child-opacity">
-            <a link-identifier="00046812261037"
-                class="w-100 h-100 z-1 hide-sibling-opacity  absolute"
-                target=""
-                href="#"><span
-                    class="w_q67L">
-                    {{ llanta.marca }} {{ llanta.modelo }} {{ llanta.ancho }}/{{ llanta.alto }}R{{ llanta.rin }}
-                    100H  <--- FALTA
-                </span></a>
-            <div class="" data-testid="list-view">
-                <div class="">
-                    <div class="">
-                        <div class="relative">
-                            <div class="relative overflow-hidden"
-                                style="max-width: 290px; height: 0px; padding-bottom: min(290px, 100%); align-self: center; width: min(290px, 100%);">
-                                <img loading="eager"
-                                    src="{% static 'core/img/rin/r13.png' %}"
-                                    id="is-0-productImage-0" width=""
-                                    height=""
-                                    class="absolute top-0 left-0"
-                                    data-testid="productTileImage"
-                                    alt="llantas {{ llanta.marca }} {{ llanta.modelo }} {{ llanta.ancho }}/{{ llanta.alto }}R{{ llanta.rin }} 100H">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="">
-                        <div>
-                        </div>
-                        <div class="mb1 mt2 b f6 black mr1 lh-copy">
-                            {{ llanta.marca.nombre }}
-                        </div>
-                        <span class="w_vi_D"
-                            style="-webkit-line-clamp: 3; padding-bottom: 0.116187em; margin-bottom: -0.116187em;">
-                            <span data-automation-id="product-title"
-                                class="normal dark-gray mb0 mt1 lh-title f6 f5-l lh-copy">
-                                {{ llanta.modelo }} {{ llanta.ancho }}/{{ llanta.alto }}R{{ llanta.rin }}
-                                100H
-                            </span>
-                        </span>
-                    </div>
-                </div>
-            </div>
+<div class="col">
+      <div class="card h-100" style="background-color: #f5f5f5; border: none;">
+        <a href="#" class="stretched-link text-decoration-none text-dark">
+          <div class="ratio ratio-1x1">
+            <img 
+              src="{% static 'core/img/rin/r13.png' %}" 
+              class="card-img-top object-fit-contain p-3" 
+              alt="llantas {{ llanta.marca }} {{ llanta.modelo }} {{ llanta.ancho }}/{{ llanta.alto }}R{{ llanta.rin }} 100H">
+          </div>
+        </a>
+        <div class="card-body">
+          <h6 class="fs-6 fs-md-5 fs-lg-4 fw-bold text-dark mb-2">
+            {{ llanta.marca.nombre }}
+          </h6>
+          <p class="mb-0 text-muted">
+            {{ llanta.modelo }} {{ llanta.ancho }}/{{ llanta.alto }}R{{ llanta.rin }} 100H
+          </p>
         </div>
+      </div>
     </div>
-</div>
 {% endfor %}

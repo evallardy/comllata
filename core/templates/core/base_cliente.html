@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LlantaCom{% endblock %}</title>
+    <link href="{% static 'core/css/bootstrap.min.css' %}" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <script src="{% static 'core/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'core/js/popper.min.js' %}"></script>
+    <script src="{% static 'core/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'core/js/funciones.js' %}"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body style="font-family: Bogle, 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+    <div id="__next">
+        <div data-testid="layout-container" class="min-vh-100 shadow">
+            {% block aviso %}{% endblock %}
+
+            <!-- HEADER Bootstrap -->
+            <header class="bg-secondary text-white sticky-top py-3 px-4 d-flex justify-content-between align-items-center">
+                <a href="/inicio">
+                    <img src="{% static 'core/img/logo-iag.jpg' %}" alt="Logo" width="130" height="32">
+                </a>
+                <nav>
+                    <ul class="list-unstyled d-flex mb-0 align-items-center">
+                        <li class="me-3">
+                            <a href="#" class="d-flex align-items-center text-white text-decoration-none">
+                                <i class="bi bi-person me-2"></i>
+                                <div class="text-start">
+                                    <small class="d-block">Iniciar sesión</small>
+                                    <strong>Cuenta</strong>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <button type="button" class="btn btn-outline-light position-relative">
+                                <i class="bi bi-cart"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    0
+                                </span>
+                                <span class="ms-2">$0.00</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+
+            <!-- BANNER (puedes personalizar más adelante) -->
+            <section class="bg-dark text-white py-1">
+                <div class="container">
+                    <!-- Subnav opcional -->
+                    <nav aria-label="Secundario">
+                        
+                    </nav>
+                </div>
+            </section>
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <main>
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- FOOTER Bootstrap -->
+            <footer class="bg-light text-center py-4 mt-auto">
+                <div class="container">
+                    <p class="mb-2">Queremos mejorar, <a href="#">danos tus comentarios</a>.</p>
+                    <small class="text-muted">&copy; {{ year }} Tu Empresa</small>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
+<script src="{% static 'core/js/pro-01-com-01.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        
+        
+    });
+</script>

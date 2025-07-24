@@ -1,0 +1,54 @@
+{% extends 'core/base_adminis.html' %}
+{% load static %}
+
+{% block title %}Inicio - ComLlanta Aminis{% endblock %}
+
+{% block aviso %}
+<!-- Aqui enviar los mensajes al principio de la pagina -->
+ <div class="d-flex justify-content-center align-items-center text-center bg-warning text-danger">
+    <div >
+        {{ mensaje_administracion }}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="__next">
+  <div data-testid="layout-container" class="d-flex flex-column min-vh- shadow" style="transform:none; transition: transform 0.2s;">
+    <main id="maincontent" data-testid="maincontent" class="container-fluid">
+      <!-- Zona de anuncios opcional -->
+      <div class="d-none" style="aspect-ratio: 16/1.2; min-height: 90px;"></div>
+
+      <!-- Filtro de marcas -->
+      <section class="d-flex justify-content-end align-items-center py-3 px-4">
+        <span class="fw-bold me-2">Marca</span>
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            {{ primera_marca }}
+          </button>
+          <ul class="dropdown-menu">
+            {% for marca in marcas %}
+              <li><a class="dropdown-item" href="#">{{ marca.nombre }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+
+      <hr>
+
+      <!-- Resultados de búsqueda -->
+      <section class="container">
+        <div class="row">
+          <div class="col-12">
+            <h2 class="h5"><span class="text-muted">Administración</span></h2>
+          </div>
+        </div>
+        <div class="row g-3">
+          
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+{% endblock %}

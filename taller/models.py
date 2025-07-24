@@ -32,6 +32,9 @@ class Taller(models.Model):
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
     modificado = models.DateTimeField("Actualizado", auto_now=True)
 
+    def __str__(self):
+        return '%s' % (self.razon_social)
+
     @property
     def estatus_nombre(self):
         return self.get_estatus_display()

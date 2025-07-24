@@ -1,0 +1,10 @@
+{% extends 'core/base_adminis.html' %}
+
+{% block content %}
+<h2>¿Estás seguro que deseas eliminar este taller?</h2>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Eliminar</button>
+  <a href="{% url 'taller_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
