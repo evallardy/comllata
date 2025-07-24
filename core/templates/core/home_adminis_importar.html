@@ -148,15 +148,15 @@
                 let tabla = $("#tabla-resultado");
                 tabla.empty();
                 if (response.llantas.length > 0) {
-                    response.llantas.forEach(llanta => {
-                        tabla.append(`
-                            <tr>
-                                <td>${llanta.razon_social}</td>
-                                <td>${llanta.llanta}</td>
-                                <td>${llanta.estatus}</td>
-                            </tr>
-                        `);
-                    });
+//                    response.llantas.forEach(llanta => {
+//                        tabla.append(`
+//                            <tr>
+//                                <td>${llanta.razon_social}</td>
+//                                <td>${llanta.llanta}</td>
+//                                <td>${llanta.estatus}</td>
+//                            </tr>
+//                        `);
+//                    });
                 }
                 else {
                     tabla.append(`
