@@ -69,14 +69,14 @@
                 let tabla = $("#tabla-resultado");
                 tabla.empty();
                 if (response.talleres.length > 0) {
-                    response.talleres.forEach(taller => {
-                        tabla.append(`
-                            <tr style='border'>
-                                <td>${taller.razon_social}</td>
-                                <td>${taller.estatus}</td>
-                            </tr>
-                        `);
-                    });
+//                    response.talleres.forEach(taller => {
+//                        tabla.append(`
+//                            <tr style='border'>
+//                                <td>${taller.razon_social}</td>
+//                                <td>${taller.estatus}</td>
+//                            </tr>
+//                        `);
+//                    });
                 }
                 else {
                     tabla.append(`

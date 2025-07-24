@@ -156,19 +156,23 @@ def llantas(request):
         nuevos = 0
         sin_modificacion = 0
 
+        registro_por_pagina = 18
+
         if int(pagina) == 0:
             inicio = 1
         else:
-            inicio = (int(pagina) * 20 ) + 1
+            inicio = (int(pagina) * registro_por_pagina ) + 1
             if inicio > paginas_totales:
                 inicio = paginas_totales
 
-        termina = inicio + 19
+        termina = inicio + registro_por_pagina
 
         if termina > paginas_totales:
             termina = paginas_totales
 
         for i in range(inicio, termina):
+
+            print( "Pagina " + str(i))
 
             url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=100" 
             headers = { "Authorization": settings.TOKEN_BOT }
