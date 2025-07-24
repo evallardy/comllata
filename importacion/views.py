@@ -156,7 +156,7 @@ def llantas(request):
         nuevos = 0
         sin_modificacion = 0
 
-        registro_por_pagina = 18
+        registro_por_pagina = 15
 
         if int(pagina) == 0:
             inicio = 1
