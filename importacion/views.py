@@ -133,7 +133,10 @@ def talleres(request):
 @csrf_exempt
 def llantas(request):
     if request.method == "POST":
-        url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "perPage=1000" 
+
+        pagina = request.POST.get("pagina", 0)
+
+        url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "perPage=100" 
         headers = { "Authorization": settings.TOKEN_BOT }
         response = requests.get(url, headers=headers)
 
@@ -143,9 +146,9 @@ def llantas(request):
 
         data = response.json()
 
-        total_registros = (data['data']['total'])
-        pagina = (data['data']['page'])
-        total_por_pagina = (data['data']['perPage'])
+#        total_registros = (data['data']['total'])
+#        pagina = (data['data']['page'])
+#        total_por_pagina = (data['data']['perPage'])
         paginas_totales = int(data['data']['numPages'])
 
         leidos = 0
@@ -153,9 +156,21 @@ def llantas(request):
         nuevos = 0
         sin_modificacion = 0
 
-        for i in range(1, paginas_totales):
+        if int(pagina) == 0:
+            inicio = 1
+        else:
+            inicio = (int(pagina) * 20 ) + 1
+            if inicio > paginas_totales:
+                inicio = paginas_totales
 
-            url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=1000" 
+        termina = inicio + 19
+
+        if termina > paginas_totales:
+            termina = paginas_totales
+
+        for i in range(inicio, termina):
+
+            url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=100" 
             headers = { "Authorization": settings.TOKEN_BOT }
             response = requests.get(url, headers=headers)
 
