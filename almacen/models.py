@@ -53,7 +53,7 @@ class Inventario(models.Model):
     estatus = models.IntegerField("Estatus", choices=ESTATUS, default=1)
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
-    modificado = models.DateTimeField("Actualizado", auto_now=True)
+    modificado = models.DateTimeField("Actualizado", auto_now=True, blank=True, null=True)
 
     def __str__(self):
         return '%s' % (self.descripcion)
