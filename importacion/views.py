@@ -133,7 +133,7 @@ def talleres(request):
 @csrf_exempt
 def llantas(request):
     if request.method == "POST":
-        url = "https://llantas.automatizia.com/apiv2/bots/tires"
+        url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "perPage=1000" 
         headers = { "Authorization": settings.TOKEN_BOT }
         response = requests.get(url, headers=headers)
 
@@ -155,7 +155,7 @@ def llantas(request):
 
         for i in range(1, paginas_totales):
 
-            url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i)
+            url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=1000" 
             headers = { "Authorization": settings.TOKEN_BOT }
             response = requests.get(url, headers=headers)
 
