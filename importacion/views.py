@@ -178,7 +178,7 @@ def llantas(request):
         with connection.cursor() as cursor:
             cursor.execute("ALTER TABLE InventarioPaso AUTO_INCREMENT = 1;")
 
-        for i in range(inicio, termina):
+        for i in range(1, paginas_totales):
 
             url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=100" 
             headers = { "Authorization": settings.TOKEN_BOT }
