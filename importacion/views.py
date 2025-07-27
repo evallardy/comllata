@@ -205,6 +205,33 @@ def llantas(request):
                     )
                     leidos += 1
 
+
+        registros_nuevos = Inventario.objects.filter(estatus=1)
+        registros_sin_recepcion = Inventario.objects.filter(estatus=3)
+        registros_totales = Inventario.objects.all()
+        sin_recepcion = registros_sin_recepcion.count()
+        total = registros_totales.count()
+
+        llantas = [
+            {'razon_social': t.talleres.razon_social, 'llanta': t.descripcion, 'estatus': t.estatus_nombre}
+            for t in registros_nuevos
+        ]
+
+        context["llantas"] = list(llantas)
+        context["leidos"] = leidos
+        context["actualizados"] = actualizados
+        context["nuevos"] = nuevos
+        context["sin_modificacion"] = sin_modificacion
+        context["sin_recepcion"] = sin_recepcion
+        context["total"] = total
+    else:
+
+        return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
+
+    return JsonResponse(context)
+
+'''
+
         inventario = InventarioPaso.objects.all()
 
         Inventario.objects.all().update(estatus=3)
@@ -284,3 +311,4 @@ def llantas(request):
         return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
 
     return JsonResponse(context)
+'''
