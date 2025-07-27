@@ -5,6 +5,7 @@ from django.views.generic import TemplateView
 from django.conf import settings
 import requests
 import json
+from django.db import connection
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -158,89 +159,106 @@ def llantas(request):
 
         registro_por_pagina = 10
 
-        if int(pagina) == 0:
-            inicio = 1
-        else:
-            inicio = (int(pagina) * registro_por_pagina ) + 1
-            if inicio > paginas_totales:
-                inicio = paginas_totales
+#        if int(pagina) == 0:
+#            inicio = 1
+#        else:
+#            inicio = (int(pagina) * registro_por_pagina ) + 1
+#            if inicio > paginas_totales:
+#                inicio = paginas_totales
 
-        termina = inicio + registro_por_pagina
+#        termina = inicio + registro_por_pagina
 
-        if termina > paginas_totales:
-            termina = paginas_totales
+#        if termina > paginas_totales:
+#            termina = paginas_totales
 
-        for i in range(inicio, termina):
+        # Borra todos los registros
+##        InventarioPaso.objects.all().delete()
 
-            print( "Pagina " + str(i))
+        # Reinicia el autoincremento del ID en MySQL
+##        with connection.cursor() as cursor:
+##            cursor.execute("ALTER TABLE InventarioPaso AUTO_INCREMENT = 1;")
 
-            url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=100" 
-            headers = { "Authorization": settings.TOKEN_BOT }
-            response = requests.get(url, headers=headers)
+##        for i in range(1, paginas_totales):
+
+##            url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=100" 
+##            headers = { "Authorization": settings.TOKEN_BOT }
+##            response = requests.get(url, headers=headers)
 
 
-            if response.status_code == 200:
+##            if response.status_code == 200:
 
-                data = response.json()  # Usa directamente .json()
+##                data = response.json()  # Usa directamente .json()
 
-                Inventario.objects.all().update(estatus=3)  # Cuidado si la tabla es grande
+##                for dato in data['data']['rows']:
+##                    leidos += 1
+##                    InventarioPaso.objects.create(
+##                        id_inventario = dato['id'],
+##                        id_empresa = dato['botId'],
+##                        producto_clave = dato['sku'],
+##                        descripcion = dato['name'],
+##                        ancho = float(dato['width']),
+##                        alto = float(dato['height']),
+##                        rin = float(dato['diameter']),
+##                        existencia = int(dato['stock']),
+##                        precio = float(dato['price']),
+##                        estatus=1
+##                    )
+##                    leidos += 1
 
-                for dato in data['data']['rows']:
-                    leidos += 1
-                    llanta = Inventario.objects.filter(id_inventario=dato['id']).first()
-                    if dato['botId']:
-                        taller = Taller.objects.filter(id_empresa=dato['botId']).first()
-                        if taller:
-                            id_taller = taller.id
-                    if llanta:
-                        if (
-                            llanta.id_inventario == dato['id'] and
-                            llanta.id_empresa == dato['botId'] and
-                            llanta.producto_clave == dato['sku'] and
-                            llanta.descripcion == dato['name'] and
-                            llanta.ancho == Decimal(dato['width']) and
-                            llanta.alto == Decimal(dato['height']) and
-                            llanta.rin == Decimal(dato['diameter']) and
-                            llanta.existencia == int(dato['stock']) and
-                            llanta.precio == Decimal(dato['price'])
-                            ):
-                            llanta.estatus = 0
-                            llanta.save()
-                            sin_modificacion += 1
-                        else:
-                            llanta.id_inventario = dato['id']
-                            llanta.id_empresa = dato['botId']
-                            llanta.talleres_id = id_taller
-                            llanta.producto_clave = dato['sku']
-                            llanta.descripcion = dato['name']
-                            llanta.ancho =float(dato['width'])
-                            llanta.alto = float(dato['height'])
-                            llanta.rin = float(dato['diameter'])
-                            llanta.existencia = int(dato['stock'])
-                            llanta.precio = float(dato['price'])
-                            llanta.estatus = 2
-                            llanta.save()
-                            actualizados += 1
-                    else:
-                        Inventario.objects.create(
-                            id_inventario = dato['id'],
-                            id_empresa = dato['botId'],
-                            talleres_id = id_taller,
-                            producto_clave = dato['sku'],
-                            descripcion = dato['name'],
-                            ancho = float(dato['width']),
-                            alto = float(dato['height']),
-                            rin = float(dato['diameter']),
-                            existencia = int(dato['stock']),
-                            precio = float(dato['price']),
-                            estatus=1
-                        )
-                        nuevos += 1
+        inventario = InventarioPaso.objects.all()
 
-#                        if leidos % 500 == 0:
-#                            transaction.set_autocommit(True)  # activa commit automático
-#                            transaction.set_autocommit(False)  # vuelve a modo manual
+        Inventario.objects.all().update(estatus=3)
 
+        for registro in inventario:
+            llanta = Inventario.objects.filter(id_inventario=registro.id_inventario).first()
+            if registro.id_empresa:
+                taller = Taller.objects.filter(id_empresa=registro.id_empresa).first()
+                if taller:
+                    id_taller = taller.id
+            if llanta:
+                if (
+                    llanta.id_inventario == registro.id_inventario and
+                    llanta.id_empresa == registro.id_empresa and
+                    llanta.producto_clave == registro.producto_clave and
+                    llanta.descripcion == registro.descripcion and
+                    llanta.ancho == registro.ancho and
+                    llanta.alto == registro.alto and
+                    llanta.rin == registro.rin and
+                    llanta.existencia == registro.existencia and
+                    llanta.precio == registro.precio
+                    ):
+                    llanta.estatus = 0
+                    llanta.save()
+                    sin_modificacion += 1
+                else:
+                    llanta.id_inventario = registro.id_inventario
+                    llanta.id_empresa = registro.id_empresa
+                    llanta.talleres_id = id_taller
+                    llanta.producto_clave = registro.producto_clave
+                    llanta.descripcion = registro.descripcion
+                    llanta.ancho = registro.ancho
+                    llanta.alto = registro.alto
+                    llanta.rin = registro.alto
+                    llanta.existencia = registro.existencia
+                    llanta.precio = registro.precio
+                    llanta.estatus = 2
+                    llanta.save()
+                    actualizados += 1
+            else:
+                Inventario.objects.create(
+                    id_inventario = registro.id_inventario,
+                    id_empresa = registro.id_empresa,
+                    talleres_id = id_taller,
+                    producto_clave = registro.id_empresa,
+                    descripcion = registro.descripcion,
+                    ancho = registro.ancho,
+                    alto = registro.alto,
+                    rin = registro.rin,
+                    existencia = registro.existencia,
+                    precio = registro.precio,
+                    estatus=1
+                )
+                nuevos += 1
 
         # Recuperar datos que se mostrarán en el frontend
         registros_nuevos = Inventario.objects.filter(estatus=1)
