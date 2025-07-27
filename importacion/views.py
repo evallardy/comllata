@@ -159,17 +159,17 @@ def llantas(request):
 
         registro_por_pagina = 10
 
-#        if int(pagina) == 0:
-#            inicio = 1
-#        else:
-#            inicio = (int(pagina) * registro_por_pagina ) + 1
-#            if inicio > paginas_totales:
-#                inicio = paginas_totales
+        if int(pagina) == 0:
+            inicio = 1
+        else:
+            inicio = (int(pagina) * registro_por_pagina ) + 1
+            if inicio > paginas_totales:
+                inicio = paginas_totales
 
-#        termina = inicio + registro_por_pagina
+        termina = inicio + registro_por_pagina
 
-#        if termina > paginas_totales:
-#            termina = paginas_totales
+        if termina > paginas_totales:
+            termina = paginas_totales
 
         # Borra todos los registros
         InventarioPaso.objects.all().delete()
@@ -178,7 +178,7 @@ def llantas(request):
         with connection.cursor() as cursor:
             cursor.execute("ALTER TABLE InventarioPaso AUTO_INCREMENT = 1;")
 
-        for i in range(1, paginas_totales):
+        for i in range(inicio, termina):
 
             url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=100" 
             headers = { "Authorization": settings.TOKEN_BOT }
