@@ -135,7 +135,7 @@ def talleres(request):
 def llantas(request):
     if request.method == "POST":
 
-        pagina = request.POST.get("pagina", 0)
+        pagina = request.POST.get("pagina", "0")
 
         url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "perPage=100" 
         headers = { "Authorization": settings.TOKEN_BOT }
@@ -158,6 +158,9 @@ def llantas(request):
         sin_modificacion = 0
 
         registro_por_pagina = 10
+
+        if not pagina:
+            pagina = 0
 
         if int(pagina) == 0:
             inicio = 1
