@@ -172,38 +172,38 @@ def llantas(request):
 #            termina = paginas_totales
 
         # Borra todos los registros
-##        InventarioPaso.objects.all().delete()
+        InventarioPaso.objects.all().delete()
 
         # Reinicia el autoincremento del ID en MySQL
-##        with connection.cursor() as cursor:
-##            cursor.execute("ALTER TABLE InventarioPaso AUTO_INCREMENT = 1;")
+        with connection.cursor() as cursor:
+            cursor.execute("ALTER TABLE InventarioPaso AUTO_INCREMENT = 1;")
 
-##        for i in range(1, paginas_totales):
+        for i in range(1, paginas_totales):
 
-##            url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=100" 
-##            headers = { "Authorization": settings.TOKEN_BOT }
-##            response = requests.get(url, headers=headers)
+            url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "page=" + str(i) + "&" + "perPage=100" 
+            headers = { "Authorization": settings.TOKEN_BOT }
+            response = requests.get(url, headers=headers)
 
 
-##            if response.status_code == 200:
+            if response.status_code == 200:
 
-##                data = response.json()  # Usa directamente .json()
+                data = response.json()  # Usa directamente .json()
 
-##                for dato in data['data']['rows']:
-##                    leidos += 1
-##                    InventarioPaso.objects.create(
-##                        id_inventario = dato['id'],
-##                        id_empresa = dato['botId'],
-##                        producto_clave = dato['sku'],
-##                        descripcion = dato['name'],
-##                        ancho = float(dato['width']),
-##                        alto = float(dato['height']),
-##                        rin = float(dato['diameter']),
-##                        existencia = int(dato['stock']),
-##                        precio = float(dato['price']),
-##                        estatus=1
-##                    )
-##                    leidos += 1
+                for dato in data['data']['rows']:
+                    leidos += 1
+                    InventarioPaso.objects.create(
+                        id_inventario = dato['id'],
+                        id_empresa = dato['botId'],
+                        producto_clave = dato['sku'],
+                        descripcion = dato['name'],
+                        ancho = float(dato['width']),
+                        alto = float(dato['height']),
+                        rin = float(dato['diameter']),
+                        existencia = int(dato['stock']),
+                        precio = float(dato['price']),
+                        estatus=1
+                    )
+                    leidos += 1
 
         inventario = InventarioPaso.objects.all()
 
