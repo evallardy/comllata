@@ -183,60 +183,59 @@ def llantas(request):
 
                 data = response.json()  # Usa directamente .json()
 
-                with transaction.atomic():
-                    Inventario.objects.all().update(estatus=3)  # Cuidado si la tabla es grande
+                Inventario.objects.all().update(estatus=3)  # Cuidado si la tabla es grande
 
-                    for dato in data['data']['rows']:
-                        leidos += 1
-                        llanta = Inventario.objects.filter(id_inventario=dato['id']).first()
-                        if dato['botId']:
-                            taller = Taller.objects.filter(id_empresa=dato['botId']).first()
-                            if taller:
-                                id_taller = taller.id
-                        if llanta:
-                            if (
-                                llanta.id_inventario == dato['id'] and
-                                llanta.id_empresa == dato['botId'] and
-                                llanta.producto_clave == dato['sku'] and
-                                llanta.descripcion == dato['name'] and
-                                llanta.ancho == Decimal(dato['width']) and
-                                llanta.alto == Decimal(dato['height']) and
-                                llanta.rin == Decimal(dato['diameter']) and
-                                llanta.existencia == int(dato['stock']) and
-                                llanta.precio == Decimal(dato['price'])
-                                ):
-                                llanta.estatus = 0
-                                llanta.save()
-                                sin_modificacion += 1
-                            else:
-                                llanta.id_inventario = dato['id']
-                                llanta.id_empresa = dato['botId']
-                                llanta.talleres_id = id_taller
-                                llanta.producto_clave = dato['sku']
-                                llanta.descripcion = dato['name']
-                                llanta.ancho =float(dato['width'])
-                                llanta.alto = float(dato['height'])
-                                llanta.rin = float(dato['diameter'])
-                                llanta.existencia = int(dato['stock'])
-                                llanta.precio = float(dato['price'])
-                                llanta.estatus = 2
-                                llanta.save()
-                                actualizados += 1
+                for dato in data['data']['rows']:
+                    leidos += 1
+                    llanta = Inventario.objects.filter(id_inventario=dato['id']).first()
+                    if dato['botId']:
+                        taller = Taller.objects.filter(id_empresa=dato['botId']).first()
+                        if taller:
+                            id_taller = taller.id
+                    if llanta:
+                        if (
+                            llanta.id_inventario == dato['id'] and
+                            llanta.id_empresa == dato['botId'] and
+                            llanta.producto_clave == dato['sku'] and
+                            llanta.descripcion == dato['name'] and
+                            llanta.ancho == Decimal(dato['width']) and
+                            llanta.alto == Decimal(dato['height']) and
+                            llanta.rin == Decimal(dato['diameter']) and
+                            llanta.existencia == int(dato['stock']) and
+                            llanta.precio == Decimal(dato['price'])
+                            ):
+                            llanta.estatus = 0
+                            llanta.save()
+                            sin_modificacion += 1
                         else:
-                            Inventario.objects.create(
-                                id_inventario = dato['id'],
-                                id_empresa = dato['botId'],
-                                talleres_id = id_taller,
-                                producto_clave = dato['sku'],
-                                descripcion = dato['name'],
-                                ancho = float(dato['width']),
-                                alto = float(dato['height']),
-                                rin = float(dato['diameter']),
-                                existencia = int(dato['stock']),
-                                precio = float(dato['price']),
-                                estatus=1
-                            )
-                            nuevos += 1
+                            llanta.id_inventario = dato['id']
+                            llanta.id_empresa = dato['botId']
+                            llanta.talleres_id = id_taller
+                            llanta.producto_clave = dato['sku']
+                            llanta.descripcion = dato['name']
+                            llanta.ancho =float(dato['width'])
+                            llanta.alto = float(dato['height'])
+                            llanta.rin = float(dato['diameter'])
+                            llanta.existencia = int(dato['stock'])
+                            llanta.precio = float(dato['price'])
+                            llanta.estatus = 2
+                            llanta.save()
+                            actualizados += 1
+                    else:
+                        Inventario.objects.create(
+                            id_inventario = dato['id'],
+                            id_empresa = dato['botId'],
+                            talleres_id = id_taller,
+                            producto_clave = dato['sku'],
+                            descripcion = dato['name'],
+                            ancho = float(dato['width']),
+                            alto = float(dato['height']),
+                            rin = float(dato['diameter']),
+                            existencia = int(dato['stock']),
+                            precio = float(dato['price']),
+                            estatus=1
+                        )
+                        nuevos += 1
 
 #                        if leidos % 500 == 0:
 #                            transaction.set_autocommit(True)  # activa commit automático
