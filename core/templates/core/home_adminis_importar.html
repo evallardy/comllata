@@ -34,7 +34,9 @@
 
           </label>
         <div class="spinner-border text-primary spinner-border-sm ms-2 align-middle" role="status" aria-hidden="true"></div>
-        </h4>
+        </h4><br>
+        <span id="hora-inicio"></span><br>
+        <span id="hora-fin"></span><br>
       </section>
       <section class="col-12 mt-4" id="termina-proceso">
         <div class="mx-auto" style="width: 50%;">
@@ -127,16 +129,27 @@
             }
         });
     }
+
+    function obtenerHoraActual() {
+        const ahora = new Date();
+        const horas = String(ahora.getHours()).padStart(2, '0');
+        const minutos = String(ahora.getMinutes()).padStart(2, '0');
+        const segundos = String(ahora.getSeconds()).padStart(2, '0');
+        return `${horas}:${minutos}:${segundos}`;
+    }
+
     function actualiza_llantas() {
         $('#empieza-proceso').show();
         $('#termina-proceso').hide();
         $("#lbl_importa").html('Llantas');
+         $('#hora-inicio').text("Inicio: " + obtenerHoraActual());
 
         $.ajax({
             url: "{% url 'importa_llantas' %}",
             type: "POST",
             headers: { "X-CSRFToken": "{{ csrf_token }}" },
             success: function (response) {
+              $('#hora-fin').text("Fin: " + obtenerHoraActual());
               $('#empieza-proceso').hide();
               $('#termina-proceso').show();
                 let tabla = $("#tabla-resultado");
@@ -198,15 +211,16 @@
                 `);
             },
            error: function(xhr, status, error) {
-                console.error("Status code:", xhr.status); // Ej: 500
-                console.error("Status text:", xhr.statusText); // Ej: Internal Server Error
-                console.error("Response text:", xhr.responseText); // El mensaje de error del servidor
-                console.error("Error:", error); // El mensaje de error de jQuery
+            $('#hora-fin').text("Fin con error: " + obtenerHoraActual());
+            console.error("Status code:", xhr.status); // Ej: 500
+            console.error("Status text:", xhr.statusText); // Ej: Internal Server Error
+            console.error("Response text:", xhr.responseText); // El mensaje de error del servidor
+            console.error("Error:", error); // El mensaje de error de jQuery
 
-                alert("Ocurrió un error al importar llantas:\n"
-                      + "Código: " + xhr.status + "\n"
-                      + "Mensaje: " + xhr.statusText + "\n"
-                      + "Detalle: " + xhr.responseText);
+            alert("Ocurrió un error al importar llantas:\n"
+                  + "Código: " + xhr.status + "\n"
+                  + "Mensaje: " + xhr.statusText + "\n"
+                  + "Detalle: " + xhr.responseText);
             }
         });
     }
