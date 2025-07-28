@@ -172,21 +172,20 @@ def llantas(request):
 
                 data = response.json()  # Usa directamente .json()
 
-                with transaction.atomic():
-                    for dato in data['data']['rows']:
-                        leidos += 1
-                        InventarioPaso.objects.create(
-                            id_inventario = dato['id'],
-                            id_empresa = dato['botId'],
-                            producto_clave = dato['sku'],
-                            descripcion = dato['name'],
-                            ancho = float(dato['width']),
-                            alto = float(dato['height']),
-                            rin = float(dato['diameter']),
-                            existencia = int(dato['stock']),
-                            precio = float(dato['price']),
-                            estatus=1
-                        )
+                for dato in data['data']['rows']:
+                    leidos += 1
+                    InventarioPaso.objects.create(
+                        id_inventario = dato['id'],
+                        id_empresa = dato['botId'],
+                        producto_clave = dato['sku'],
+                        descripcion = dato['name'],
+                        ancho = float(dato['width']),
+                        alto = float(dato['height']),
+                        rin = float(dato['diameter']),
+                        existencia = int(dato['stock']),
+                        precio = float(dato['price']),
+                        estatus=1
+                    )
 
 
         # Recuperar datos que se mostrarán en el frontend

@@ -211,17 +211,9 @@
                 `);
             },
            error: function(xhr, status, error) {
-            $('#hora-fin').text("Fin con error: " + obtenerHoraActual());
-            console.error("Status code:", xhr.status); // Ej: 500
-            console.error("Status text:", xhr.statusText); // Ej: Internal Server Error
-            console.error("Response text:", xhr.responseText); // El mensaje de error del servidor
-            console.error("Error:", error); // El mensaje de error de jQuery
-
-            alert("Ocurrió un error al importar llantas:\n"
-                  + "Código: " + xhr.status + "\n"
-                  + "Mensaje: " + xhr.statusText + "\n"
-                  + "Detalle: " + xhr.responseText);
-            }
+              $('#hora-fin').text("Fin con error: " + obtenerHoraActual());
+              alert("Ocurrió un error al importar llantas:");
+           }
         });
     }
 </script>
