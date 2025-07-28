@@ -146,9 +146,6 @@ def llantas(request):
         paginas_totales = int(data['data']['numPages'])
 
         leidos = 0
-        actualizados = 0
-        nuevos = 0
-        sin_modificacion = 0
 
         Inventario.objects.all().update(estatus=3)
 
@@ -185,71 +182,86 @@ def llantas(request):
                         estatus=1
                     )
 
-        inventario = InventarioPaso.objects.all()
-
-        for registro in inventario:
-            llanta = Inventario.objects.filter(id_inventario=registro.id_inventario).first()
-            if registro.id_empresa:
-                taller = Taller.objects.filter(id_empresa=registro.id_empresa).first()
-                if taller:
-                    id_taller = taller.id
-            if llanta:
-                if (
-                    llanta.id_empresa == registro.id_empresa and
-                    llanta.producto_clave == registro.producto_clave and
-                    llanta.descripcion == registro.descripcion and
-                    llanta.ancho == registro.ancho and
-                    llanta.alto == registro.alto and
-                    llanta.rin == registro.rin and
-                    llanta.existencia == registro.existencia and
-                    llanta.precio == registro.precio
-                    ):
-                    llanta.estatus = 0
-                    llanta.save()
-                    sin_modificacion += 1
-                else:
-                    llanta.id_empresa = registro.id_empresa
-                    llanta.talleres_id = id_taller
-                    llanta.producto_clave = registro.producto_clave
-                    llanta.descripcion = registro.descripcion
-                    llanta.ancho = registro.ancho
-                    llanta.alto = registro.alto
-                    llanta.rin = registro.alto
-                    llanta.existencia = registro.existencia
-                    llanta.precio = registro.precio
-                    llanta.estatus = 2
-                    llanta.save()
-                    actualizados += 1
-            else:
-                Inventario.objects.create(
-                    id_inventario = registro.id_inventario,
-                    id_empresa = registro.id_empresa,
-                    talleres_id = id_taller,
-                    producto_clave = registro.id_empresa,
-                    descripcion = registro.descripcion,
-                    ancho = registro.ancho,
-                    alto = registro.alto,
-                    rin = registro.rin,
-                    existencia = registro.existencia,
-                    precio = registro.precio,
-                    estatus=1
-                )
-                nuevos += 1
-
-        # Recuperar datos que se mostrarán en el frontend
-        registros_sin_recepcion = Inventario.objects.filter(estatus=3)
-        sin_recepcion = registros_sin_recepcion.count()
-        registros_totales = Inventario.objects.all()
-        total = registros_totales.count()
-
         context["leidos"] = leidos
-        context["actualizados"] = actualizados
-        context["nuevos"] = nuevos
-        context["sin_modificacion"] = sin_modificacion
-        context["sin_recepcion"] = sin_recepcion
-        context["total"] = total
     else:
 
         return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
+
+    return JsonResponse(context)
+
+
+def actualizaInventario(request):
+        
+    context = {}
+
+    leidos = 0
+    actualizados = 0
+    nuevos = 0
+    sin_modificacion = 0
+
+    inventario = InventarioPaso.objects.all()
+
+    for registro in inventario:
+        leidos += 1
+        llanta = Inventario.objects.filter(id_inventario=registro.id_inventario).first()
+        if registro.id_empresa:
+            taller = Taller.objects.filter(id_empresa=registro.id_empresa).first()
+            if taller:
+                id_taller = taller.id
+        if llanta:
+            if (
+                llanta.id_empresa == registro.id_empresa and
+                llanta.producto_clave == registro.producto_clave and
+                llanta.descripcion == registro.descripcion and
+                llanta.ancho == registro.ancho and
+                llanta.alto == registro.alto and
+                llanta.rin == registro.rin and
+                llanta.existencia == registro.existencia and
+                llanta.precio == registro.precio
+                ):
+                llanta.estatus = 0
+                llanta.save()
+                sin_modificacion += 1
+            else:
+                llanta.id_empresa = registro.id_empresa
+                llanta.talleres_id = id_taller
+                llanta.producto_clave = registro.producto_clave
+                llanta.descripcion = registro.descripcion
+                llanta.ancho = registro.ancho
+                llanta.alto = registro.alto
+                llanta.rin = registro.alto
+                llanta.existencia = registro.existencia
+                llanta.precio = registro.precio
+                llanta.estatus = 2
+                llanta.save()
+                actualizados += 1
+        else:
+            Inventario.objects.create(
+                id_inventario = registro.id_inventario,
+                id_empresa = registro.id_empresa,
+                talleres_id = id_taller,
+                producto_clave = registro.id_empresa,
+                descripcion = registro.descripcion,
+                ancho = registro.ancho,
+                alto = registro.alto,
+                rin = registro.rin,
+                existencia = registro.existencia,
+                precio = registro.precio,
+                estatus=1
+            )
+            nuevos += 1
+
+    # Recuperar datos que se mostrarán en el frontend
+    registros_sin_recepcion = Inventario.objects.filter(estatus=3)
+    sin_recepcion = registros_sin_recepcion.count()
+    registros_totales = Inventario.objects.all()
+    total = registros_totales.count()
+
+    context["leidos"] = leidos
+    context["actualizados"] = actualizados
+    context["nuevos"] = nuevos
+    context["sin_modificacion"] = sin_modificacion
+    context["sin_recepcion"] = sin_recepcion
+    context["total"] = total
 
     return JsonResponse(context)

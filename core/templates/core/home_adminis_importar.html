@@ -24,6 +24,7 @@
 
             <button class="btn btn-primary" onclick="actualiza_talleres()">Talleres</button>
             <button class="btn btn-primary" onclick="actualiza_llantas()">Inventario</button>
+            <button class="btn btn-primary" onclick="actualiza_inventario()">Actualiza inventario</button>
             <button class="btn btn-primary">Promociones</button>
           </div>
         </div>
@@ -161,25 +162,48 @@
               $('#termina-proceso').show();
                 let tabla = $("#tabla-resultado");
                 tabla.empty();
-                if (response.llantas.length > 0) {
-//                    response.llantas.forEach(llanta => {
-//                        tabla.append(`
-//                            <tr>
-//                                <td>${llanta.razon_social}</td>
-//                                <td>${llanta.llanta}</td>
-//                                <td>${llanta.estatus}</td>
-//                            </tr>
-//                        `);
-//                    });
-                }
-                else {
-                    tabla.append(`
-                        <tr style="border-bottom: 1px solid rgb(129, 121, 121)">
-                            <td>Registros</td>
-                            <td class='text-center'>Cantidad</td>
-                        </tr>
-                    `);
-                }
+                tabla.append(`
+                    <tr style="border-bottom: 1px solid rgb(129, 121, 121)">
+                        <td>Registros</td>
+                        <td class='text-center'>Cantidad</td>
+                    </tr>
+                `);
+                tabla.append(`
+                    <tr style="font-weight: bold; background-color: #EBEBEB"">
+                        <td>Leidos</td>
+                        <td class='text-center'>${parseInt(response.leidos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                    </tr>
+                `);
+            },
+           error: function(xhr, status, error) {
+              $('#hora-fin').text("Fin con error: " + obtenerHoraActual());
+              alert("Ocurrió un error al importar llantas:");
+           }
+        });
+    }
+    function actualiza_inventario() {
+        $('#empieza-proceso').show();
+        $('#termina-proceso').hide();
+        $("#lbl_importa").html('Llantas');
+         $('#hora-inicio').text("Inicio: " + obtenerHoraActual());
+         $('#datos-hora').show();
+
+        $.ajax({
+            url: "{% url 'actualiza_inventario' %}",
+            type: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            success: function (response) {
+              $('#hora-fin').text("Fin: " + obtenerHoraActual());
+              $('#empieza-proceso').hide();
+              $('#termina-proceso').show();
+                let tabla = $("#tabla-resultado");
+                tabla.empty();
+                tabla.append(`
+                    <tr style="border-bottom: 1px solid rgb(129, 121, 121)">
+                        <td>Registros</td>
+                        <td class='text-center'>Cantidad</td>
+                    </tr>
+                `);
                 tabla.append(`
                     <tr style="font-weight: bold; background-color: #EBEBEB"">
                         <td>Leidos</td>
@@ -219,7 +243,7 @@
             },
            error: function(xhr, status, error) {
               $('#hora-fin').text("Fin con error: " + obtenerHoraActual());
-              alert("Ocurrió un error al importar llantas:");
+              alert("Ocurrió un error al actualizar el inventario");
            }
         });
     }
