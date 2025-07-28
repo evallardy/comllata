@@ -172,21 +172,43 @@ def llantas(request):
 
                 data = response.json()  # Usa directamente .json()
 
-                for dato in data['data']['rows']:
-                    leidos += 1
-                    InventarioPaso.objects.create(
-                        id_inventario = dato['id'],
-                        id_empresa = dato['botId'],
-                        producto_clave = dato['sku'],
-                        descripcion = dato['name'],
-                        ancho = float(dato['width']),
-                        alto = float(dato['height']),
-                        rin = float(dato['diameter']),
-                        existencia = int(dato['stock']),
-                        precio = float(dato['price']),
-                        estatus=1
-                    )
+                with transaction.atomic():
+                    for dato in data['data']['rows']:
+                        leidos += 1
+                        InventarioPaso.objects.create(
+                            id_inventario = dato['id'],
+                            id_empresa = dato['botId'],
+                            producto_clave = dato['sku'],
+                            descripcion = dato['name'],
+                            ancho = float(dato['width']),
+                            alto = float(dato['height']),
+                            rin = float(dato['diameter']),
+                            existencia = int(dato['stock']),
+                            precio = float(dato['price']),
+                            estatus=1
+                        )
 
+
+        # Recuperar datos que se mostrarán en el frontend
+        registros_sin_recepcion = Inventario.objects.filter(estatus=3)
+        sin_recepcion = registros_sin_recepcion.count()
+        registros_totales = Inventario.objects.all()
+        total = registros_totales.count()
+
+        context["llantas"] = list(llantas)
+        context["leidos"] = leidos
+        context["actualizados"] = actualizados
+        context["nuevos"] = nuevos
+        context["sin_modificacion"] = sin_modificacion
+        context["sin_recepcion"] = sin_recepcion
+        context["total"] = total
+    else:
+
+        return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
+
+    return JsonResponse(context)
+
+'''
         inventario = InventarioPaso.objects.all()
 
         for registro in inventario:
@@ -258,3 +280,4 @@ def llantas(request):
         return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
 
     return JsonResponse(context)
+'''
