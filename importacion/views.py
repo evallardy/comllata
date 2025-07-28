@@ -139,9 +139,7 @@ def llantas(request):
         headers = { "Authorization": settings.TOKEN_BOT }
         response = requests.get(url, headers=headers)
 
-        context = {
-            "llantas": [],
-        } 
+        context = {} 
 
         data = response.json()
 
@@ -187,14 +185,6 @@ def llantas(request):
                         estatus=1
                     )
 
-        context["leidos"] = leidos
-    else:
-
-        return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
-
-    return JsonResponse(context)
-
-'''
         inventario = InventarioPaso.objects.all()
 
         for registro in inventario:
@@ -205,7 +195,6 @@ def llantas(request):
                     id_taller = taller.id
             if llanta:
                 if (
-                    llanta.id_inventario == registro.id_inventario and
                     llanta.id_empresa == registro.id_empresa and
                     llanta.producto_clave == registro.producto_clave and
                     llanta.descripcion == registro.descripcion and
@@ -219,7 +208,6 @@ def llantas(request):
                     llanta.save()
                     sin_modificacion += 1
                 else:
-                    llanta.id_inventario = registro.id_inventario
                     llanta.id_empresa = registro.id_empresa
                     llanta.talleres_id = id_taller
                     llanta.producto_clave = registro.producto_clave
@@ -254,7 +242,6 @@ def llantas(request):
         registros_totales = Inventario.objects.all()
         total = registros_totales.count()
 
-        context["llantas"] = list(llantas)
         context["leidos"] = leidos
         context["actualizados"] = actualizados
         context["nuevos"] = nuevos
@@ -266,4 +253,3 @@ def llantas(request):
         return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
 
     return JsonResponse(context)
-'''
