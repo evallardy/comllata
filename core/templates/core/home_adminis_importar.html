@@ -28,6 +28,10 @@
           </div>
         </div>
       </section>
+      <section id="datos-hora">
+        <span id="hora-inicio"></span><br>
+        <span id="hora-fin"></span><br>
+      </section>
       <section class="col-12 mt-4" id="empieza-proceso">
         <h4>Procesando importación de 
           <label id="lbl_importa">
@@ -35,8 +39,6 @@
           </label>
         <div class="spinner-border text-primary spinner-border-sm ms-2 align-middle" role="status" aria-hidden="true"></div>
         </h4><br>
-        <span id="hora-inicio"></span><br>
-        <span id="hora-fin"></span><br>
       </section>
       <section class="col-12 mt-4" id="termina-proceso">
         <div class="mx-auto" style="width: 50%;">
@@ -56,15 +58,19 @@
 <script>
     $('#empieza-proceso').hide();
     $('#termina-proceso').hide();
+    $('#datos-hora').hide();    
     function actualiza_talleres() {
+        $('#datos-hora').show();    
         $('#empieza-proceso').show();
         $('#termina-proceso').hide();
         $("#lbl_importa").html('Talleres');
+         $('#hora-inicio').text("Inicio: " + obtenerHoraActual());
         $.ajax({
             url: "{% url 'importa_talleres' %}",
             type: "POST",
             headers: { "X-CSRFToken": "{{ csrf_token }}" },
             success: function (response) {
+              $('#hora-fin').text("Fin: " + obtenerHoraActual());
               $('#empieza-proceso').hide();
               $('#termina-proceso').show();
                 let tabla = $("#tabla-resultado");
@@ -143,6 +149,7 @@
         $('#termina-proceso').hide();
         $("#lbl_importa").html('Llantas');
          $('#hora-inicio').text("Inicio: " + obtenerHoraActual());
+         $('#datos-hora').show();
 
         $.ajax({
             url: "{% url 'importa_llantas' %}",
