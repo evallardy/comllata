@@ -179,36 +179,6 @@
                         <td class='text-center'>${parseInt(response.leidos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
                     </tr>
                 `);
-                tabla.append(`
-                    <tr style="font-weight: bold;">
-                        <td>Actualizados</td>
-                        <td class='text-center'>${parseInt(response.actualizados).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
-                    </tr>
-                `);
-                tabla.append(`
-                    <tr style="font-weight: bold; background-color: #EBEBEB"">
-                        <td>Nuevos</td>
-                        <td class='text-center'>${parseInt(response.nuevos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
-                    </tr>
-                `);
-                tabla.append(`
-                    <tr style="font-weight: bold;">
-                        <td>Sin modificación</td>
-                        <td class='text-center'>${parseInt(response.sin_modificacion).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
-                    </tr>
-                `);
-                tabla.append(`
-                    <tr style="font-weight: bold; background-color: #EBEBEB"">
-                        <td>Sin recepción</td>
-                        <td class='text-center'>${parseInt(response.sin_recepcion).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
-                    </tr>
-                `);
-                tabla.append(`
-                    <tr style="font-weight: bold;">
-                        <td>Total</td>
-                        <td class='text-center'>${parseInt(response.total).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
-                    </tr>
-                `);
             },
            error: function(xhr, status, error) {
               $('#hora-fin').text("Fin con error: " + obtenerHoraActual());

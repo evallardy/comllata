@@ -187,20 +187,7 @@ def llantas(request):
                         estatus=1
                     )
 
-
-        # Recuperar datos que se mostrarán en el frontend
-        registros_sin_recepcion = Inventario.objects.filter(estatus=3)
-        sin_recepcion = registros_sin_recepcion.count()
-        registros_totales = Inventario.objects.all()
-        total = registros_totales.count()
-
-        context["llantas"] = list(llantas)
         context["leidos"] = leidos
-        context["actualizados"] = actualizados
-        context["nuevos"] = nuevos
-        context["sin_modificacion"] = sin_modificacion
-        context["sin_recepcion"] = sin_recepcion
-        context["total"] = total
     else:
 
         return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
