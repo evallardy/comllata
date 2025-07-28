@@ -135,8 +135,6 @@ def talleres(request):
 def llantas(request):
     if request.method == "POST":
 
-        pagina = request.POST.get("pagina", "0")
-
         url = "https://llantas.automatizia.com/apiv2/bots/tires" + "&" + "perPage=100" 
         headers = { "Authorization": settings.TOKEN_BOT }
         response = requests.get(url, headers=headers)
@@ -147,9 +145,6 @@ def llantas(request):
 
         data = response.json()
 
-#        total_registros = (data['data']['total'])
-#        pagina = (data['data']['page'])
-#        total_por_pagina = (data['data']['perPage'])
         paginas_totales = int(data['data']['numPages'])
 
         leidos = 0
@@ -157,22 +152,7 @@ def llantas(request):
         nuevos = 0
         sin_modificacion = 0
 
-        registro_por_pagina = 10
-
-        if not pagina:
-            pagina = 0
-
-        if int(pagina) == 0:
-            inicio = 1
-        else:
-            inicio = (int(pagina) * registro_por_pagina ) + 1
-            if inicio > paginas_totales:
-                inicio = paginas_totales
-
-        termina = inicio + registro_por_pagina
-
-        if termina > paginas_totales:
-            termina = paginas_totales
+        Inventario.objects.all().update(estatus=3)
 
         # Borra todos los registros
         InventarioPaso.objects.all().delete()
@@ -206,38 +186,8 @@ def llantas(request):
                         precio = float(dato['price']),
                         estatus=1
                     )
-                    leidos += 1
-
-
-        registros_nuevos = Inventario.objects.filter(estatus=1)
-        registros_sin_recepcion = Inventario.objects.filter(estatus=3)
-        registros_totales = Inventario.objects.all()
-        sin_recepcion = registros_sin_recepcion.count()
-        total = registros_totales.count()
-
-        llantas = [
-            {'razon_social': t.talleres.razon_social, 'llanta': t.descripcion, 'estatus': t.estatus_nombre}
-            for t in registros_nuevos
-        ]
-
-        context["llantas"] = list(llantas)
-        context["leidos"] = leidos
-        context["actualizados"] = actualizados
-        context["nuevos"] = nuevos
-        context["sin_modificacion"] = sin_modificacion
-        context["sin_recepcion"] = sin_recepcion
-        context["total"] = total
-    else:
-
-        return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
-
-    return JsonResponse(context)
-
-'''
 
         inventario = InventarioPaso.objects.all()
-
-        Inventario.objects.all().update(estatus=3)
 
         for registro in inventario:
             llanta = Inventario.objects.filter(id_inventario=registro.id_inventario).first()
@@ -291,16 +241,10 @@ def llantas(request):
                 nuevos += 1
 
         # Recuperar datos que se mostrarán en el frontend
-        registros_nuevos = Inventario.objects.filter(estatus=1)
         registros_sin_recepcion = Inventario.objects.filter(estatus=3)
-        registros_totales = Inventario.objects.all()
         sin_recepcion = registros_sin_recepcion.count()
+        registros_totales = Inventario.objects.all()
         total = registros_totales.count()
-
-        llantas = [
-            {'razon_social': t.talleres.razon_social, 'llanta': t.descripcion, 'estatus': t.estatus_nombre}
-            for t in registros_nuevos
-        ]
 
         context["llantas"] = list(llantas)
         context["leidos"] = leidos
@@ -314,4 +258,3 @@ def llantas(request):
         return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
 
     return JsonResponse(context)
-'''

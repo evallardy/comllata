@@ -24,7 +24,6 @@
 
             <button class="btn btn-primary" onclick="actualiza_talleres()">Talleres</button>
             <button class="btn btn-primary" onclick="actualiza_llantas()">Inventario</button>
-            <input type="text" name="pagina" id="id_pagina">
             <button class="btn btn-primary">Promociones</button>
           </div>
         </div>
@@ -133,15 +132,10 @@
         $('#termina-proceso').hide();
         $("#lbl_importa").html('Llantas');
 
-        let pagina = $("#id_pagina").val();  // obtener valor del campo
-
         $.ajax({
             url: "{% url 'importa_llantas' %}",
             type: "POST",
             headers: { "X-CSRFToken": "{{ csrf_token }}" },
-            data: {
-              pagina: pagina  // lo envías como parte del POST
-            },
             success: function (response) {
               $('#empieza-proceso').hide();
               $('#termina-proceso').show();
