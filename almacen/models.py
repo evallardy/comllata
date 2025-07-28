@@ -65,7 +65,7 @@ class Inventario(models.Model):
     class Meta:
         verbose_name = 'Llanta' 
         verbose_name_plural = 'Llantas' 
-        ordering = ['talleres','alto', 'ancho', 'rin']
+        ordering = ['talleres','ancho', 'alto', 'rin']
 #        unique_together= [('talleres','producto_clave'),('talleres','llantas')]
         db_table = 'Inventario'
 

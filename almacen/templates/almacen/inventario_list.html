@@ -10,8 +10,8 @@
         <tr>
             <th>Descripción</th>
             <th>Producto/Clave</th>
-            <th>Alto</th>
             <th>Ancho</th>
+            <th>Alto</th>
             <th>Rin</th>
             <th>Precio</th>
             <th>Existencia</th>
@@ -24,8 +24,8 @@
         <tr>
             <td>{{ item.descripcion|default_if_none:'' }}</td>
             <td>{{ item.producto_clave|default_if_none:'' }}</td>
-            <td>{{ item.alto|default_if_none:'' }}</td>
             <td>{{ item.ancho|default_if_none:'' }}</td>
+            <td>{{ item.alto|default_if_none:'' }}</td>
             <td>{{ item.rin|default_if_none:'' }}</td>
             <td>${{ item.precio|intcomma }}</td>
             <td>{{ item.existencia|intcomma }}</td>
