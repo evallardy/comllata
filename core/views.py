@@ -99,6 +99,8 @@ class BuscarLlantaView(BaseClienteView):
 
         busqueda_llantas = ""
 
+        inventario_por_taller = ''
+
         texto = request.POST.get('q', '') + " "
 
         genai.configure(api_key=settings.APIKEY_GOOGLE)
@@ -109,8 +111,8 @@ class BuscarLlantaView(BaseClienteView):
             " si no encuentra informacion para el auto, solo enviame un resume en un mensaje para avisar en una variable llamada comentario dentro del json json"
         json_string = modeloIA.generate_content(pregunta)
         if not json_string:
-            pregunta = "en el siguiente texto nos envian las medidas de una llanta, dime cuales son, " + \
-                       "' entregame la respuesta en formato json, solo entregame el ancho, el alto y el rin, adicionalmente remplaza en el texto de entrada las diagonales por espacios " + \
+            pregunta = "en el siguiente texto nos envian las medidas de una llanta, dime cuales son " + \
+                       "' entregame la respuesta en formato json, solo entregame el ancho, el alto y el rin, estos valores son numericos, adicionalmente remplaza en el texto de entrada las diagonales por espacios " + \
                        " antes de procesar, si tienes algun cometnario de esto, enviamelo en la variable comentario, no me entregues mas información, solo la que te pido " + \
                        ", el texto es el siguiente " + texto
             json_string = modeloIA.generate_content(pregunta)
@@ -144,6 +146,8 @@ class BuscarLlantaView(BaseClienteView):
         opcion_seleccionada.append(datos)
 
         medida1 = medida2 = medida3 = False
+        marca = modelo = anio = ancho = alto = rin = texto1 = ''
+        cantidad = 0
 
         if not comentario:
             for columna, dato in datos.items():
@@ -170,18 +174,35 @@ class BuscarLlantaView(BaseClienteView):
                     comentario = dato
 
         mensaje = ''
-        if marca:
-            texto = 'El primer auto que encontré con la especificación que me das es el siguiente :<br>'
-            texto += f'   Marca  : {marca}<br>'
-            texto += f'   Modelo : {modelo}<br>'
-            texto += f'   Año    : {anio}<br>'
-            texto += 'Este auto ocupa una llanta con las siguientes medidas : <br>'
-            texto += f'   Alto   : {alto}<br>'
-            texto += f'   Ancho  : {ancho}<br>'
-            texto += f'   Rin    : {rin}<br>'
-            texto += '<br>A continuación te muestro las opciones que tengo.'
-        elif ancho:
-            texto = ''  # o lo que necesites en ese caso               
+        try:
+            ancho = int(ancho)
+        except (TypeError, ValueError):
+            ancho = 0
+
+        try:
+            alto = int(alto)
+        except (TypeError, ValueError):
+            alto = 0
+
+        try:
+            rin = int(rin)
+        except (TypeError, ValueError):
+            rin = 0
+            
+        if marca and modelo and anio:
+            texto1 += 'El primer auto que encontré con la especificación que me das es el siguiente :<br>'
+            texto1 += f'   Marca  : {marca}<br>'
+            texto1 += f'   Modelo : {modelo}<br>'
+            texto1 += f'   Año    : {anio}<br>'
+        if alto and ancho and rin:
+            if marca and modelo and anio:
+                texto1 += 'Este auto ocupa una llanta con las siguientes medidas : <br>'
+            else:
+                texto1 += 'Las medidas que me solicitas son las siguientes : <br>'
+            texto1 += f'   Alto   : {alto}<br>'
+            texto1 += f'   Ancho  : {ancho}<br>'
+            texto1 += f'   Rin    : {rin}<br>'
+            texto1 += '<br>A continuación te muestro las opciones que tengo.'
 
         presenta = False
 
@@ -232,7 +253,7 @@ class BuscarLlantaView(BaseClienteView):
             'busqueda_llantas': busqueda_llantas, 
             'presenta': presenta,
             'cantidad': cantidad,
-            'texto':texto,
+            'texto1':texto1,
             'inventario_por_taller':inventario_por_taller
         }
 
