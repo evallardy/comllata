@@ -1,0 +1,54 @@
+{% load static %}
+<div class="container my-3">
+    <h3 class="text-center mb-4">
+        Llantas {{ ancho }}/{{ alto }} R{{ rin }}
+    </h3>
+
+    {% for taller, llantas in inventario_por_taller.items %}
+        <div class="card mb-4 shadow rounded-4 mx-auto" style="width: 60%;">
+            <div class="card-header bg-primary text-white rounded-top-4">
+                <strong>{{ taller.razon_social }}</strong>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Columna izquierda: Imagen y datos -->
+                    <div class="col-md-4 text-center d-flex flex-column align-items-center">
+                        <img src="{% static 'core/img/principal/taller_default.jpeg' %}"
+                             alt="{{ taller.razon_social }}"
+                             class="img-fluid rounded mb-2"
+                             style="max-height: 180px; object-fit: cover;">
+
+                        <p class="mb-0">{{ taller.direccion|default_if_none:"" }}</p>
+                        <p class="mb-0">{{ taller.municipio|default_if_none:"" }}</p>
+                        <p class="mb-2">{{ taller.estado|default_if_none:"" }}</p>
+                        {% if taller.latitud and taller.longitud %}
+                        <a href="#" class="btn btn-outline-primary btn-sm mt-1">
+                            Ver en mapa
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Columna derecha: Lista de llantas -->
+                    <div class="col-md-8">
+                        <div class="row fw-bold border-bottom pb-2 mb-2 bg-light sticky-top" style="top: 0;">
+                            <div class="col-6">Marca</div>
+                            <div class="col-6">Precio</div>
+                        </div>
+                        <div style="max-height: 260px; overflow-y: auto;">
+                            {% for llanta in llantas %}
+                                <div class="row mb-2">
+                                    <div class="col-6">{{ llanta.producto_clave }}</div>
+                                    <div class="col-6 text-primary">${{ llanta.precio|floatformat:2 }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-warning text-center">
+            No hay talleres con llantas disponibles para esta medida.
+        </div>
+    {% endfor %}
+</div>

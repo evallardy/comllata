@@ -8,6 +8,7 @@ import re
 import sys
 import google.generativeai as genai
 import json
+from collections import defaultdict
 
 from almacen.models import *
 from .models import *
@@ -93,8 +94,6 @@ class BuscarLlantaView(BaseClienteView):
         return context
 
     def post(self, request, *args, **kwargs):
-
-        context = []
 
         comentario = ""
 
@@ -187,9 +186,33 @@ class BuscarLlantaView(BaseClienteView):
         presenta = False
 
         if medida1 and medida2 and medida3:
-            llantas = Llanta.objects.filter(ancho=ancho, alto=alto, rin=rin)
+            llantas1 = InventarioPaso.objects.filter(talleres__isnull=True, estatus=1)
+
+            for llanta in llantas1:
+                taller = Taller.objects.filter(id_empresa=llanta.id_empresa).first()
+                llanta.estatus = 0
+                if taller and llanta.talleres != taller:
+                    llanta.talleres = taller
+                llanta.save()
+
+            llantas = InventarioPaso.objects.filter(ancho=ancho, alto=alto, rin=rin).order_by('talleres', 'precio')
+
+            # Agrupar por taller
+            inventario_por_taller = defaultdict(list)
+            for item in llantas:
+                if item.talleres:  # Evitar talleres nulos
+                    inventario_por_taller[item.talleres].append(item)
+
+            context = {
+                'ancho': ancho,
+                'alto': alto,
+                'rin': rin,
+                'inventario_por_taller': dict(inventario_por_taller)
+            }
+
+
             cantidad = llantas.count()
-            busqueda_llantas = render_to_string("core/_presenta_llanta.html", {"llantas": llantas}) 
+            busqueda_llantas = render_to_string("core/_presenta_taller.html", context) 
             presenta = True
         else:
             opcion_seleccionada = []
@@ -209,7 +232,8 @@ class BuscarLlantaView(BaseClienteView):
             'busqueda_llantas': busqueda_llantas, 
             'presenta': presenta,
             'cantidad': cantidad,
-            'texto':texto
+            'texto':texto,
+            'inventario_por_taller':inventario_por_taller
         }
 
         return render(request, self.template_name, {'context': context})
