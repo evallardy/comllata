@@ -103,44 +103,44 @@ class BuscarLlantaView(BaseClienteView):
 
         texto = request.POST.get('q', '') + " "
 
-        genai.configure(api_key=settings.APIKEY_GOOGLE)
-        sys.stdout.reconfigure(encoding='utf-8')
-        modeloIA = genai.GenerativeModel('gemini-2.0-flash')
-        pregunta = "que llanta en ancho, alto y rin ocupa el '" + texto + " ' , solo entregame la informacion en formato json , de el ancho,  el alto y rin solo los +" \
-            "numeros sin unidad de medida, que sean valores estandar, ademas en el json , ponme la marca el modelo y año del auto que tomaste la información, " + \
-            " si no encuentra informacion para el auto, solo enviame un resume en un mensaje para avisar en una variable llamada comentario dentro del json json"
-        json_string = modeloIA.generate_content(pregunta)
-        if not json_string:
-            pregunta = "en el siguiente texto nos envian las medidas de una llanta, dime cuales son " + \
-                       "' entregame la respuesta en formato json, solo entregame el ancho, el alto y el rin, estos valores son numericos, adicionalmente remplaza en el texto de entrada las diagonales por espacios " + \
-                       " antes de procesar, si tienes algun cometnario de esto, enviamelo en la variable comentario, no me entregues mas información, solo la que te pido " + \
-                       ", el texto es el siguiente " + texto
-            json_string = modeloIA.generate_content(pregunta)
-        json_string = json_string.text
-        limpio = json_string.strip("`").strip("json").strip()
-        clean_json = limpio.replace('\n', '')
+#        genai.configure(api_key=settings.APIKEY_GOOGLE)
+#        sys.stdout.reconfigure(encoding='utf-8')
+#        modeloIA = genai.GenerativeModel('gemini-2.0-flash')
+#        pregunta = "que llanta en ancho, alto y rin ocupa el '" + texto + " ' , solo entregame la informacion en formato json , de el ancho,  el alto y rin solo los +" \
+#            "numeros sin unidad de medida, que sean valores estandar, ademas en el json , ponme la marca el modelo y año del auto que tomaste la información, " + \
+#            " si no encuentra informacion para el auto, solo enviame un resume en un mensaje para avisar en una variable llamada comentario dentro del json json"
+#        json_string = modeloIA.generate_content(pregunta)
+#        if not json_string:
+#            pregunta = "en el siguiente texto nos envian las medidas de una llanta, dime cuales son " + \
+#                       "' entregame la respuesta en formato json, solo entregame el ancho, el alto y el rin, estos valores son numericos, adicionalmente remplaza en el texto de entrada las diagonales por espacios " + \
+#                       " antes de procesar, si tienes algun cometnario de esto, enviamelo en la variable comentario, no me entregues mas información, solo la que te pido " + \
+#                       ", el texto es el siguiente " + texto
+#            json_string = modeloIA.generate_content(pregunta)
+#        json_string = json_string.text
+#        limpio = json_string.strip("`").strip("json").strip()
+#        clean_json = limpio.replace('\n', '')
 
-        match = re.search(r'\[\s*.*?\s*\]', clean_json, re.DOTALL)
+#        match = re.search(r'\[\s*.*?\s*\]', clean_json, re.DOTALL)
 
-        if match:
-            respuesta = match
-        else:
-            respuesta = json_string
+ #       if match:
+ #           respuesta = match
+ #       else:
+ #           respuesta = json_string
 
         # Elimina las marcas ```json y ```
-        limpio_json = limpio.replace("```json", "").replace("```", "").strip()
+ #       limpio_json = limpio.replace("```json", "").replace("```", "").strip()
 
         # Convierte a objeto Python
-        datos = json.loads(limpio_json)
+  #      datos = json.loads(limpio_json)
 
-#        datos = {
-#            "marca": "Ford",
-#            "modelo": "Mustang",
-#            "año": "2015",
-#            "ancho": 235,
-#            "alto": 55,
-#            "rin": 17
-#        }
+        datos = {
+            "marca": "Ford",
+            "modelo": "Mustang",
+            "año": "2015",
+            "ancho": 235,
+            "alto": 55,
+            "rin": 17
+        }
 
         opcion_seleccionada = []
         opcion_seleccionada.append(datos)

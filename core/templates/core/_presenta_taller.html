@@ -22,9 +22,12 @@
                         <p class="mb-0">{{ taller.municipio|default_if_none:"" }}</p>
                         <p class="mb-2">{{ taller.estado|default_if_none:"" }}</p>
                         {% if taller.latitud and taller.longitud %}
-                        <a href="#" class="btn btn-outline-primary btn-sm mt-1">
+                        <button onclick="localizacion('{{ taller.longitud|default:0 }}', '{{ taller.latitud|default:0 }}', '{{ taller.razon_social }}')"
+                                class="btn btn-outline-primary btn-sm mt-1"
+                                data-bs-toggle="modal"
+                                data-bs-target="#mapaModal">
                             Ver en mapa
-                        </a>
+                        </button>
                         {% endif %}
                     </div>
 
@@ -52,3 +55,42 @@
         </div>
     {% endfor %}
 </div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  let map;
+  let marker;
+
+  function localizacion(datalat, datalng, datanombre) {
+    const mapaModal = document.getElementById('mapaModal');
+
+    mapaModal.addEventListener('shown.bs.modal', function () {
+      const btn = document.querySelector('.btn-mapa[data-bs-target="#mapaModal"][data-lat]');
+
+      const lat = parseFloat(datalat) || 0;
+      const lng = parseFloat(datalng) || 0;
+      const nombre = datanombre || "Ubicación desconocida";
+
+      // Crear mapa si no existe
+      if (!map) {
+        map = L.map('mapa').setView([lat, lng], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '© OpenStreetMap'
+        }).addTo(map);
+      }
+
+      // Mover mapa y marcador
+      map.setView([lat, lng], 15);
+
+      if (marker) {
+        marker.setLatLng([lat, lng]);
+        marker.bindPopup(nombre).openPopup();
+      } else {
+        marker = L.marker([lat, lng]).addTo(map).bindPopup(nombre).openPopup();
+      }
+
+      map.invalidateSize();
+    });
+    }
+</script>

@@ -25,7 +25,7 @@
             background-color: #f5f5f5;
         }
     </style>
-    {% block extra_css %}{% endblock %}
+    {% block extra_haed %}{% endblock %}
 </head>
 
 <body style="font-family: Bogle, 'Helvetica Neue', Helvetica, Arial, sans-serif;">
@@ -88,10 +88,10 @@
     </div>
 </body>
 </html>
-<script src="{% static 'core/js/pro-01-com-01.js' %}"></script>
+
 <script>
     $(document).ready(function() {
-        
-        
+    {% block ready %}        
+    {% endblock %}
     });
 </script>
