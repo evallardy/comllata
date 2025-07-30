@@ -10,6 +10,7 @@ import google.generativeai as genai
 import json
 from collections import defaultdict
 
+
 from almacen.models import *
 from .models import *
 
@@ -103,44 +104,48 @@ class BuscarLlantaView(BaseClienteView):
 
         texto = request.POST.get('q', '') + " "
 
-#        genai.configure(api_key=settings.APIKEY_GOOGLE)
-#        sys.stdout.reconfigure(encoding='utf-8')
-#        modeloIA = genai.GenerativeModel('gemini-2.0-flash')
-#        pregunta = "que llanta en ancho, alto y rin ocupa el '" + texto + " ' , solo entregame la informacion en formato json , de el ancho,  el alto y rin solo los +" \
-#            "numeros sin unidad de medida, que sean valores estandar, ademas en el json , ponme la marca el modelo y año del auto que tomaste la información, " + \
-#            " si no encuentra informacion para el auto, solo enviame un resume en un mensaje para avisar en una variable llamada comentario dentro del json json"
-#        json_string = modeloIA.generate_content(pregunta)
-#        if not json_string:
-#            pregunta = "en el siguiente texto nos envian las medidas de una llanta, dime cuales son " + \
-#                       "' entregame la respuesta en formato json, solo entregame el ancho, el alto y el rin, estos valores son numericos, adicionalmente remplaza en el texto de entrada las diagonales por espacios " + \
-#                       " antes de procesar, si tienes algun cometnario de esto, enviamelo en la variable comentario, no me entregues mas información, solo la que te pido " + \
-#                       ", el texto es el siguiente " + texto
-#            json_string = modeloIA.generate_content(pregunta)
-#        json_string = json_string.text
-#        limpio = json_string.strip("`").strip("json").strip()
-#        clean_json = limpio.replace('\n', '')
+        if settings.ACTIVA_IA:
 
-#        match = re.search(r'\[\s*.*?\s*\]', clean_json, re.DOTALL)
+            genai.configure(api_key=settings.APIKEY_GOOGLE)
+            sys.stdout.reconfigure(encoding='utf-8')
+            modeloIA = genai.GenerativeModel('gemini-2.0-flash')
+            pregunta = "que llanta en ancho, alto y rin ocupa el '" + texto + " ' , solo entregame la informacion en formato json , de el ancho,  el alto y rin solo los +" \
+                "numeros sin unidad de medida, que sean valores estandar, ademas en el json , ponme la marca el modelo y año del auto que tomaste la información, " + \
+                " si no encuentra informacion para el auto, solo enviame un resume en un mensaje para avisar en una variable llamada comentario dentro del json json"
+            json_string = modeloIA.generate_content(pregunta)
+            if not json_string:
+                pregunta = "en el siguiente texto nos envian las medidas de una llanta, dime cuales son " + \
+                        "' entregame la respuesta en formato json, solo entregame el ancho, el alto y el rin, estos valores son numericos, adicionalmente remplaza en el texto de entrada las diagonales por espacios " + \
+                        " antes de procesar, si tienes algun cometnario de esto, enviamelo en la variable comentario, no me entregues mas información, solo la que te pido " + \
+                        ", el texto es el siguiente " + texto
+                json_string = modeloIA.generate_content(pregunta)
+            json_string = json_string.text
+            limpio = json_string.strip("`").strip("json").strip()
+            clean_json = limpio.replace('\n', '')
 
- #       if match:
- #           respuesta = match
- #       else:
- #           respuesta = json_string
+            match = re.search(r'\[\s*.*?\s*\]', clean_json, re.DOTALL)
 
-        # Elimina las marcas ```json y ```
- #       limpio_json = limpio.replace("```json", "").replace("```", "").strip()
+            if match:
+                respuesta = match
+            else:
+                respuesta = json_string
 
-        # Convierte a objeto Python
-  #      datos = json.loads(limpio_json)
+            # Elimina las marcas ```json y ```
+            limpio_json = limpio.replace("```json", "").replace("```", "").strip()
 
-        datos = {
-            "marca": "Ford",
-            "modelo": "Mustang",
-            "año": "2015",
-            "ancho": 235,
-            "alto": 55,
-            "rin": 17
-        }
+            # Convierte a objeto Python
+            datos = json.loads(limpio_json)
+
+        else:
+    
+            datos = {
+                "marca": "Ford",
+                "modelo": "Mustang",
+                "año": "2015",
+                "ancho": 235,
+                "alto": 55,
+                "rin": 17
+            }
 
         opcion_seleccionada = []
         opcion_seleccionada.append(datos)
