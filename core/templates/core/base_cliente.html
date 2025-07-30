@@ -50,27 +50,19 @@
                             </a>
                         </li>
                         <li>
-                            <button type="button" class="btn btn-outline-light position-relative">
+                            <button type="button" class="btn btn-outline-light position-relative" 
+                                    data-bs-toggle="modal" data-bs-target="#carritoModal">
                                 <i class="bi bi-cart"></i>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <span id="carritoCantidad" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                     0
                                 </span>
-                                <span class="ms-2">$0.00</span>
+                                <span id="carritoTotal" class="ms-2">$0.00</span>
                             </button>
                         </li>
                     </ul>
                 </nav>
             </header>
 
-            <!-- BANNER (puedes personalizar más adelante) -->
-            <section class="bg-dark text-white py-1">
-                <div class="container">
-                    <!-- Subnav opcional -->
-                    <nav aria-label="Secundario">
-                        
-                    </nav>
-                </div>
-            </section>
 
             <!-- CONTENIDO PRINCIPAL -->
             <main>

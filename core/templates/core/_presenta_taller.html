@@ -1,47 +1,90 @@
 {% load static %}
+<style>
+    .taller-text {
+        font-size: 1rem;
+    }
+
+    @media (max-width: 1200px) {
+        .taller-text {
+            font-size: 0.750rem;
+        }
+    }
+
+    @media (max-width: 994px) {
+        .taller-text {
+            font-size: 0.650rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .taller-text {
+            font-size: 0.600rem;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .taller-text {
+            font-size: 0.500rem;
+        }
+    }
+</style>
 <div class="container my-3">
     <h3 class="text-center mb-4">
         Llantas {{ ancho }}/{{ alto }} R{{ rin }}
     </h3>
 
     {% for taller, llantas in inventario_por_taller.items %}
-        <div class="card mb-4 shadow rounded-4 mx-auto" style="width: 60%;">
+        <div class="card mb-4 shadow rounded-4 container px-4">
             <div class="card-header bg-primary text-white rounded-top-4">
                 <strong>{{ taller.razon_social }}</strong>
             </div>
             <div class="card-body">
                 <div class="row">
                     <!-- Columna izquierda: Imagen y datos -->
-                    <div class="col-md-4 text-center d-flex flex-column align-items-center">
+                    <div class="col-12 col-md-4 text-center d-flex flex-column align-items-center mb-3 mb-md-0">
                         <img src="{% static 'core/img/principal/taller_default.jpeg' %}"
-                             alt="{{ taller.razon_social }}"
-                             class="img-fluid rounded mb-2"
-                             style="max-height: 180px; object-fit: cover;">
+                            alt="{{ taller.razon_social }}"
+                            class="img-fluid rounded mb-2"
+                            style="max-height: 180px; object-fit: cover; width: 100%;">
 
-                        <p class="mb-0">{{ taller.direccion|default_if_none:"" }}</p>
-                        <p class="mb-0">{{ taller.municipio|default_if_none:"" }}</p>
-                        <p class="mb-2">{{ taller.estado|default_if_none:"" }}</p>
+                        <p class="mb-0 small taller-text">{{ taller.direccion|default_if_none:"" }}</p>
+                        <p class="mb-0 small taller-text">{{ taller.municipio|default_if_none:"" }}</p>
+                        <p class="mb-2 small taller-text">{{ taller.estado|default_if_none:"" }}</p>
+
                         {% if taller.latitud and taller.longitud %}
-                        <button onclick="localizacion('{{ taller.longitud|default:0 }}', '{{ taller.latitud|default:0 }}', '{{ taller.razon_social }}')"
-                                class="btn btn-outline-primary btn-sm mt-1"
-                                data-bs-toggle="modal"
-                                data-bs-target="#mapaModal">
-                            Ver en mapa
-                        </button>
+                            <button onclick="localizacion('{{ taller.longitud|default:0 }}', '{{ taller.latitud|default:0 }}', '{{ taller.razon_social }}')"
+                                    class="btn btn-outline-primary btn-sm mt-1"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#mapaModal">
+                                Ver en mapa
+                            </button>
                         {% endif %}
                     </div>
 
                     <!-- Columna derecha: Lista de llantas -->
-                    <div class="col-md-8">
+                    <div class="col-12 col-md-8">
                         <div class="row fw-bold border-bottom pb-2 mb-2 bg-light sticky-top" style="top: 0;">
                             <div class="col-6">Marca</div>
                             <div class="col-6">Precio</div>
                         </div>
                         <div style="max-height: 260px; overflow-y: auto;">
                             {% for llanta in llantas %}
-                                <div class="row mb-2">
-                                    <div class="col-6">{{ llanta.producto_clave }}</div>
-                                    <div class="col-6 text-primary">${{ llanta.precio|floatformat:2 }}</div>
+                                <div class="row mb-2 align-items-center"
+                                    style="background-color: {% if forloop.counter0|divisibleby:2 %}#dee2e6{% else %}#ffffff{% endif %};">
+                                    <div class="col-4 col-sm-5 col-md-3 taller-text">{{ llanta.descripcion }}</div>
+                                    <div class="col-2 col-sm-2 col-md-3 text-primary text-end taller-text">${{ llanta.precio|floatformat:2 }}</div>
+                                    <div class="col-2 col-sm-1 col-md-2 text-primary text-end taller-text">{{ llanta.existencia|floatformat:0 }}</div>
+                                    <div class="col-2 col-sm-2 col-md-2 text-primary">
+                                        <input type="text" class="form-control text-end"
+                                            name="cantidad_{{llanta.id}}" id="id_cantidad_{{llanta.id}}"
+                                            style="padding: 1px 5px;" maxlength="3"
+                                            onfocusout="reformatear(this.id)"
+                                            onkeypress="return valideKey(event);">
+                                    </div>
+                                    <div class="col-2 col-sm-2 col-md-2 text-primary">
+                                        <button class="btn btn-outline-primary btn-sm taller-text" style="padding: 1px 5px;"
+                                            onclick="agregarAlCarrito('{{ llanta.id }}', '{{ llanta.descripcion }}', '{{ llanta.precio }}')">Agregar</button>
+                                    </div>
                                 </div>
                             {% endfor %}
                         </div>
@@ -54,6 +97,7 @@
             No hay talleres con llantas disponibles para esta medida.
         </div>
     {% endfor %}
+
 </div>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
