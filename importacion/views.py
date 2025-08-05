@@ -150,14 +150,12 @@ def llantas(request):
 
         leidos = 0
 
-        Inventario.objects.all().update(estatus=3)
-
         # Borra todos los registros
-        InventarioPaso.objects.all().delete()
+        Inventario.objects.all().delete()
 
         # Reinicia el autoincremento del ID en MySQL
         with connection.cursor() as cursor:
-            cursor.execute("ALTER TABLE InventarioPaso AUTO_INCREMENT = 1;")
+            cursor.execute("ALTER TABLE Inventario AUTO_INCREMENT = 1;")
 
         for i in range(1, paginas_totales):
 
@@ -172,7 +170,7 @@ def llantas(request):
 
                 for dato in data['data']['rows']:
                     leidos += 1
-                    InventarioPaso.objects.create(
+                    Inventario.objects.create(
                         id_inventario = dato['id'],
                         id_empresa = dato['botId'],
                         producto_clave = dato['sku'],

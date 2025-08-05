@@ -31,9 +31,9 @@ class RegistrarVentaPaypalView(View):
 
             # Validar y calcular el total desde la base de datos
             for producto_id, item in carrito.items():
+                descripcion = item.get('descripcion', '')
                 cantidad = int(item.get('cantidad', 0))
                 precio = float(item.get('precio', 0))
-                descripcion = item.get('descripcion', '')
                 id_inventario = item.get('inventario', '')
                 id_empresa = item.get('empresa', '')
 

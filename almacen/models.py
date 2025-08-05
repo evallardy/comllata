@@ -82,34 +82,34 @@ class Entradas(models.Model):
         ordering = ['talleres','producto_clave']
         db_table = 'Entrada'
 
-class InventarioPaso(models.Model):
-    id_inventario = models.CharField("Id primario",max_length=64, blank=True, null=True)
-    id_empresa = models.CharField("Id empresa",max_length=64, blank=True, null=True)
-    talleres = models.ForeignKey(Taller, on_delete=models.CASCADE, blank=True, null=True)
-    llantas = models.ForeignKey(Llanta, on_delete=models.CASCADE, blank=True, null=True)
-    producto_clave = models.CharField("Producto/Clave",max_length=100, blank=True, null=True)  #SKU
-    descripcion = models.CharField("Descripción", max_length=255, blank=True, null=True)
-    ancho = models.DecimalField("Ancho", decimal_places=2, max_digits=10, default=0)
-    alto = models.DecimalField("Alto", decimal_places=2, max_digits=10, default=0)
-    rin = models.DecimalField("Rin", decimal_places=2, max_digits=10, default=0)
-    existencia = models.IntegerField("Existencia", default=0)
-    precio = models.DecimalField("Precio", decimal_places=2, max_digits=10, default=0)
-    actualizado = models.IntegerField("Actualizado", choices=ACTUALIZADO, default=False)
-    estatus = models.IntegerField("Estatus", choices=ESTATUS, default=1)
-    # Bitácora
-    creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
-    modificado = models.DateTimeField("Actualizado", auto_now=True, blank=True, null=True)
+# class InventarioPaso(models.Model):
+#    id_inventario = models.CharField("Id primario",max_length=64, blank=True, null=True)
+#    id_empresa = models.CharField("Id empresa",max_length=64, blank=True, null=True)
+#    talleres = models.ForeignKey(Taller, on_delete=models.CASCADE, blank=True, null=True)
+#    llantas = models.ForeignKey(Llanta, on_delete=models.CASCADE, blank=True, null=True)
+#    producto_clave = models.CharField("Producto/Clave",max_length=100, blank=True, null=True)  #SKU
+#    descripcion = models.CharField("Descripción", max_length=255, blank=True, null=True)
+#    ancho = models.DecimalField("Ancho", decimal_places=2, max_digits=10, default=0)
+##    alto = models.DecimalField("Alto", decimal_places=2, max_digits=10, default=0)
+#    rin = models.DecimalField("Rin", decimal_places=2, max_digits=10, default=0)
+#    existencia = models.IntegerField("Existencia", default=0)
+#    precio = models.DecimalField("Precio", decimal_places=2, max_digits=10, default=0)
+#    actualizado = models.IntegerField("Actualizado", choices=ACTUALIZADO, default=False)
+#    estatus = models.IntegerField("Estatus", choices=ESTATUS, default=1)
+#    # Bitácora
+#    creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
+#    modificado = models.DateTimeField("Actualizado", auto_now=True, blank=True, null=True)
 
-    def __str__(self):
-        return '%s' % (self.descripcion)
+#    def __str__(self):
+#        return '%s' % (self.descripcion)
 
-    @property
-    def estatus_nombre(self):
-        return self.get_estatus_display()
+#    @property
+#    def estatus_nombre(self):
+#        return self.get_estatus_display()
 
-    class Meta:
-        verbose_name = 'Llanta' 
-        verbose_name_plural = 'Llantas' 
-        ordering = ['talleres','producto_clave']
+#    class Meta:
+#        verbose_name = 'Llanta' 
+#        verbose_name_plural = 'Llantas' 
+#        ordering = ['talleres','producto_clave']
 #        unique_together= [('talleres','producto_clave'),('talleres','llantas')]
-        db_table = 'InventarioPaso'
+#        db_table = 'InventarioPaso'
