@@ -139,11 +139,11 @@ class BuscarLlantaView(BaseClienteView):
         else:
     
             datos = {
-                "marca": "Ford",
-                "modelo": "Mustang",
-                "año": "2015",
-                "ancho": 235,
-                "alto": 55,
+                "marca": "Audi",
+                "modelo": "A3",
+                "año": "2016",
+                "ancho": 225,
+                "alto": 45,
                 "rin": 17
             }
 

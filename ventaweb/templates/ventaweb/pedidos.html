@@ -14,6 +14,7 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 text-dark">Venta #{{ group.grouper }}</h5>
+                <span>Fecha pedido</span>
                 <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-{{ group.grouper }}">
                     Surtir venta
                 </button>
@@ -22,6 +23,7 @@
                 {% for item in group.list %}
                     <li class="list-group-item d-flex justify-content-between flex-column flex-md-row">
                         <span class="fw-medium">{{ item.descripcion }}</span>
+                        <span>{{ item.fecha_pedido }}</span>
                         <span>
                             Cant: <strong>{{ item.cantidad }}</strong> &nbsp; | &nbsp; 
                             ${{ item.importe }}

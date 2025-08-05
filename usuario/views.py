@@ -17,18 +17,18 @@ from .forms import UsuarioForm, UsuarioFormEdit, CambiaContrasenaForm, Registrar
 class CustomLoginView(LoginView):
     def get_success_url(self):
         user = self.request.user
-        if hasattr(user, 'is_cliente') and user.is_cliente:
+        if user.is_cliente:
             return '/'  # Redirige a dashboard de cliente
-        elif user.is_staff or getattr(user, 'is_taller', True):
+        elif user.is_staff or user.is_taller:
             return '/administracion/'  # Redirige a dashboard de admin o taller
         return '/'  # Redirige a home o login si no cumple nada
 
 def custom_logout_view(request):
     if request.user.is_authenticated:
-        if getattr(request.user, 'is_cliente', False):
+        if request.user.is_cliente:
             logout(request)
             return redirect('login_cliente')
-        elif request.user.is_staff or getattr(request.user, 'is_taller', False):
+        elif request.user.is_staff or request.user.is_taller:
             logout(request)
             return redirect('login_admin')
     logout(request)

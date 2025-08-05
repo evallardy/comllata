@@ -44,6 +44,7 @@ class VentaDetalle(models.Model):
     importe = models.DecimalField(max_digits=12, decimal_places=2)
     estatus = models.IntegerField('Estatus', choices=ESTATUS, default=0)
     usuario = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Usuario')
+    fecha_pedido = models.DateTimeField('Pedido', auto_now_add=True,blank=True, null=True)
     fecha_entrega = models.DateTimeField('Entrega', auto_now=True ,blank=True, null=True)
 
     def __str__(self):
