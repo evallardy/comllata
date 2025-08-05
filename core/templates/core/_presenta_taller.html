@@ -53,6 +53,7 @@
 
                         {% if taller.latitud and taller.longitud %}
                             <button onclick="localizacion('{{ taller.longitud|default:0 }}', '{{ taller.latitud|default:0 }}', '{{ taller.razon_social }}')"
+                                    id="id_boton_mapa_{{taller.id}}"
                                     class="btn btn-outline-primary btn-sm mt-1"
                                     data-bs-toggle="modal"
                                     data-bs-target="#mapaModal">
@@ -64,8 +65,11 @@
                     <!-- Columna derecha: Lista de llantas -->
                     <div class="col-12 col-md-8">
                         <div class="row fw-bold border-bottom pb-2 mb-2 bg-light sticky-top" style="top: 0;">
-                            <div class="col-6">Marca</div>
-                            <div class="col-6">Precio</div>
+                            <div class="col-4 col-sm-5 col-md-3 taller-text">Marca</div>
+                            <div class="col-2 col-sm-2 col-md-3 text-end taller-text">Precio</div>
+                            <div class="col-2 col-sm-1 col-md-2 text-end taller-text" style="padding: 0;">Bodega</div>
+                            <div class="col-2 col-sm-2 col-md-2 d-flex justify-content-center taller-text">Solicita</div>
+                            <div class="col-2 col-sm-2 col-md-2 "></div>
                         </div>
                         <div style="max-height: 260px; overflow-y: auto;">
                             {% for llanta in llantas %}
@@ -74,16 +78,20 @@
                                     <div class="col-4 col-sm-5 col-md-3 taller-text">{{ llanta.descripcion }}</div>
                                     <div class="col-2 col-sm-2 col-md-3 text-primary text-end taller-text">${{ llanta.precio|floatformat:2 }}</div>
                                     <div class="col-2 col-sm-1 col-md-2 text-primary text-end taller-text">{{ llanta.existencia|floatformat:0 }}</div>
-                                    <div class="col-2 col-sm-2 col-md-2 text-primary">
-                                        <input type="text" class="form-control text-end"
-                                            name="cantidad_{{llanta.id}}" id="id_cantidad_{{llanta.id}}"
-                                            style="padding: 1px 5px;" maxlength="3"
-                                            onfocusout="reformatear(this.id)"
-                                            onkeypress="return valideKey(event);">
+                                    <div class="col-2 col-sm-2 col-md-2 text-primary d-flex justify-content-center">
+                                        <div class="col-10">
+                                            <input type="text" class="form-control text-end"
+                                                name="cantidad_{{llanta.id}}" id="id_cantidad_{{llanta.id}}"
+                                                style="padding: 1px 5px;" maxlength="3"
+                                                onfocusout="reformatear(this.id)"
+                                                onkeypress="return valideKey(event);">
+                                        </div>
                                     </div>
                                     <div class="col-2 col-sm-2 col-md-2 text-primary">
                                         <button class="btn btn-outline-primary btn-sm taller-text" style="padding: 1px 5px;"
-                                            onclick="agregarAlCarrito('{{ llanta.id }}', '{{ llanta.descripcion }}', '{{ llanta.precio }}')">Agregar</button>
+                                            id="id_boton_{{llanta.id}}"
+                                            onclick="agregarAlCarrito('{{ llanta.id }}', '{{ llanta.descripcion }}', '{{ llanta.precio }}', 
+                                                '{{llanta.id_inventario}}', '{{llanta.id_empresa}}')">Agregar</button>
                                     </div>
                                 </div>
                             {% endfor %}

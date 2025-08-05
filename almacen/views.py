@@ -1,3 +1,5 @@
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
@@ -6,6 +8,7 @@ from .models import Inventario
 from .forms import InventarioForm
 from core.views import BaseAdministracionMixin
 
+@method_decorator(staff_member_required(login_url='/administracion/'), name='dispatch')
 class InventarioListView(BaseAdministracionMixin, TemplateView):
     model = Inventario
     template_name = 'almacen/inventario_list.html'
@@ -22,18 +25,21 @@ class InventarioListView(BaseAdministracionMixin, TemplateView):
         context['inventarios'] = page_obj.object_list  # Para compatibilidad si ya usas {{ inventarios }}
         return context
 
+@method_decorator(staff_member_required(login_url='/administracion/'), name='dispatch')
 class InventarioCreateView(BaseAdministracionMixin, CreateView):
     model = Inventario
     form_class = InventarioForm
     template_name = 'almacen/inventario_form.html'
     success_url = reverse_lazy('inventario_list')
 
+@method_decorator(staff_member_required(login_url='/administracion/'), name='dispatch')
 class InventarioUpdateView(BaseAdministracionMixin, UpdateView):
     model = Inventario
     form_class = InventarioForm
     template_name = 'almacen/inventario_form.html'
     success_url = reverse_lazy('inventario_list')
 
+@method_decorator(staff_member_required(login_url='/administracion/'), name='dispatch')
 class InventarioDeleteView(BaseAdministracionMixin, DeleteView):
     model = Inventario
     template_name = 'almacen/inventario_confirm_delete.html'

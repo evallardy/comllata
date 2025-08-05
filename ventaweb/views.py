@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.views import View
 from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
@@ -6,10 +7,95 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from .models import VentaPaypal
+import json
+from django.utils.decorators import method_decorator
 
-from almacen.models import Inventario
+from almacen.models import *
+from ventaweb.models import *
 
-# Create your views here.
+# python manage.py runsslserver --certificate localhost.pem --key localhost-key.pem
+
+@method_decorator(csrf_exempt, name='dispatch')
+class RegistrarVentaPaypalView(View):
+    def post(self, request):
+        usuario = request.user if request.user.is_authenticated else None
+
+        try:
+            datos = json.loads(request.body)
+
+            total_calculado = 0
+            carrito = datos.get('carrito', {})
+            detalles = []
+
+            # Validar y calcular el total desde la base de datos
+            for producto_id, item in carrito.items():
+                cantidad = int(item.get('cantidad', 0))
+                precio = float(item.get('precio', 0))
+                descripcion = item.get('descripcion', '')
+                id_inventario = item.get('inventario', '')
+                id_empresa = item.get('empresa', '')
+
+                inventario = Inventario.objects.filter(id_inventario=id_inventario).first()
+
+                if not inventario:
+                    return JsonResponse({'status': 'error', 'error': f'Producto {id_inventario} no encontrado del taller {id_empresa}'})
+
+                # Validar que el precio coincida
+                if float(inventario.precio) != precio:
+                    return JsonResponse({'status': 'error', 'error': f'Precio no válido para {descripcion} del taller {id_empresa}'})
+
+                importe = cantidad * precio
+                total_calculado += importe
+
+                detalles.append({
+                    'id_inventario': id_inventario,
+                    'id_empresa': id_empresa,
+                    'descripcion': descripcion,
+                    'cantidad': cantidad,
+                    'precio_unitario': precio,
+                    'importe': importe
+                })
+
+            total_enviado = datos.get('total', 0)
+
+            # Validar total enviado vs calculado
+            if round(total_calculado, 2) != round(float(total_enviado), 2):
+                return JsonResponse({'status': 'error', 'error': f'Total {total_enviado} no coincide con el calculado {total_calculado}, {cantidad}, {precio}'})
+
+            venta = VentaPaypal.objects.create(
+                paypal_order_id = datos['order_id'],
+                nombre_cliente = datos['nombre'],
+                email_cliente = datos['email'],
+                nombre_completo = datos.get('nombre_completo', ''),
+                direccion = datos.get('direccion', ''),
+                ciudad = datos.get('ciudad', ''),
+                estado = datos.get('estado', ''),
+                cp = datos.get('cp', ''),
+                pais = datos.get('pais', ''),
+                fecha_creacion = datos['fecha_creacion'],
+                total = round(total_calculado, 2),
+                comprador=request.user if request.user.is_authenticated else None
+            )
+
+            for d in detalles:
+                VentaDetalle.objects.create(
+                    venta=venta,
+                    id_inventario=d['id_inventario'],
+                    id_empresa=d['id_empresa'],
+                    descripcion=d['descripcion'],
+                    cantidad=d['cantidad'],
+                    precio_unitario=d['precio_unitario'],
+                    importe=d['importe'],
+                    usuario=usuario
+                )
+
+            return JsonResponse({'status': 'ok', 'venta_id': venta.id})
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'error': str(e)})
+
 class Venta(ListView):
     template_name = 'ventaweb/venta.html'
     context_object_name = 'productos'
@@ -201,3 +287,26 @@ def filtrar_llantas(request):
         'cantidad_productos': productos_filtrados.count(),
     })
 
+class VentaDetalleListView(ListView):
+    model = VentaDetalle
+    template_name = 'ventaweb/pedidos.html'
+    context_object_name = 'ventas'
+
+    def get_queryset(self):
+        id_empresa = self.request.user.taller.id_empresa
+        return VentaDetalle.objects.filter(estatus=0, id_empresa=id_empresa).select_related('venta').order_by('venta_id')
+
+class SurtirVentaView(View):
+    def post(self, request, venta_id):
+        ahora = timezone.now()
+        VentaDetalle.objects.filter(venta_id=venta_id).update(estatus=1, fecha_entrega=ahora)
+        return redirect('lista_ventas')
+    
+class EntregaDetalleListView(ListView):
+    model = VentaDetalle
+    template_name = 'ventaweb/entregas.html'
+    context_object_name = 'ventas'
+
+    def get_queryset(self):
+        id_empresa = self.request.user.taller.id_empresa
+        return VentaDetalle.objects.filter(estatus=1, id_empresa=id_empresa).select_related('venta').order_by('-fecha_entrega')

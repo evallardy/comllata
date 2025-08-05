@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends "core/adminis/base.html" %}
 {% load static %}
 {% block blcss %}
 {% load bootstrap4 %}
@@ -19,7 +19,9 @@
                 <th class="col-2">Usuario</th>
                 <th class="col-3">Correo</th>
                 <th class="col-2">Celular</th>
-                <th class="col-1">Cliente</th>
+                <th class="col-1">Tipo</th>
+                <th class="col-1">Taller</th>
+                <th class="col-1">Estatus</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +30,7 @@
                 <td class="align-middle">
                     {% if modifica_usuario_perm %}
                     <a href="{% url 'mod_usuario' user.id %}" style="text-decoration: none; font-weight: bold; font-style: italic;">
-                    {{ user.first_name }} {{ user.last_name }}
+                     {{ user.last_name|default_if_none:"" }} {{ user.materno|default_if_none:"" }}, {{ user.first_name|default_if_none:"" }}
                     </a>
                     {% else %}
                     <a href="#" style="text-decoration: none; ">
@@ -37,9 +39,31 @@
                     {% endif %}
                 </td>
                 <td class="text-center align-middle">{{ user.username }}</td>
-                <td class="text-center align-middle">{{ user.email|default_if_none:"" }}</td>
-                <td class="text-center align-middle">{{ user.celular|default_if_none:"" }}</td>
-                <td class="text-center align-middle">{{ user.get_cliente_display }}</td>
+                <td class="align-middle">{{ user.email|default_if_none:"" }}</td>
+                <td class="align-middle">{{ user.celular|default_if_none:"" }}</td>
+                <td class="text-center align-middle">
+                    {% if user.is_staff %}
+                    Staff 
+                    {% endif %}
+                    {% if user.is_taller %}
+                    Taller 
+                    {% endif %}
+                    {% if user.is_cliente %}
+                    Cliente
+                    {% else %}
+                     
+                    {% endif %}
+                </td>
+                <td class="align-middle">
+                {{ user.taller.razon_social }}
+                </td>                
+                <td class="text-center align-middle">
+                    {% if user.is_active %}
+                    Activo
+                    {% else %}
+                    Sin accesos
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>

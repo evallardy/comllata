@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends "core/cliente/base.html" %}
 {% load static %}
 {% block css %}
 <style>
@@ -25,7 +25,7 @@
 <div class="d-flex justify-content-center">
     <div class="col-4 col-sm-4 col-md-2 col-lg-2 col-xl-2 col-xxl-2">
         <div class="login-card">
-            <form action="" method="post" onkeypress="return anular(event)">
+            <form action="" method="post" onkeypress="return anular(event)" autocomplete="off">
                 {% csrf_token %}
                 <div class="text-center mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
@@ -46,7 +46,7 @@
 
                 <div class="checkbox mb-3">
                     <label>
-                        <input type="checkbox" value="remember-me"> Recordarme
+                        <a href="{% url 'registrarse' %}" >Registrarse</a>
                     </label>
                 </div>
                 <input class="btn btn-success w-100" type="submit" value="Entrar">

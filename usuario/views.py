@@ -1,4 +1,5 @@
 from django.http import HttpResponseRedirect
+from django.contrib.auth import logout
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.forms import UserCreationForm
@@ -8,10 +9,30 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import Permission
 from django.http import JsonResponse
+from django.contrib.auth.views import LoginView
 
 from usuario.models import Usuario
-from .forms import UsuarioForm, UsuarioFormEdit, CambiaContrasenaForm
+from .forms import UsuarioForm, UsuarioFormEdit, CambiaContrasenaForm, RegistrarseForm
 
+class CustomLoginView(LoginView):
+    def get_success_url(self):
+        user = self.request.user
+        if hasattr(user, 'is_cliente') and user.is_cliente:
+            return '/'  # Redirige a dashboard de cliente
+        elif user.is_staff or getattr(user, 'is_taller', True):
+            return '/administracion/'  # Redirige a dashboard de admin o taller
+        return '/'  # Redirige a home o login si no cumple nada
+
+def custom_logout_view(request):
+    if request.user.is_authenticated:
+        if getattr(request.user, 'is_cliente', False):
+            logout(request)
+            return redirect('login_cliente')
+        elif request.user.is_staff or getattr(request.user, 'is_taller', False):
+            logout(request)
+            return redirect('login_admin')
+    logout(request)
+    return redirect('/')
 
 class usuarios(LoginRequiredMixin, ListView):
     model = Usuario
@@ -49,24 +70,17 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         user = self.get_object()  # Obtén el usuario a actualizar
 
         # Obtener los datos del formulario manualmente
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        celular = request.POST.get('celular')
-        email = request.POST.get('email')
-        cliente = request.POST.get('cliente') == 'on'  # Checkbox devuelve 'on' o None
-        is_active = request.POST.get('is_active') == 'on'  # Checkbox devuelve 'on' o None
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.celular = request.POST.get('celular')
+        user.email = request.POST.get('email')
+        user.is_active = request.POST.get('is_active') == 'on'
+        user.is_cliente = request.POST.get('is_cliente') == 'on'
+        user.is_staff = request.POST.get('is_staff') == 'on'
+        user.is_taller = request.POST.get('is_taller') == 'on'
+        user.taller_id = request.POST.get('taller')
+
         password = request.POST.get('password')
-
-        # Actualizar los campos del usuario en la base de datos
-        Usuario.objects.filter(id=user.id).update(
-            first_name=first_name,
-            last_name=last_name,
-            celular=celular,
-            email=email,
-            cliente=cliente,
-            is_active=is_active,
-        )
-
         # Actualizar la contraseña solo si se proporciona un nuevo valor
         if password:
             user.set_password(password)  # Establece la nueva contraseña
@@ -153,3 +167,15 @@ def todos_permisos(request, id):
         'usuario_permisos': list(usuario_permisos),
     }
     return JsonResponse(data)
+
+def registrarse(request):
+    data = {
+        'form': RegistrarseForm
+    }
+    if request.method == 'POST':
+        formulario = UsuarioForm(data=request.POST)
+        if formulario.is_valid():
+            formulario.save()
+            return redirect(to="home")
+        data["form"] = formulario
+    return render(request, 'usuario/registrarse.html', data)

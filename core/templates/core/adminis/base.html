@@ -40,18 +40,31 @@
                 <a href="{% url 'administracion' %}" class="text-decoration-none">
                     <img src="{% static 'core/img/logo-iag.jpg' %}" alt="Logo" width="130" height="32">
                 </a>
-
+                <h3>{{ user.taller.razon_social }}</h3>
                 <!-- Nav a la derecha -->
                 <nav>
                     <ul class="list-unstyled d-flex mb-0 align-items-center">
                         <li>
-                            <a href="#" class="d-flex align-items-center text-white text-decoration-none">
+                            {% if not user.is_authenticated %}
+                            <a href="{% url 'login_admin' %}" class="d-flex align-items-center text-white text-decoration-none">
                                 <i class="bi bi-person me-2"></i>
                                 <div class="text-start">
                                     <small class="d-block">Iniciar sesión</small>
                                     <strong>Cuenta</strong>
                                 </div>
                             </a>
+                            {% else %}
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link text-white text-decoration-none d-flex align-items-center p-0">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    <div class="text-start">
+                                        <small class="d-block">Cerrar sesión</small>
+                                        <strong>{{ user.username }}</strong>
+                                    </div>
+                                </button>
+                            </form>
+                            {% endif %}
                         </li>
                     </ul>
                 </nav>
@@ -63,6 +76,7 @@
                         <div class="container d-flex align-items-center" style="height: 15px;">
                             <nav class="ms-auto" aria-label="Navegación secundaria">
                                 <ul class="nav">
+                                    {% if user.is_authenticated and user.is_staff %}
                                     <li class="nav-item">
                                         <a class="nav-link text-white px-2" href="{% url 'taller_list' %}">Talleres</a>
                                     </li>
@@ -72,6 +86,18 @@
                                     <li class="nav-item">
                                         <a class="nav-link text-white px-2" href="{% url 'importacion' %}">Importar</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white px-2" href="{% url 'usuarios' %}">Usuarios</a>
+                                    </li>
+                                    {% endif %}
+                                    {% if user.is_authenticated and user.taller %}
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white px-2" href="{% url 'lista_ventas' %}">Pedidos</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white px-2" href="{% url 'lista_entregadas' %}">Entregados</a>
+                                    </li>
+                                    {% endif %}
                                 </ul>
                             </nav>
                         </div>

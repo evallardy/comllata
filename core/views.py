@@ -1,3 +1,5 @@
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
@@ -73,9 +75,7 @@ def home(request):
         'menu_rines_template': menu_rines_template,
     } 
 
-    return render(request, 'core/home_cliente.html', { 'context': context })
-
-
+    return render(request, 'core/cliente/home.html', { 'context': context })
 
 class BaseClienteView(TemplateView):
     mensaje_cliente = "Mensajes para el cliente"
@@ -87,7 +87,7 @@ class BaseClienteView(TemplateView):
         return context
 
 class BuscarLlantaView(BaseClienteView):
-    template_name = "core/home_cliente.html"
+    template_name = "core/cliente/home.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -274,22 +274,23 @@ class BaseAdministracionMixin:
         return context
 
 class AdministracionView(BaseAdministracionMixin, TemplateView):
-    template_name = "core/home_adminis.html"
+    template_name = "core/adminis/home.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["procesado"] = False
         return context
     
+@method_decorator(staff_member_required(login_url='/administracion/'), name='dispatch')
 class ImportacionView(BaseAdministracionMixin, TemplateView):
-    template_name = "core/home_adminis_importar.html"
+    template_name = "core/adminis/importar.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context    
     
 class ActualizacionView(BaseAdministracionMixin, TemplateView):
-    template_name = "core/home_adminis_actualiza.html"
+    template_name = "core/adminis/actualiza.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

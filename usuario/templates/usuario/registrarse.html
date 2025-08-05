@@ -1,0 +1,130 @@
+{% extends "core/cliente/base.html" %}
+{% load static %}
+{% block blcss %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% endblock %}
+{% block content %}
+<div class="container mt-2 row col-12">
+    <div class="col-12">
+        <h2 class="text-center">Bienvenido a registrarse</h2>
+        <form method="POST" class="row g-3" autocomplete="off">
+            {% csrf_token %}
+            <div class="col-12">
+                <div class="d-flex justify-content-start mb-3">
+                    <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success ms-3">Guardar</button>
+                </div>
+                <div class="row d-flex justify-content-around text-center">
+                    <h4 style="color: rgb(11, 125, 231);">Datos requeridos</h4>
+                </div>
+            </div>
+            <div class="col-12">
+              <div class="col-3">
+                  Correo <br>
+                  {{ form.username }}
+                  {% if form.username.errors %}
+                     <div class="text-danger small">
+                        {{ form.username.errors.0 }}
+                     </div>
+                  {% endif %}              
+                  {% if form.email.errors %}
+                     <div class="text-danger small">
+                        {{ form.email.errors.0 }}
+                     </div>
+                  {% endif %}              
+            </div>
+            </div>
+            <div class="col-12 row">
+              <div class="col-4">
+                  {{ form.first_name.label }}
+                  {{ form.first_name }}
+                  {% if form.first_name.errors %}
+                     <div class="text-danger small">
+                        {{ form.first_name.errors.0 }}
+                     </div>
+                  {% endif %}              
+              </div>
+              <div class="col-4">
+                  {{ form.last_name.label }}
+                  {{ form.last_name }}
+                  {% if form.last_name.errors %}
+                     <div class="text-danger small">
+                        {{ form.last_name.errors.0 }}
+                     </div>
+                  {% endif %}              
+              </div>
+              <div class="col-4">
+                  {{ form.materno.label }}
+                  {{ form.materno }}
+                  {% if form.materno.errors %}
+                     <div class="text-danger small">
+                        {{ form.materno.errors.0 }}
+                     </div>
+                  {% endif %}              
+              </div>
+            </div>
+            <div class="col-12 row">
+              <div class="col-4">
+                  {{ form.celular.label }}
+                  {{ form.celular }}
+                  {% if form.celular.errors %}
+                     <div class="text-danger small">
+                        {{ form.celular.errors.0 }}
+                     </div>
+                  {% endif %}              
+              </div>
+              <div class="col-4" hidden>
+                  {{ form.email.label }}
+                  {{ form.email }}
+              </div>
+
+              <div class="col-4 row justify-content-center align-items-center" hidden>
+                    <div class="col-3 d-flex flex-column align-items-center justify-content-center mt">
+                      <div class="form-check">
+                        <input type="text" id="id_is_active" name="is_active" value="1">
+                      </div>
+                    </div>
+                  <div class="col-3 d-flex flex-column align-items-center justify-content-center">
+                      <div class="form-check">
+                          <input type="text" id="id_is_cliente" name="is_cliente" value="1">
+                      </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-12 row">
+              <div class="col-4">
+                  {{ form.password1.label }}
+                  {{ form.password1 }}
+                  {% if form.password1.errors %}
+                     <div class="text-danger small">
+                        {{ form.password1.errors.0 }}
+                     </div>
+                  {% endif %}              
+              </div>
+              <div class="col-4">
+                  {{ form.password2.label }}
+                  {{ form.password2 }}
+                  {% if form.password2.errors %}
+                     <div class="text-danger small">
+                        {{ form.password2.errors.0 }}
+                     </div>
+                  {% endif %}              
+              </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+    $('#id_username').on('input', function () {
+      const valor = $(this).val();
+      $('#id_email').val(valor);
+    });        
+
+    });
+</script>
+
+{% endblock %}

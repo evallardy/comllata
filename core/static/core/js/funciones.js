@@ -18,11 +18,20 @@ function valideKeySinPunto(evt){
     }
 }
 function reformatear(obj) {
-    let valor = $('#' + obj).val().replace(/,/g, '');  // Eliminar comas del valor del campo
-    $('#' + obj).val(numberFormat2.format(valor));  // Aplicar formato al valor sin comas
-//    objeto = "#" + obj;
-//    valor = $(objeto).val().replaceAll(",", "").replaceAll(",", "");
-//    $(objeto).val(numberFormat2.format(valor));
+    const $input = $('#' + obj);
+    let valor = $input.val();
+
+    if (typeof valor === 'string' && valor.trim() !== '') {
+        // Eliminar comas y convertir a número
+        valor = valor.replace(/,/g, '');
+        const numero = parseFloat(valor);
+
+        if (!isNaN(numero)) {
+            $input.val(numberFormat2.format(numero));
+        } else {
+            $input.val('');
+        }
+    }
 }
 //function reformatear(obj) {
 //    objeto = "#" + obj;

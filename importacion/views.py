@@ -1,3 +1,4 @@
+from django.contrib.admin.views.decorators import staff_member_required
 # views.py
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -18,6 +19,7 @@ from almacen.models import *
 class TalleresView(TemplateView):
     template_name = "importacion/pagina.html"
 
+@staff_member_required
 @require_POST
 @csrf_exempt
 def talleres(request):
@@ -129,7 +131,8 @@ def talleres(request):
             return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
 
         return JsonResponse(context)
-                
+
+@staff_member_required                
 @require_POST
 @csrf_exempt
 def llantas(request):
@@ -189,7 +192,7 @@ def llantas(request):
 
     return JsonResponse(context)
 
-
+@staff_member_required
 def actualizaInventario(request):
         
     context = {}

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TallerListView, TallerCreateView, TallerUpdateView, TallerDeleteView
+from .views import *
 
 urlpatterns = [
     path('talleres/', TallerListView.as_view(), name='taller_list'),

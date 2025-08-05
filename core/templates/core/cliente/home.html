@@ -1,0 +1,313 @@
+{% extends 'core/cliente/base.html' %}
+{% load static %}
+{% csrf_token %}
+{% block aviso %}
+{{ context.aviso_template }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <div class="row">
+        <div class="col-12">
+            <!-- Sección de búsqueda y encabezado -->
+            <div class="bg-secondary text-white p-3">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-car-front me-2"></i>
+                    <div>
+                        <small class="d-block">¿A qué carro quieres</small>
+                        <strong>comprar llantas?</strong>
+                    </div>
+                </div>
+                <form action="{% url 'home' %}" method="post" class="mt-3" role="search">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="search" name="q" id="id_q" class="form-control rounded-pill ps-4 pe-5" placeholder="Buscar llantas..." aria-label="Buscar">
+                        <button class="btn position-absolute end-0 me-3 bg-transparent" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Texto superior -->
+            <div class="mt-4">
+                <div class="alert alert-light">
+                    {{ context.texto1|safe }}
+                </div>
+            </div>
+
+            <!-- Título de resultados -->
+            <div class="my-4">
+                {% if context.cantidad %}
+                <h2 class="h5">Opciones para la llanta
+                    <span class="text-muted">({{ context.cantidad }})</span>
+                </h2>
+                {% endif %}
+            </div>
+
+            <!-- Resultados -->
+            <div class="row">
+                {{ context.busqueda_llantas }}
+            </div>
+
+            <!-- Mensajes -->
+            <div class="pt-4">
+                <div class="alert alert-info">{{ mensage_1 }}</div>
+            </div>
+            <div class="pt-2">
+                <div class="alert alert-warning">{{ mensage_2 }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 🛒 Presenta mapa -->
+<div class="modal fade" id="mapaModal" tabindex="-1" aria-labelledby="mapaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mapaModalLabel">Ubicación del taller</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="mapa" style="width: 100%; height: 600px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 🛒 Modal Carrito -->
+<div class="modal fade" id="carritoModal" tabindex="-1" aria-labelledby="carritoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="carritoModalLabel">🛒 Carrito de compras</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Carrito visual -->
+        <table class="table table-bordered table-sm" id="tablaCarrito">
+            <thead class="table-light">
+                <tr>
+                    <th>Producto</th>
+                    <th class="text-end">Cantidad</th>
+                    <th class="text-end">Precio</th>
+                    <th class="text-end">Importe</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="cuerpoCarrito">
+                <tr><td colspan="5" class="text-center text-muted">El carrito está vacío</td></tr>
+            </tbody>
+        </table>
+        <!-- 🧾 Total del carrito -->
+        <div class="text-end mt-3">
+            <strong>Total:</strong>
+            <span id="carritoTotal" class="ms-2 text-primary fw-bold">$0.00</span>
+        </div>
+
+        <!-- PayPal: este div se usará para mostrar el botón -->
+        <div id="paypal-button-container" class="mt-3"></div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button id="btnPagar" class="btn btn-success" onclick="pagoPaypal()" hidden>Pagar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 🟢 Modal "Gracias por su compra" -->
+<div class="modal fade" id="graciasModal" tabindex="-1" aria-labelledby="graciasModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="graciasModalLabel">✅ ¡Gracias por su compra!</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>Su pago fue procesado con éxito.</p>
+        <p class="fw-bold">Venta ID: <span id="graciasVentaId" class="text-primary"></span></p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button class="btn btn-secondary" onclick="cierra_pago()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://www.paypal.com/sdk/js?client-id=AbH3kReloqliHjc6WOggaPNsmJHWAqHt3sW88a-MS5JFP0BnwJM301HgHqADBsJdk8XIR5MgGueLO2xx&currency=MXN"></script>
+<script>
+let carrito = {};
+let graciasModal = null;
+function cierra_pago() {
+    $('#id_q').focus();
+
+    // Oculta las modales si están abiertas
+    if (typeof graciasModal !== 'undefined') {
+        graciasModal.hide();
+    }
+    $('#carritoModal').modal('hide');
+
+    // Limpia el contenido del carrito
+    carrito = {};
+    actualizarCarrito();
+    actualizarResumenCarrito();
+
+    // Limpia el botón PayPal renderizado previamente
+    $('#paypal-button-container').empty();
+
+    // Muestra nuevamente el botón para iniciar el pago (si aplica)
+    $('#btnPagar').show();
+}
+function actualizarResumenCarrito() {
+    const ids = Object.keys(carrito);
+    let totalCantidad = 0;
+    let totalImporte = 0;
+
+    ids.forEach(id => {
+        const item = carrito[id];
+        totalCantidad += item.cantidad;
+        totalImporte += item.precio * item.cantidad;
+    });
+
+    document.getElementById("carritoCantidad").textContent = totalCantidad;
+    document.getElementById("carritoTotal").textContent = `$${totalImporte.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById("carritoTotal1").textContent = `$${totalImporte.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+}
+
+function agregarAlCarrito(id, descripcion, precio_coma, inventario, empresa) {
+    const cantidadInput = document.getElementById('id_cantidad_' + id);
+    const cantidad = parseInt(cantidadInput.value);
+    const precio = parseFloat(precio_coma.replace(/,/g, ""));
+
+    if (!cantidad || cantidad <= 0) {
+        alert("Ingresa una cantidad válida.");
+        return;
+    }
+
+    if (carrito[id]) {
+        carrito[id].cantidad += cantidad;
+    } else {
+        carrito[id] = { descripcion, precio, cantidad, inventario, empresa };
+    }
+
+    cantidadInput.value = "";
+    actualizarCarrito();
+    actualizarResumenCarrito();
+}
+
+function eliminarDelCarrito(id) {
+    delete carrito[id];
+    actualizarCarrito();
+    actualizarResumenCarrito();
+}
+
+function actualizarCarrito() {
+    const cuerpo = document.getElementById("cuerpoCarrito");
+    cuerpo.innerHTML = "";
+
+    const ids = Object.keys(carrito);
+    if (ids.length === 0) {
+        cuerpo.innerHTML = `<tr><td colspan="5" class="text-center text-muted">El carrito está vacío</td></tr>`;
+        return;
+    }
+
+    ids.forEach(id => {
+        const item = carrito[id];
+        const importe = (item.cantidad * item.precio).toFixed(2);
+        const fila = `
+            <tr>
+                <td>${item.descripcion}</td>
+                <td class="text-end">${item.cantidad}</td>
+                <td class="text-end">$${item.precio.toFixed(2)}</td>
+                <td class="text-end">$${importe}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-danger" onclick="eliminarDelCarrito('${id}')">✕</button>
+                </td>
+                <td hidden>${item.inventario}</td>
+                <td hidden>${item.empresa}</td>
+            </tr>
+        `;
+        cuerpo.innerHTML += fila;
+    });
+//    actualizarResumenCarrito(); // 👈 se actualiza el header
+}
+</script>
+<script>
+    $('#carritoModal').on('shown.bs.modal', function () {
+        const total = parseFloat($('#carritoTotal').text().replace(/[$,]/g, ''));
+        if (total > 0) {
+            pagoPaypal();  // Se ejecuta solo si hay algo que pagar
+        }
+    });
+    function pagoPaypal() {
+        // Oculta el botón original para que no se vea junto a PayPal
+        $('#btnPagar').hide();
+
+        // Limpia el botón PayPal antes de renderizar (evita múltiples botones)
+        $('#paypal-button-container').empty();
+
+        const importeInput = $('#carritoTotal').text();
+        const totalImporte = parseFloat(importeInput.replace(/[$,]/g, ''));
+
+        if (isNaN(totalImporte) || totalImporte <= 0) {
+            alert("⚠️ No hay un importe válido para pagar.");
+            return;
+        }
+
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: totalImporte.toFixed(2)
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    // Enviar datos al backend
+                    fetch("{% url 'registrar_venta_paypal' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({
+                            order_id: data.orderID,
+                            nombre: details.payer.name.given_name + " " + details.payer.name.surname,
+                            email: details.payer.email_address,
+                            nombre_completo: details.purchase_units[0].shipping.name.full_name,
+                            direccion: details.purchase_units[0].shipping.address.address_line_1,
+                            ciudad: details.purchase_units[0].shipping.address.admin_area_2,
+                            estado: details.purchase_units[0].shipping.address.admin_area_1,
+                            cp: details.purchase_units[0].shipping.address.postal_code,
+                            pais: details.purchase_units[0].shipping.address.country_code,
+                            fecha_creacion: details.create_time,
+                            total: totalImporte,
+                            carrito: carrito
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status === 'ok') {
+                            // Mostrar modal de confirmación
+                            document.getElementById("graciasVentaId").textContent = result.venta_id;
+                            graciasModal = new bootstrap.Modal(document.getElementById('graciasModal'));
+                            graciasModal.show();
+                        } else {
+                            alert("❌ Error en backend: " + result.error);
+                        }
+                    });
+                });
+            },
+            onError: function(err) {
+                console.error(err);
+                alert('❌ Error en el proceso de pago.');
+            }
+        }).render('#paypal-button-container');
+    }
+</script>
+{% endblock %}
+
