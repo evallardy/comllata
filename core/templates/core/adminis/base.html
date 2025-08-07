@@ -89,9 +89,6 @@
                                     <li class="nav-item">
                                         <a class="nav-link text-white px-2" href="{% url 'usuarios' %}">Usuarios</a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'prueba_envio' 15 %}">Envia correo</a>
-                                    </li>                                    
                                     {% endif %}
                                     {% if user.is_authenticated and user.taller %}
                                     <li class="nav-item">
