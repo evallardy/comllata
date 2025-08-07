@@ -78,7 +78,7 @@ function validarCodigo(ventaId) {
                 location.reload();  // Actualiza la lista de ventas
                 $(`#modal-${ventaId}`).modal('hide');
             } else {
-                alert("❌ Código incorrecto.");
+                alert("❌ " + response.mensaje);
             }
             
         },

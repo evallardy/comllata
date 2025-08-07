@@ -1,4 +1,5 @@
 import bcrypt
+from django.utils.timezone import localtime
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
@@ -37,6 +38,36 @@ def verificar_codigo_entrega(request):
         return JsonResponse({'status': 'error', 'mensaje': f'Esta venta ya fue entregada.'})
 
     if valida_codigo(codigo_cliente, venta.token_hash):
+        if venta.cantidad == 1:
+            mensaje_llanta = ' tu llanta '
+        else:
+            mensaje_llanta = ' tus '+ str(venta.cantidad) +' llantas '
+
+        taller = Taller.objects.filter(id_empresa=venta.id_empresa).first()
+
+        razon_social = taller.razon_social.upper()
+
+        ahora = timezone.localtime(timezone.now())
+        ahora_str = ahora.strftime('%d/%m/%Y %H:%M')
+
+        mensaje_html = f'''
+            <div style="font-size: 18px;">La compra de {mensaje_llanta} con medidas:<br><br> 
+            <code>{venta.descripcion or ""}</code><br><br> 
+            fue entrega exitosamente en el taller:<br><br>
+            <code>{razon_social or ""}</code><br><br>
+            Número de venta: <br><br>
+            <code>{venta.id}</code><br><br>
+            Con fecha:<br><br>
+            <code>{ahora_str}</code><br><br>
+            NO ES NECESARIO RESPONDER A ESTE CORREO
+            </div>
+        '''
+        correos = [venta.venta.email_cliente,]
+        if not envia_correo(
+            'Tu pedido ha sido entregado exitósamente',
+            correos,
+            mensaje_html):
+            return JsonResponse({'status': 'error', 'error': 'No se pudo enviar el correo'})
         venta.estatus = True
         venta.save()
         return JsonResponse({'status': 'ok', 'mensaje': 'Venta entregada correctamente.'})
@@ -166,18 +197,38 @@ class RegistrarVentaPaypalView(View):
                     NO ES NECESARIO RESPONDER A ESTE CORREO
                     </div>
                 '''
-                send_mail(
-                    subject='Tu pedido ha sido registrado',
-                    message='Texto adicional',
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[venta.email_cliente,],
-                    html_message=mensaje_html
-                )
+                correos = [venta.email_cliente]
+                if not envia_correo(
+                    'Tu pedido ha sido registrado',
+                    correos,
+                    mensaje_html):
+                    return JsonResponse({'status': 'error', 'error': 'No se pudo enviar el correo'})                    
+
+#                send_mail(
+#                    subject='Tu pedido ha sido registrado',
+#                    message='Texto adicional',
+#                    from_email=settings.EMAIL_HOST_USER,
+#                    recipient_list=[venta.email_cliente,],
+#                    html_message=mensaje_html
+#                )
 
             return JsonResponse({'status': 'ok', 'compras': compras})
 
         except Exception as e:
             return JsonResponse({'status': 'error', 'error': str(e)})
+
+def envia_correo(subject, recipient_list, html_message):
+    try:
+        send_mail(
+            subject=subject,
+            message='',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=recipient_list,
+            html_message=html_message
+        )
+        return True
+    except Exception as e:
+        return False
 
 def pruebaEnvio(request, venta_id):
     try:
@@ -557,29 +608,3 @@ class EnviarConfirmaVentaView(View):
             'curso': curso,
             'qr_url': img_url
         })
-
-def verificar_codigo_entrega2(request):
-    if request.method == 'POST':
-        venta_id = request.POST.get('venta_id')
-        codigo_cliente = request.POST.get('codigo')
-
-        # Buscar la venta sin importar el estatus
-        venta = VentaDetalle.objects.filter(id=venta_id).first()
-
-        if not venta:
-            return JsonResponse({'status': 'error', 'mensaje': 'No se encontró la venta con ese ID.'})
-
-        if venta.estatus:
-            return JsonResponse({
-                'status': 'error',
-                'mensaje': f'Esta venta ya se entregó el {venta.fecha_entrega.strftime("%d/%m/%Y %H:%M") if venta.fecha_entrega else "anteriormente"}.'
-            })
-
-        # Verificar el código
-        if bcrypt.checkpw(codigo_cliente.encode(), venta.token_hash.encode()):
-            venta.estatus = True
-            venta.fecha_entrega = now()
-            venta.save()
-            return JsonResponse({'status': 'ok', 'mensaje': 'Código válido. Producto entregado.'})
-        else:
-            return JsonResponse({'status': 'error', 'mensaje': 'Código incorrecto. Verifica con el cliente.'})
