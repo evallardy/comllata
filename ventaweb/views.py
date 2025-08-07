@@ -1,4 +1,5 @@
 import bcrypt
+from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -168,7 +169,7 @@ class RegistrarVentaPaypalView(View):
                 send_mail(
                     subject='Tu pedido ha sido registrado',
                     message='Texto adicional',
-                    from_email='evalalrdy@gmail.com',
+                    from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[venta.email_cliente,],
                     html_message=mensaje_html
                 )
