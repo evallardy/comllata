@@ -10,4 +10,6 @@ urlpatterns = [
     path('ventas/', VentaDetalleListView.as_view(), name='lista_ventas'),
     path('entregadas/', EntregaDetalleListView.as_view(), name='lista_entregadas'),
     path('ventas/surtir/<int:venta_id>/', SurtirVentaView.as_view(), name='surtir_venta'),
+    path('prueba_envio/<int:venta_id>/', pruebaEnvio, name='prueba_envio'),
+    path('verificar-codigo/', verificar_codigo_entrega, name='verificar_codigo'),
 ]

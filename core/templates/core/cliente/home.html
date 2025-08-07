@@ -126,7 +126,21 @@
       </div>
       <div class="modal-body text-center">
         <p>Su pago fue procesado con éxito.</p>
-        <p class="fw-bold">Venta ID: <span id="graciasVentaId" class="text-primary"></span></p>
+        <p class="fw-bold">Datos para la entrega</span></p>
+        <table class="table" id="tbl-compra">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Taller</th>
+                    <th>Descripción</th>
+                    <th>Cant.</th>
+                    <th>Token</th>
+                </tr>
+            </thead>
+            <tbody id="tbl-detalle">
+                <!-- Aquí se agregan las filas -->
+            </tbody>
+        </table>
       </div>
       <div class="modal-footer justify-content-center">
         <button class="btn btn-secondary" onclick="cierra_pago()">Cerrar</button>
@@ -292,8 +306,20 @@ function actualizarCarrito() {
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 'ok') {
+                            $('#tbl-detalle').empty();
                             // Mostrar modal de confirmación
-                            document.getElementById("graciasVentaId").textContent = result.venta_id;
+                            $.each(result.compras, function(index, item) {
+                                let fila = `
+                                    <tr>
+                                        <td>${item.id}</td>
+                                        <td>${item.taller}</td>
+                                        <td>${item.descripcion}</td>
+                                        <td>${item.cantidad}</td>
+                                        <td>${item.token}</td>
+                                    </tr>
+                                `;
+                                $('#tbl-detalle').append(fila);
+                            });
                             graciasModal = new bootstrap.Modal(document.getElementById('graciasModal'));
                             graciasModal.show();
                         } else {

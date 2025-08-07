@@ -8,26 +8,22 @@
         <h2 class="fw-bold text-primary">Entregas realizadas</h2>
     </div>
 
-    {% regroup ventas by venta.id as ventas_grouped %}
-
-    {% for group in ventas_grouped %}
+    {% for venta in ventas %}
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-dark">Venta #{{ group.grouper }}</h5>
+                <h5 class="mb-0 text-dark">Venta #{{ venta.id }}</h5>
                 <span>Entregado</span>
                 <span></span>
             </div>
             <ul class="list-group list-group-flush">
-                {% for item in group.list %}
                     <li class="list-group-item d-flex justify-content-between flex-column flex-md-row">
-                        <span class="fw-medium">{{ item.descripcion }}</span>
-                        <span>{{ item.fecha_entrega }}</span>
+                        <span class="fw-medium">{{ venta.descripcion }}</span>
+                        <span>{{ venta.fecha_entrega }}</span>
                         <span>
-                            Cant: <strong>{{ item.cantidad }}</strong> &nbsp; | &nbsp; 
-                            ${{ item.importe }}
+                            Cant: <strong>{{ venta.cantidad }}</strong> &nbsp; | &nbsp; 
+                            ${{ venta.importe }}
                         </span>
                     </li>
-                {% endfor %}
             </ul>
         </div>
 

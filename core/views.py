@@ -11,12 +11,30 @@ import sys
 import google.generativeai as genai
 import json
 from collections import defaultdict
+from django.contrib.auth.hashers import make_password, check_password
+import random
+import string
 
 
 from almacen.models import *
 from .models import *
 
 # Create your views here.
+
+def generar_codigo():
+    caracteres = string.ascii_uppercase + string.digits
+    return ''.join(random.choices(caracteres, k=8))
+
+def encrypta_codigo(codigo):
+    return make_password(codigo)
+
+def valida_codigo(codigo, cadena):
+    if check_password(codigo, cadena):
+        print("✅ Código válido")
+        return True
+    else:
+        print("❌ Código inválido")
+        return False
 
 def home(request):
 
@@ -219,7 +237,7 @@ class BuscarLlantaView(BaseClienteView):
                 llanta.estatus = 0
                 if taller and llanta.talleres != taller:
                     llanta.talleres = taller
-                llanta.save()
+                    llanta.save()
 
             llantas = Inventario.objects.filter(ancho=ancho, alto=alto, rin=rin).order_by('talleres', 'precio')
 

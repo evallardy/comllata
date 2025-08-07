@@ -46,6 +46,7 @@ class VentaDetalle(models.Model):
     usuario = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL, verbose_name='Usuario')
     fecha_pedido = models.DateTimeField('Pedido', auto_now_add=True,blank=True, null=True)
     fecha_entrega = models.DateTimeField('Entrega', auto_now=True ,blank=True, null=True)
+    token_hash = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return f"{self.descripcion} ({self.cantidad})"

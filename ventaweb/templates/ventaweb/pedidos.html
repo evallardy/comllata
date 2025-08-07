@@ -8,47 +8,45 @@
         <h2 class="fw-bold text-primary">Ventas pendientes por surtir</h2>
     </div>
 
-    {% regroup ventas by venta.id as ventas_grouped %}
-
-    {% for group in ventas_grouped %}
+    {% for venta in ventas %}
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-dark">Venta #{{ group.grouper }}</h5>
+                <h5 class="mb-0 text-dark">Venta #{{ venta.id }}</h5>
                 <span>Fecha pedido</span>
-                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-{{ group.grouper }}">
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-{{ venta.id }}">
                     Surtir venta
                 </button>
             </div>
             <ul class="list-group list-group-flush">
-                {% for item in group.list %}
                     <li class="list-group-item d-flex justify-content-between flex-column flex-md-row">
-                        <span class="fw-medium">{{ item.descripcion }}</span>
-                        <span>{{ item.fecha_pedido }}</span>
+                        <span class="fw-medium">{{ venta.descripcion }}</span>
+                        <span>{{ venta.fecha_pedido }}</span>
                         <span>
-                            Cant: <strong>{{ item.cantidad }}</strong> &nbsp; | &nbsp; 
-                            ${{ item.importe }}
+                            Cant: <strong>{{ venta.cantidad }}</strong> &nbsp; | &nbsp; 
+                            ${{ venta.importe }}
                         </span>
                     </li>
-                {% endfor %}
             </ul>
         </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="modal-{{ group.grouper }}" tabindex="-1" aria-labelledby="modalLabel{{ group.grouper }}" aria-hidden="true">
+        <div class="modal fade" id="modal-{{ venta.id }}" tabindex="-1" aria-labelledby="modalLabel{{ venta.id }}" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-              <form method="POST" action="{% url 'surtir_venta' venta_id=group.grouper %}">
+              <form method="POST" action="{% url 'surtir_venta' venta_id=venta.id %}">
                   {% csrf_token %}
                   <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel{{ group.grouper }}">Confirmar surtido</h5>
+                    <h5 class="modal-title" id="modalLabel{{ venta.id }}">Confirmar surtido</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                   </div>
                   <div class="modal-body text-center">
-                    <p class="mb-0 fs-5">¿Está surtida la <strong>venta #{{ group.grouper }}</strong>?</p>
+                    <p class="mb-3 fs-5">Para surtir la <strong>venta #{{ venta.id }}</strong>, ingresa el código:</p>
+                    <input type="text" id="codigo-{{ venta.id }}" class="form-control text-center" placeholder="Código de entrega">
+                    <div class="invalid-feedback mt-2" id="error-{{ venta.id }}" style="display: none;"></div>
                   </div>
                   <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Confirmar</button>
+                    <button type="button" class="btn btn-success" onclick="validarCodigo({{ venta.id }})">Confirmar</button>
                   </div>
               </form>
             </div>
@@ -61,4 +59,42 @@
     {% endfor %}
 
 </div>
+<script>
+function validarCodigo(ventaId) {
+    const codigo = document.getElementById(`codigo-${ventaId}`).value;
+    const errorDiv = document.getElementById(`error-${ventaId}`);
+
+   $.ajax({
+        url: "{% url 'verificar_codigo' %}",
+        type: "POST",
+        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+        data: {
+            'venta_id': ventaId,
+            'codigo': codigo,
+        },
+        success: function (response) {
+            if (response.status == 'ok') {
+                $(`#modal-${ventaId}`).modal('hide');
+                alert("✅ Venta surtida correctamente.");
+                location.reload();  // Actualiza la lista de ventas
+            } else {
+                alert("❌ Código incorrecto.");
+            }
+            
+        },
+        error: function(xhr, status, error) {
+            const errorDiv = document.getElementById(`error-${ventaId}`);
+            errorDiv.style.display = 'block';
+
+            if (xhr.responseJSON && xhr.responseJSON.mensaje) {
+                errorDiv.innerText = xhr.responseJSON.mensaje;
+            } else {
+                errorDiv.innerText = "❌ Error al procesar la solicitud.";
+            }
+
+            document.getElementById(`codigo-${ventaId}`).classList.add('is-invalid');
+        }
+    });
+}
+</script>
 {% endblock %}

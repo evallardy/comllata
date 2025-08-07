@@ -1,3 +1,5 @@
+import bcrypt
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views import View
@@ -11,11 +13,34 @@ from django.http import JsonResponse
 from .models import VentaPaypal
 import json
 from django.utils.decorators import method_decorator
+from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
 
+from core.views import generar_codigo, encrypta_codigo, valida_codigo
 from almacen.models import *
 from ventaweb.models import *
 
 # python manage.py runsslserver --certificate localhost.pem --key localhost-key.pem
+
+@require_POST
+def verificar_codigo_entrega(request):
+    venta_id = request.POST.get('venta_id')
+    codigo_cliente = request.POST.get('codigo')
+
+    venta = VentaDetalle.objects.filter(id=venta_id).first()
+
+    if venta is None:
+        return JsonResponse({'status': 'error', 'mensaje': 'Venta no encontrada'})
+
+    if venta.estatus:
+        return JsonResponse({'status': 'error', 'mensaje': f'Esta venta ya fue entregada.'})
+
+    if valida_codigo(codigo_cliente, venta.token_hash):
+        venta.estatus = True
+        venta.save()
+        return JsonResponse({'status': 'ok', 'mensaje': 'Venta entregada correctamente.'})
+    else:
+        return JsonResponse({'status': 'error', 'mensaje': 'Código incorrecto.'})
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RegistrarVentaPaypalView(View):
@@ -79,8 +104,14 @@ class RegistrarVentaPaypalView(View):
                 comprador=request.user if request.user.is_authenticated else None
             )
 
+            compras = []
+
             for d in detalles:
-                VentaDetalle.objects.create(
+
+                token = generar_codigo()
+                token_hash = encrypta_codigo(token)
+
+                venta_detalle = VentaDetalle.objects.create(
                     venta=venta,
                     id_inventario=d['id_inventario'],
                     id_empresa=d['id_empresa'],
@@ -88,13 +119,107 @@ class RegistrarVentaPaypalView(View):
                     cantidad=d['cantidad'],
                     precio_unitario=d['precio_unitario'],
                     importe=d['importe'],
-                    usuario=usuario
+                    usuario=usuario,
+                    token_hash=token_hash
                 )
 
-            return JsonResponse({'status': 'ok', 'venta_id': venta.id})
+                taller = Taller.objects.filter(id_empresa=d['id_empresa']).first()
+
+                razon_social = taller.razon_social.upper()
+
+                compras.append({
+                    'id': venta_detalle.id,
+                    'descripcion': venta_detalle.descripcion,
+                    'cantidad': venta_detalle.cantidad,
+                    'token': token,
+                    'taller': taller.razon_social,
+                })
+
+                if venta_detalle.cantidad == 1:
+                    mensaje_llanta = ' tu llanta '
+                    mensaje_recoger = ' recoger'
+                else:
+                    mensaje_llanta = ' tus llantas '
+                    mensaje_recoger = ' recogerlas'
+
+                mensaje_html = f'''
+                    <div style="font-size: 18px;">La compra de {mensaje_llanta} con medidas:<br><br> 
+                    <code>{venta_detalle.descripcion or ""}</code><br><br> 
+                    quedó registrada en el taller:<br><br>
+                    <code>{razon_social or ""}</code><br><br>
+                    Número de venta: <br><br>
+                    <code>{venta_detalle.id}</code><br><br>
+                    Además presenta este código:<br><br>
+                    <code>{token}</code><br><br>
+                    Para que pases a {mensaje_recoger} en:<br><br>
+                    <code>
+                        {taller.direccion or ""}, 
+                        {taller.numero_exterior or ""} 
+                        {taller.numero_interior or ""} 
+                        {taller.colonia or ""}<br>
+                        {taller.codigo_postal or ""} 
+                        {taller.municipio or ""} 
+                        {taller.estado or ""}<br>
+                        teléfono {taller.telefono or ""}
+                    </code><br><br>
+                    NO ES NECESARIO RESPONDER A ESTE CORREO
+                    </div>
+                '''
+                send_mail(
+                    subject='Tu pedido ha sido registrado',
+                    message='Texto adicional',
+                    from_email='evalalrdy@gmail.com',
+                    recipient_list=[venta.email_cliente,],
+                    html_message=mensaje_html
+                )
+
+            return JsonResponse({'status': 'ok', 'compras': compras})
 
         except Exception as e:
             return JsonResponse({'status': 'error', 'error': str(e)})
+
+def pruebaEnvio(request, venta_id):
+    try:
+        venta = VentaDetalle.objects.filter(id=venta_id).first()
+
+        if not venta:
+            return JsonResponse({'status': 'error', 'mensaje': 'Venta no encontrada'})
+
+        taller = Taller.objects.filter(id_empresa='6c8349cc7260ae62e3b1396831a8398f').first()
+
+        if not taller:
+            return JsonResponse({'status': 'error', 'mensaje': 'Taller no encontrado'})
+
+        # Simula un token (o reemplaza con uno real)
+        token = 'abc123de'
+
+        razon_social = taller.razon_social.upper()
+
+        mensaje_html = f'''
+        <p>Tu venta quedó registrada en el taller <b>{razon_social}</b>,<br>
+        con el número <strong>{venta.id}</strong>, para que pases a recogerlo.<br>
+        Además presenta este código:</p>
+        <p style="font-size: 18px;"><code>{token}</code></p>
+        <p>Dirección:<br>
+        {taller.direccion}, {taller.numero_exterior} {taller.numero_interior} {taller.colonia}<br>
+        {taller.codigo_postal} {taller.municipio} {taller.estado}<br>
+        Teléfono: {taller.telefono}<br><br>
+        NO ES NECESARIO RESPONDER A ESTE CORREO
+        </p>
+        '''
+
+        send_mail(
+            subject='Tu pedido ha sido registrado',
+            message='Texto adicional',
+            from_email='evalalrdy@gmail.com',
+            recipient_list=['evallardy@gmail.com'],
+            html_message=mensaje_html
+        )
+
+        return JsonResponse({'status': 'ok', 'venta_id': venta.id})
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'error': str(e)})
 
 class Venta(ListView):
     template_name = 'ventaweb/venta.html'
@@ -310,3 +435,150 @@ class EntregaDetalleListView(ListView):
     def get_queryset(self):
         id_empresa = self.request.user.taller.id_empresa
         return VentaDetalle.objects.filter(estatus=1, id_empresa=id_empresa).select_related('venta').order_by('-fecha_entrega')
+
+class EnviarConfirmaVentaView(View):
+    def get(self, request, *args, **kwargs):
+        # Obtener el curso por pk
+        curso = get_object_or_404(Curso, pk=kwargs['pk'])
+
+        # Crear el formulario
+        form = CorreoForm(initial={
+#            'destinatario': curso.empresa.correo,
+            'destinatario': curso.empresa.correo,
+            'asunto': f'QR para registro del curso {curso.tema.nombre}',
+            'contenido': f'Este correo contiene el QR para registro del curso "{curso.tema.nombre}".',
+        })
+
+        # Genera el código QR
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr_data = f'https://descapa.iagmexico.com/core/asistentes/registrar/{curso.pk}/'  # URL del curso
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        
+        img = qr.make_image(fill='black', back_color='white')
+
+        # Guarda la imagen en un objeto BytesIO
+        img_io = BytesIO()
+        img.save(img_io, 'PNG')
+        img_io.seek(0)
+        
+        # Codifica la imagen a base64
+        img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+        img_url = f"data:image/png;base64,{img_base64}"
+
+        return render(request, 'core/asistentes/asistente_enviar_qr_form.html', {
+            'form': form,
+            'curso': curso,
+            'qr_url': img_url
+        })
+
+    def post(self, request, *args, **kwargs):
+        # Obtener el curso por pk
+        curso = get_object_or_404(Curso, pk=kwargs['pk'])
+        
+        # Crear el formulario con los datos enviados
+        form = CorreoForm(request.POST)
+
+        if form.is_valid():
+            # Obtener los datos del formulario
+            destinatario = form.cleaned_data['destinatario']
+            asunto = form.cleaned_data['asunto']
+            contenido = form.cleaned_data['contenido']
+
+            # Generar el código QR nuevamente
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr_data = f'https://descapa.iagmexico.com/core/asistentes/registrar/{curso.pk}/'  # URL del curso
+#            qr_data = f'//localhost:8000/core/asistentes/registrar/{curso.pk}/'  # URL del curso
+            qr.add_data(qr_data)
+            qr.make(fit=True)
+            
+            img = qr.make_image(fill='black', back_color='white')
+
+            # Guarda la imagen en un objeto BytesIO
+            img_io = BytesIO()
+            img.save(img_io, 'PNG')
+            img_io.seek(0)
+            
+            # Codifica la imagen a base64
+            img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+            img_url = f"data:image/png;base64,{img_base64}"
+
+            # Preparar el correo
+            # from_email = settings.EMAIL_HOST_USER
+            from_email = 'soporte@iagmexico.com'
+            recipient_list = [destinatario]  # Usar el correo proporcionado por el usuario
+
+            # Crear el mensaje del correo
+            email = EmailMessage(
+                asunto,  # Asunto
+                contenido,  # Contenido
+                from_email,  # De quien lo envia
+                recipient_list,  # Destinatarios
+            )
+
+            # Adjuntar la imagen del QR al correo
+            email.attach(
+                f"qr_curso_{curso.pk}.png",  # Nombre del archivo
+                img_io.getvalue(),  # Imagen en formato binario
+                "image/png"  # Tipo de contenido
+            )
+
+            # Enviar el correo
+            try:
+                email.send()
+#                messages.success(request, "Correo enviado correctamente.")
+                respuesta = 'Correo enviado correctamente'
+            except Exception as e:
+#                messages.error(request, f"Error al enviar el correo: {str(e)}")
+                respuesta = f"Error al enviar el correo: {str(e)}"
+
+            # Redirigir a la página de éxito o mostrar mensaje
+            return render(request, 'core/asistentes/asistente_enviar_qr_form.html', {
+                'form': form,
+                'curso': curso,
+                'qr_url': img_url,
+                'respuesta': respuesta,
+            })
+        
+        # Si el formulario no es válido, volver a mostrar el formulario con errores
+        return render(request, 'core/asistentes/asistente_enviar_qr_form.html', {
+            'form': form,
+            'curso': curso,
+            'qr_url': img_url
+        })
+
+def verificar_codigo_entrega2(request):
+    if request.method == 'POST':
+        venta_id = request.POST.get('venta_id')
+        codigo_cliente = request.POST.get('codigo')
+
+        # Buscar la venta sin importar el estatus
+        venta = VentaDetalle.objects.filter(id=venta_id).first()
+
+        if not venta:
+            return JsonResponse({'status': 'error', 'mensaje': 'No se encontró la venta con ese ID.'})
+
+        if venta.estatus:
+            return JsonResponse({
+                'status': 'error',
+                'mensaje': f'Esta venta ya se entregó el {venta.fecha_entrega.strftime("%d/%m/%Y %H:%M") if venta.fecha_entrega else "anteriormente"}.'
+            })
+
+        # Verificar el código
+        if bcrypt.checkpw(codigo_cliente.encode(), venta.token_hash.encode()):
+            venta.estatus = True
+            venta.fecha_entrega = now()
+            venta.save()
+            return JsonResponse({'status': 'ok', 'mensaje': 'Código válido. Producto entregado.'})
+        else:
+            return JsonResponse({'status': 'error', 'mensaje': 'Código incorrecto. Verifica con el cliente.'})
