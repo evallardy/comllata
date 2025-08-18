@@ -55,7 +55,7 @@
                                             {{ venta.get_estatus_comision_display }}</span>
                                         </td>
                                         <td class="col-1">
-                                            {% if venta.estatus_comision == 0 %}
+                                            {% if venta.estatus_comision == 90 %}
                                             <button class="btn btn-sm btn-success" onclick="abrirModal({{ venta.id }})">
                                                 Pagar
                                             </button>
