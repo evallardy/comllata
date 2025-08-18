@@ -74,6 +74,8 @@ def verificar_codigo_entrega(request):
             mensaje_html):
             return JsonResponse({'status': 'error', 'error': 'No se pudo enviar el correo'})
         venta.estatus = True
+        venta.fecha_entrega = timezone.localdate()
+        venta.estatus_comision = 2
         venta.save()
         return JsonResponse({'status': 'ok', 'mensaje': 'Venta entregada correctamente.'})
     else:
@@ -557,6 +559,13 @@ class PedidoDetalleListView(ListView):
     def get_queryset(self):
         empresa_id = self.request.user.empresa_id
         return VentaDetalle.objects.filter(estatus=0, empresa_id=empresa_id).select_related('venta').order_by('venta_id')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        empresa_id = self.request.user.empresa_id
+        context['total_pendientes'] = VentaDetalle.objects.filter(estatus=0, empresa_id=empresa_id).select_related('venta').order_by('venta_id').count()
+        return context
+
 
 class SurtirVentaView(View):
     def post(self, request, venta_id):
@@ -571,7 +580,13 @@ class EntregaDetalleListView(ListView):
 
     def get_queryset(self):
         empresa_id = self.request.user.empresa_id
-        return VentaDetalle.objects.filter(estatus=1, empresa_id=empresa_id).select_related('venta').order_by('-fecha_entrega')
+        return VentaDetalle.objects.filter(estatus__gte=1, empresa_id=empresa_id).select_related('venta').order_by('-fecha_entrega')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        empresa_id = self.request.user.empresa_id
+        context['total_pendientes'] = VentaDetalle.objects.filter(estatus__gte=1, empresa_id=empresa_id).select_related('venta').order_by('-fecha_entrega').count()
+        return context
 
 class EnviarConfirmaVentaView(View):
     def get(self, request, *args, **kwargs):
@@ -702,11 +717,11 @@ class VentaDetalleListView(BaseAdministracionMixin, ListView):
     ordering = ["fecha_entrega"]
 
     def get_queryset(self):
-        return VentaDetalle.objects.filter(estatus=0).order_by('fecha_entrega')
+        return VentaDetalle.objects.order_by('fecha_entrega')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['total_registros'] = VentaDetalle.objects.filter(estatus=0).count()
+        context['total_registros'] = VentaDetalle.objects.count()
         return context
 
 # Detalle de compra

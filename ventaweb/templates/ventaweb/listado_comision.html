@@ -48,9 +48,9 @@
                                             {% if venta.estatus_comision == 0 %}
                                                 <span class="badge bg-danger">
                                             {% elif venta.estatus_comision == 1 %}
-                                                <span class="badge bg-warning">
+                                                <span class="badge bg-warning text-dark">
                                             {% else %}
-                                                <span class="badge bg-success text-dark">
+                                                <span class="badge bg-success text-white">
                                             {% endif %}
                                             {{ venta.get_estatus_comision_display }}</span>
                                         </td>

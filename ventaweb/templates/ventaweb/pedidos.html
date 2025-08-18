@@ -1,99 +1,141 @@
 {% extends "core/adminis/base.html" %}
 {% load static %}
 {% block content %}
-{% load static %}
 <div class="container py-4">
-
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary">Ventas pendientes por surtir</h2>
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Ventas pendientes por surtir</h4>
+                    <span class="badge bg-light text-dark">Total: {{ total_pendientes }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Venta</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha pedido</th>
+                                    <th>Cantidad</th>
+                                    <th>P. unitario</th>
+                                    <th>Importe</th>
+                                    <th>Comisión</th>
+                                    <th>Depósito</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for venta in ventas %}
+                                    <tr>
+                                        <td>{{ venta.id }}</td>
+                                        <td>{{ venta.descripcion |default_if_none:"" }}</td>
+                                        <td>{{ venta.fecha_pedido|default_if_none:"" }}</td>
+                                        <td>{{ venta.cantidad }}</td>
+                                        <td>{{ venta.precio_unitario }}</td>
+                                        <td>{{ venta.importe }}</td>
+                                        <td>{{ venta.comision }}</td>
+                                        <td>{{ venta.deposito }}</td>
+                                        <td class="text-center">
+                                            <button class="btn btn-sm btn-outline-primary" 
+                                                    onclick="muestraModal({{venta.id }})">
+                                                Surtir venta
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted">No hay talleres registrados</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    {% for venta in ventas %}
-        
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-dark">Venta #{{ venta.id }}</h5>
-                <span>Fecha pedido</span>
-                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal-{{ venta.id }}">
-                    Surtir venta
-                </button>
-            </div>
-            <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between flex-column flex-md-row">
-                        <span class="fw-medium">{{ venta.descripcion }}</span>
-                        <span>{{ venta.fecha_pedido }}</span>
-                        <span>
-                            Cant: <strong>{{ venta.cantidad }}</strong> &nbsp; | &nbsp; 
-                            ${{ venta.importe }}
-                        </span>
-                    </li>
-            </ul>
+<!-- Modal -->
+<div class="modal fade" id="modal-venta" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+<!--            <form method="POST" action=" url 'surtir_venta' venta_id=venta.id ">   -->
+            <form method="POST" >
+                {% csrf_token %}
+                <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Confirmar surtido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center">
+                <p class="mb-3 fs-5">Para surtir la <strong><label id="id_venta"></label></strong>, ingresa el código:</p>
+                <input type="text" id="id_codigo" name="codigo" class="form-control text-center" placeholder="Código de entrega">
+                <div class="invalid-feedback mt-2" id="id_error" style="display: none;"></div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="validarCodigo()">Confirmar</button>
+                </div>
+            </form>
         </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="modal-{{ venta.id }}" tabindex="-1" aria-labelledby="modalLabel{{ venta.id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <form method="POST" action="{% url 'surtir_venta' venta_id=venta.id %}">
-                  {% csrf_token %}
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel{{ venta.id }}">Confirmar surtido</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                  </div>
-                  <div class="modal-body text-center">
-                    <p class="mb-3 fs-5">Para surtir la <strong>venta #{{ venta.id }}</strong>, ingresa el código:</p>
-                    <input type="text" id="codigo-{{ venta.id }}" class="form-control text-center" placeholder="Código de entrega">
-                    <div class="invalid-feedback mt-2" id="error-{{ venta.id }}" style="display: none;"></div>
-                  </div>
-                  <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-success" onclick="validarCodigo({{ venta.id }})">Confirmar</button>
-                  </div>
-              </form>
-            </div>
-          </div>
-        </div>
-    {% empty %}
-        <div class="alert alert-info text-center">
-            No hay ventas pendientes por surtir.
-        </div>
-    {% endfor %}
-
+    </div>
 </div>
 <script>
-function validarCodigo(ventaId) {
-    const codigo = document.getElementById(`codigo-${ventaId}`).value;
-    const errorDiv = document.getElementById(`error-${ventaId}`);
+let venta_id = 0;
 
-   $.ajax({
-        url: "{% url 'verificar_codigo' %}",
+function muestraModal(id) {
+    venta_id = id;
+    $("#id_venta").text(venta_id);
+    $('#modal-venta').modal('show');
+}
+
+// Obtener CSRF token de las cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+function validarCodigo() {
+    const codigo = document.getElementById('id_codigo').value;
+    const errorDiv = document.getElementById('id_error');
+
+    $.ajax({
+        url: "/ventaweb/verificar-codigo/",
         type: "POST",
-        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+        headers: { "X-CSRFToken": csrftoken },
         data: {
-            'venta_id': ventaId,
+            'venta_id': venta_id,
             'codigo': codigo,
         },
         success: function (response) {
             if (response.status == 'ok') {
                 alert("✅ Venta surtida correctamente.");
-                location.reload();  // Actualiza la lista de ventas
-                $(`#modal-${ventaId}`).modal('hide');
+                location.reload();
+                $('#modal-venta').modal('hide');
             } else {
                 alert("❌ " + response.mensaje);
             }
-            
         },
         error: function(xhr, status, error) {
-            const errorDiv = document.getElementById(`error-${ventaId}`);
             errorDiv.style.display = 'block';
-
             if (xhr.responseJSON && xhr.responseJSON.mensaje) {
                 errorDiv.innerText = xhr.responseJSON.mensaje;
             } else {
                 errorDiv.innerText = "❌ Error al procesar la solicitud.";
             }
-
-            document.getElementById(`codigo-${ventaId}`).classList.add('is-invalid');
+            document.getElementById('id_codigo').classList.add('is-invalid');
         }
     });
 }

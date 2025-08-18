@@ -37,7 +37,8 @@ ESTATUS = (
 ESTATUS_COMISION = (
     (0, 'No aplicó comisión'),
     (1, 'Por pagar'),
-    (2, 'Pagada'),
+    (2, 'Para depósito'),
+    (3, 'Depositado'),
 )
 
 class VentaDetalle(models.Model):

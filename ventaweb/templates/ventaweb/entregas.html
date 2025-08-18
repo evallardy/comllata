@@ -1,37 +1,54 @@
 {% extends "core/adminis/base.html" %}
 {% load static %}
 {% block content %}
-{% load static %}
 <div class="container py-4">
-
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary">Entregas realizadas</h2>
-    </div>
-
-    {% for venta in ventas %}
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-dark">Venta #{{ venta.id }}</h5>
-                <span>Entregado</span>
-                <span></span>
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Ventas entregadas</h4>
+                    <span class="badge bg-light text-dark">Total: {{ total_pendientes }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Venta</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha pedido</th>
+                                    <th>Cantidad</th>
+                                    <th>P. unitario</th>
+                                    <th>Importe</th>
+                                    <th>Comisión</th>
+                                    <th>Depósito</th>
+                                    <th>Estatus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for venta in ventas %}
+                                    <tr>
+                                        <td>{{ venta.id }}</td>
+                                        <td>{{ venta.descripcion |default_if_none:"" }}</td>
+                                        <td>{{ venta.fecha_pedido|default_if_none:"" }}</td>
+                                        <td>{{ venta.cantidad }}</td>
+                                        <td>{{ venta.precio_unitario }}</td>
+                                        <td>{{ venta.importe }}</td>
+                                        <td>{{ venta.comision }}</td>
+                                        <td>{{ venta.deposito }}</td>
+                                        <td>{{ venta.get_estatus_comision_display }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted">No hay talleres registrados</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between flex-column flex-md-row">
-                        <span class="fw-medium">{{ venta.descripcion }}</span>
-                        <span>{{ venta.fecha_entrega }}</span>
-                        <span>
-                            Cant: <strong>{{ venta.cantidad }}</strong> &nbsp; | &nbsp; 
-                            ${{ venta.importe }}
-                        </span>
-                    </li>
-            </ul>
         </div>
-
-    {% empty %}
-        <div class="alert alert-info text-center">
-            No hay entregas.
-        </div>
-    {% endfor %}
-
+    </div>
 </div>
 {% endblock %}
