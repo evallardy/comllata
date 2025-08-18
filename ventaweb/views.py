@@ -549,7 +549,7 @@ def filtrar_llantas(request):
         'cantidad_productos': productos_filtrados.count(),
     })
 
-class VentaDetalleListView(ListView):
+class PedidoDetalleListView(ListView):
     model = VentaDetalle
     template_name = 'ventaweb/pedidos.html'
     context_object_name = 'ventas'
