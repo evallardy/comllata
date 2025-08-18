@@ -96,7 +96,7 @@
                                         <a class="nav-link text-white px-2" href="{% url 'usuarios' %}">Usuarios</a>
                                     </li>
                                     {% endif %}
-                                    {% if user.is_authenticated and user.taller %}
+                                    {% if user.is_authenticated and user.is_taller %}
                                     <li class="nav-item">
                                         <a class="nav-link text-white px-2" href="{% url 'lista_ventas' %}">Pedidos</a>
                                     </li>

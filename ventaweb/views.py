@@ -206,8 +206,6 @@ class RegistrarVentaPaypalView(View):
                     else:
                         regla_taller = ReglasComision.objects.filter(
                                             empresa_id=d['empresa_id'],
-                                            marca='',
-                                            rin=0, 
                                             fecha_inicial__lte=hoy,
                                             fecha_final__gte=hoy,
                                         ).first()
@@ -572,7 +570,7 @@ class EntregaDetalleListView(ListView):
     context_object_name = 'ventas'
 
     def get_queryset(self):
-        empresa_id = self.request.user.taller.empresa_id
+        empresa_id = self.request.user.empresa_id
         return VentaDetalle.objects.filter(estatus=1, empresa_id=empresa_id).select_related('venta').order_by('-fecha_entrega')
 
 class EnviarConfirmaVentaView(View):
