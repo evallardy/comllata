@@ -230,22 +230,15 @@ class BuscarLlantaView(BaseClienteView):
         presenta = False
 
         if medida1 and medida2 and medida3:
-            llantas1 = Inventario.objects.filter(talleres__isnull=True, estatus=1)
+            llantas1 = Inventario.objects.filter(empresa__isnull=True, estatus=1)
 
-            for llanta in llantas1:
-                taller = Taller.objects.filter(id_empresa=llanta.id_empresa).first()
-                llanta.estatus = 0
-                if taller and llanta.talleres != taller:
-                    llanta.talleres = taller
-                    llanta.save()
-
-            llantas = Inventario.objects.filter(ancho=ancho, alto=alto, rin=rin).order_by('talleres', 'precio')
+            llantas = Inventario.objects.filter(ancho=ancho, alto=alto, rin=rin, existencia__gt=0).order_by('empresa', 'precio')
 
             # Agrupar por taller
             inventario_por_taller = defaultdict(list)
             for item in llantas:
-                if item.talleres:  # Evitar talleres nulos
-                    inventario_por_taller[item.talleres].append(item)
+                if item.empresa:  # Evitar talleres nulos
+                    inventario_por_taller[item.empresa].append(item)
 
             context = {
                 'ancho': ancho,

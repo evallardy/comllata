@@ -6,21 +6,26 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views import View
 from django.http import JsonResponse
-from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from .models import VentaPaypal
 import json
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
+from django.urls import reverse_lazy
+from decimal import Decimal, ROUND_HALF_UP
 
+
+from .models import *
+from .forms import ReglasComisionForm
 from core.views import generar_codigo, encrypta_codigo, valida_codigo
 from almacen.models import *
 from ventaweb.models import *
+from core.views import BaseAdministracionMixin
 
 # python manage.py runsslserver --certificate localhost.pem --key localhost-key.pem
 
@@ -43,9 +48,9 @@ def verificar_codigo_entrega(request):
         else:
             mensaje_llanta = ' tus '+ str(venta.cantidad) +' llantas '
 
-        taller = Taller.objects.filter(id_empresa=venta.id_empresa).first()
-
-        razon_social = taller.razon_social.upper()
+#        taller = Taller.objects.filter(id_empresa=venta.id_empresa).first()
+#
+#        razon_social = taller.razon_social.upper()
 
         ahora = timezone.localtime(timezone.now())
         ahora_str = ahora.strftime('%d/%m/%Y %H:%M')
@@ -54,7 +59,7 @@ def verificar_codigo_entrega(request):
             <div style="font-size: 18px;">La compra de {mensaje_llanta} con medidas:<br><br> 
             <code>{venta.descripcion or ""}</code><br><br> 
             fue entrega exitosamente en el taller:<br><br>
-            <code>{razon_social or ""}</code><br><br>
+            <code>{venta.empresa.razon_social or ""}</code><br><br>
             Número de venta: <br><br>
             <code>{venta.id}</code><br><br>
             Con fecha:<br><br>
@@ -92,23 +97,28 @@ class RegistrarVentaPaypalView(View):
                 cantidad = int(item.get('cantidad', 0))
                 precio = float(item.get('precio', 0))
                 id_inventario = item.get('inventario', '')
-                id_empresa = item.get('empresa', '')
+                empresa_id = item.get('empresa_id', '')
+
+                taller = Taller.objects.filter(id_empresa=empresa_id).first()
+
+                razon_social = taller.razon_social
 
                 inventario = Inventario.objects.filter(id_inventario=id_inventario).first()
 
                 if not inventario:
-                    return JsonResponse({'status': 'error', 'error': f'Producto {id_inventario} no encontrado del taller {id_empresa}'})
+                    return JsonResponse({'status': 'error', 'error': f'Producto {id_inventario} no encontrado del taller {empresa_id}'})
 
                 # Validar que el precio coincida
                 if float(inventario.precio) != precio:
-                    return JsonResponse({'status': 'error', 'error': f'Precio no válido para {descripcion} del taller {id_empresa}'})
+                    return JsonResponse({'status': 'error', 'error': f'Precio no válido para {descripcion} del taller {empresa_id}'})
 
                 importe = cantidad * precio
                 total_calculado += importe
 
                 detalles.append({
                     'id_inventario': id_inventario,
-                    'id_empresa': id_empresa,
+                    'empresa_id': empresa_id,
+                    'razon_social': razon_social,
                     'descripcion': descripcion,
                     'cantidad': cantidad,
                     'precio_unitario': precio,
@@ -116,6 +126,11 @@ class RegistrarVentaPaypalView(View):
                 })
 
             total_enviado = datos.get('total', 0)
+
+##########  Quitar para produccion  ##########
+#            total_enviado = total_calculado
+#            datos['order_id'] = 2
+##############################################
 
             # Validar total enviado vs calculado
             if round(total_calculado, 2) != round(float(total_enviado), 2):
@@ -143,29 +158,109 @@ class RegistrarVentaPaypalView(View):
                 token = generar_codigo()
                 token_hash = encrypta_codigo(token)
 
+                importe=d['importe']
+
                 venta_detalle = VentaDetalle.objects.create(
                     venta=venta,
                     id_inventario=d['id_inventario'],
-                    id_empresa=d['id_empresa'],
+                    empresa_id=d['empresa_id'],
+                    razon_social=d['razon_social'],
                     descripcion=d['descripcion'],
                     cantidad=d['cantidad'],
                     precio_unitario=d['precio_unitario'],
-                    importe=d['importe'],
+                    importe=importe,
                     usuario=usuario,
                     token_hash=token_hash
                 )
 
-                taller = Taller.objects.filter(id_empresa=d['id_empresa']).first()
+                razon_social_titulo = razon_social.upper()
 
-                razon_social = taller.razon_social.upper()
+                llanta = Inventario.objects.filter(id_inventario=d['id_inventario']).first()
+
+                importe_a_calcular = importe / (1 + settings.IMPUESTO_IVA)
+                hoy = timezone.localdate()
+
+                encontro_regla = False
+
+                regla_taller_marca = ReglasComision.objects.filter(
+                                        empresa_id=d['empresa_id'],
+                                        marca=llanta.marca, 
+                                        fecha_inicial__lte=hoy,
+                                        fecha_final__gte=hoy,
+                                    ).first()
+                if regla_taller_marca:
+                    tipo_comision = regla_taller_marca.tipo
+                    cantidad_comision = regla_taller_marca.cantidad
+                    encontro_regla = True
+                else:
+                    regla_taller_rin = ReglasComision.objects.filter(
+                                            empresa_id=d['empresa_id'],
+                                            rin=llanta.rin,
+                                            fecha_inicial__lte=hoy,
+                                            fecha_final__gte=hoy,
+                                        ).first()
+                    if regla_taller_rin:
+                        tipo_comision = regla_taller_rin.tipo
+                        cantidad_comision = regla_taller_rin.cantidad
+                        encontro_regla = True
+                    else:
+                        regla_taller = ReglasComision.objects.filter(
+                                            empresa_id=d['empresa_id'],
+                                            marca='',
+                                            rin='', 
+                                            fecha_inicial__lte=hoy,
+                                            fecha_final__gte=hoy,
+                                        ).first()
+                        if regla_taller:
+                            tipo_comision = regla_taller.tipo
+                            cantidad_comision = regla_taller.cantidad
+                            encontro_regla = True
+                        else:
+                            regla_talleres = ReglasComision.objects.filter(
+                                                talleres=1,
+                                                fecha_inicial__lte=hoy,
+                                                fecha_final__gte=hoy,
+                                            ).first()
+                            if regla_talleres:
+                                tipo_comision = regla_talleres.tipo
+                                cantidad_comision = regla_talleres.cantidad
+                                encontro_regla = True
+
+                porcentaje = 0
+
+                if encontro_regla:
+                    if tipo_comision == 0:
+                        importe_comision = (Decimal(importe_a_calcular) * cantidad_comision) / 100
+                        estatus_comision = 1
+                        porcentaje = cantidad_comision
+                    elif tipo_comision == 1:
+                        importe_comision = cantidad_comision
+                        estatus_comision = 1
+                    else:
+                        importe_comision = 0
+                        estatus_comision = 0
+                else:
+                    importe_comision = 0
+                    estatus_comision = 0
+                
+                importe_pagar = Decimal(importe) - importe_comision
+
+                venta_detalle.estatus_comision = estatus_comision
+                venta_detalle.deposito = importe_pagar
+                venta_detalle.comision = importe_comision
+                venta_detalle.porcentaje = porcentaje
+                
+                venta_detalle.save()
+
 
                 compras.append({
                     'id': venta_detalle.id,
                     'descripcion': venta_detalle.descripcion,
                     'cantidad': venta_detalle.cantidad,
                     'token': token,
-                    'taller': taller.razon_social,
+                    'taller': razon_social_titulo,
                 })
+
 
                 if venta_detalle.cantidad == 1:
                     mensaje_llanta = ' tu llanta '
@@ -203,15 +298,7 @@ class RegistrarVentaPaypalView(View):
                     correos,
                     mensaje_html):
                     return JsonResponse({'status': 'error', 'error': 'No se pudo enviar el correo'})                    
-
-#                send_mail(
-#                    subject='Tu pedido ha sido registrado',
-#                    message='Texto adicional',
-#                    from_email=settings.EMAIL_HOST_USER,
-#                    recipient_list=[venta.email_cliente,],
-#                    html_message=mensaje_html
-#                )
-
+            
             return JsonResponse({'status': 'ok', 'compras': compras})
 
         except Exception as e:
@@ -470,8 +557,8 @@ class VentaDetalleListView(ListView):
     context_object_name = 'ventas'
 
     def get_queryset(self):
-        id_empresa = self.request.user.taller.id_empresa
-        return VentaDetalle.objects.filter(estatus=0, id_empresa=id_empresa).select_related('venta').order_by('venta_id')
+        empresa_id = self.request.user.taller.empresa_id
+        return VentaDetalle.objects.filter(estatus=0, empresa_id=empresa_id).select_related('venta').order_by('venta_id')
 
 class SurtirVentaView(View):
     def post(self, request, venta_id):
@@ -485,8 +572,8 @@ class EntregaDetalleListView(ListView):
     context_object_name = 'ventas'
 
     def get_queryset(self):
-        id_empresa = self.request.user.taller.id_empresa
-        return VentaDetalle.objects.filter(estatus=1, id_empresa=id_empresa).select_related('venta').order_by('-fecha_entrega')
+        empresa_id = self.request.user.taller.empresa_id
+        return VentaDetalle.objects.filter(estatus=1, empresa_id=empresa_id).select_related('venta').order_by('-fecha_entrega')
 
 class EnviarConfirmaVentaView(View):
     def get(self, request, *args, **kwargs):
@@ -608,3 +695,64 @@ class EnviarConfirmaVentaView(View):
             'curso': curso,
             'qr_url': img_url
         })
+
+# Listado
+class VentaDetalleListView(BaseAdministracionMixin, ListView):
+    model = VentaDetalle
+    template_name = "ventaweb/listado_comision.html"
+    context_object_name = "ventas"
+    ordering = ["fecha_entrega"]
+
+    def get_queryset(self):
+        return VentaDetalle.objects.filter(estatus=0).order_by('fecha_entrega')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_registros'] = VentaDetalle.objects.filter(estatus=0).count()
+        return context
+
+# Detalle de compra
+class VentaDetalleDetailView(BaseAdministracionMixin, DetailView):
+    model = VentaDetalle
+    template_name = "ventaweb/detalle_comision.html"
+    context_object_name = "venta"
+
+
+class PagarComisionView(BaseAdministracionMixin, View):
+    def post(self, request):
+        pk = request.POST.get('pk')
+        venta = get_object_or_404(VentaDetalle, pk=pk)
+        venta.estatus_comision = 1
+        venta.fecha_pago_comision = timezone.localtime(timezone.now())
+        venta.save()
+        return JsonResponse({"status": "ok", "mensaje": "Comisión para pagar."})
+    
+class ReglasComisionList(BaseAdministracionMixin, TemplateView):
+    model = ReglasComision
+    template_name = "ventaweb/reglascomision_list.html"
+    context_object_name = "reglas"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        reglas = ReglasComision.objects.order_by('-fecha_inicial')
+        context['reglas'] = reglas
+        context['total_reglas'] = reglas.count()
+        context['hoy'] = timezone.localdate()
+        return context
+    
+class ReglasComisionCreate(BaseAdministracionMixin, CreateView):
+    model = ReglasComision
+    form_class = ReglasComisionForm
+    template_name = "ventaweb/reglascomision_form.html"
+    success_url = reverse_lazy("reglas_list")
+
+class ReglasComisionUpdate(BaseAdministracionMixin, UpdateView):
+    model = ReglasComision
+    form_class = ReglasComisionForm
+    template_name = "ventaweb/reglascomision_update.html"
+    success_url = reverse_lazy("reglas_list")
+
+class ReglasComisionDelete(BaseAdministracionMixin, DeleteView):
+    model = ReglasComision
+    template_name = "ventaweb/reglascomision_confirm_delete.html"
+    success_url = reverse_lazy("reglas_list")    

@@ -16,11 +16,15 @@ class InventarioListView(BaseAdministracionMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         inventarios = Inventario.objects.all()  # puedes cambiar el orden
+
+        Llantas_totales = inventarios.count()
+
         paginator = Paginator(inventarios, 100)  # 10 por página
 
         page_number = self.request.GET.get("page")
         page_obj = paginator.get_page(page_number)
 
+        context['Llantas_totales'] = Llantas_totales
         context['page_obj'] = page_obj
         context['inventarios'] = page_obj.object_list  # Para compatibilidad si ya usas {{ inventarios }}
         return context

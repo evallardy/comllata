@@ -1,14 +1,132 @@
 {% extends 'core/adminis/base.html' %}
 {% load humanize %}
-{% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container mt-4">
-  <h3>{{ view.object.pk|yesno:"Editar Inventario,Nuevo Inventario" }}</h3>
-  <form method="post">{% csrf_token %}
-    {{ form|crispy }}
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="{% url 'inventario_list' %}" class="btn btn-secondary">Cancelar</a>
-  </form>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">{{ view.object.pk|yesno:"Editar Inventario,Nuevo Inventario" }}</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+
+              <!-- ID Inventario -->
+              <div class="col-md-6">
+                <label for="id_id_inventario" class="form-label">Id primario</label>
+                {{ form.id_inventario }}
+                {% if form.id_inventario.errors %}
+                  <div class="invalid-feedback d-block">{{ form.id_inventario.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Empresa -->
+              <div class="col-md-6">
+                <label for="id_empresa" class="form-label">Taller</label>
+                {{ form.empresa }}
+                {% if form.empresa.errors %}
+                  <div class="invalid-feedback d-block">{{ form.empresa.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Producto/Clave -->
+              <div class="col-md-6">
+                <label for="id_producto_clave" class="form-label">Producto / Clave</label>
+                {{ form.producto_clave }}
+                {% if form.producto_clave.errors %}
+                  <div class="invalid-feedback d-block">{{ form.producto_clave.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Descripción -->
+              <div class="col-md-6">
+                <label for="id_descripcion" class="form-label">Descripción</label>
+                {{ form.descripcion }}
+                {% if form.descripcion.errors %}
+                  <div class="invalid-feedback d-block">{{ form.descripcion.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Marca -->
+              <div class="col-md-6">
+                <label for="id_marca" class="form-label">Marca</label>
+                {{ form.marca }}
+                {% if form.marca.errors %}
+                  <div class="invalid-feedback d-block">{{ form.marca.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-12 row">
+                <!-- Ancho -->
+                <div class="col-md-4">
+                  <label for="id_ancho" class="form-label">Ancho</label>
+                  {{ form.ancho }}
+                  {% if form.ancho.errors %}
+                    <div class="invalid-feedback d-block">{{ form.ancho.errors|striptags }}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Alto -->
+                <div class="col-md-4">
+                  <label for="id_alto" class="form-label">Alto</label>
+                  {{ form.alto }}
+                  {% if form.alto.errors %}
+                    <div class="invalid-feedback d-block">{{ form.alto.errors|striptags }}</div>
+                  {% endif %}
+                </div>
+
+                <!-- Rin -->
+                <div class="col-md-4">
+                  <label for="id_rin" class="form-label">Rin</label>
+                  {{ form.rin }}
+                  {% if form.rin.errors %}
+                    <div class="invalid-feedback d-block">{{ form.rin.errors|striptags }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <!-- Existencia -->
+              <div class="col-md-6">
+                <label for="id_existencia" class="form-label">Existencia</label>
+                {{ form.existencia }}
+                {% if form.existencia.errors %}
+                  <div class="invalid-feedback d-block">{{ form.existencia.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Precio -->
+              <div class="col-md-6">
+                <label for="id_precio" class="form-label">Precio</label>
+                {{ form.precio }}
+                {% if form.precio.errors %}
+                  <div class="invalid-feedback d-block">{{ form.precio.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Estatus -->
+              <div class="col-md-6">
+                <label for="id_estatus" class="form-label">Estatus</label>
+                {{ form.estatus }}
+                {% if form.estatus.errors %}
+                  <div class="invalid-feedback d-block">{{ form.estatus.errors|striptags }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-end">
+              <button type="submit" class="btn btn-success me-2">
+                <i class="bi bi-save"></i> Guardar
+              </button>
+              <a href="{% url 'inventario_list' %}" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

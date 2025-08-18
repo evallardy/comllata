@@ -15,7 +15,7 @@ class UsuarioForm(UserCreationForm):
     class Meta:
         model = Usuario
         fields = ['username', 'is_staff', 'is_taller', 'is_cliente', 'is_active', 'first_name', 'last_name',
-                   'materno', 'celular', 'taller', 'email', 'password1', 'password2']
+                   'materno', 'celular', 'empresa', 'email', 'password1', 'password2']
         labels = {
             'username': 'Usuario',
             'is_staff': 'Staff',
@@ -26,7 +26,7 @@ class UsuarioForm(UserCreationForm):
             'last_name': 'Paterno',
             'materno': 'Materno',
             'celular': 'Celular',
-            'taller': 'Taller',
+            'empresa': 'Taller',
             'email': 'Correo',
             'password1': 'Contraseña',
             'password2': 'Confirmación'
@@ -43,7 +43,7 @@ class UsuarioForm(UserCreationForm):
         self.fields['is_cliente'].required = False
         self.fields['is_active'].required = False
         self.fields['celular'].required = True
-        self.fields['taller'].required = False
+        self.fields['empresa'].required = False
         self.fields['email'].required = True
         self.fields['password1'].required = False
         self.fields['password2'].required = False
@@ -76,7 +76,7 @@ class UsuarioFormEdit(forms.ModelForm):
 
     class Meta:
         model = Usuario
-        fields = ['first_name', 'last_name', 'materno', 'is_staff', 'is_taller', 'is_cliente', 'celular', 'taller', 'email', 'is_active', 'password']
+        fields = ['first_name', 'last_name', 'materno', 'is_staff', 'is_taller', 'is_cliente', 'celular', 'empresa', 'email', 'is_active', 'password']
         labels = {
             'first_name': 'Nombre',
             'last_name': 'Paterno',
@@ -84,7 +84,7 @@ class UsuarioFormEdit(forms.ModelForm):
             'is_staff': 'Staff',
             'is_taller': 'Taller',
             'is_cliente': 'Cliente',
-            'taller': 'Taller',
+            'empresa': 'Taller',
             'celular': 'Celular',
             'email': 'Correo',
             'is_active': 'Activo',
@@ -100,7 +100,7 @@ class UsuarioFormEdit(forms.ModelForm):
         self.fields['is_taller'].required = False
         self.fields['is_cliente'].required = False
         self.fields['celular'].required = True
-        self.fields['taller'].required = False
+        self.fields['empresa'].required = False
         self.fields['email'].required = True
         self.fields['is_active'].required = False
         self.fields['password'].required = False

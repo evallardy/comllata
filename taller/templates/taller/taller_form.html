@@ -1,11 +1,160 @@
 {% extends 'core/adminis/base.html' %}
 
 {% block content %}
-<h2 class="mb-4">Formulario de Taller</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Guardar</button>
-  <a href="{% url 'taller_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Formulario de Taller</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+              
+              <div class="col-md-6">
+                <label for="{{ form.id_empresa.id_for_label }}" class="form-label">Id empresa</label>
+                {{ form.id_empresa }}
+                {% if form.id_empresa.errors %}
+                  <div class="text-danger small">{{ form.id_empresa.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label for="{{ form.razon_social.id_for_label }}" class="form-label">Razón Social</label>
+                {{ form.razon_social }}
+                {% if form.razon_social.errors %}
+                  <div class="text-danger small">{{ form.razon_social.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label for="{{ form.direccion.id_for_label }}" class="form-label">Dirección</label>
+                {{ form.direccion }}
+                {% if form.direccion.errors %}
+                  <div class="text-danger small">{{ form.direccion.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-3">
+                <label for="{{ form.numero_exterior.id_for_label }}" class="form-label">Número Exterior</label>
+                {{ form.numero_exterior }}
+                {% if form.numero_exterior.errors %}
+                  <div class="text-danger small">{{ form.numero_exterior.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-3">
+                <label for="{{ form.numero_interior.id_for_label }}" class="form-label">Número Interior</label>
+                {{ form.numero_interior }}
+                {% if form.numero_interior.errors %}
+                  <div class="text-danger small">{{ form.numero_interior.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="{{ form.id_colonia.id_for_label }}" class="form-label">Id Colonia</label>
+                {{ form.id_colonia }}
+                {% if form.id_colonia.errors %}
+                  <div class="text-danger small">{{ form.id_colonia.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="{{ form.colonia.id_for_label }}" class="form-label">Colonia</label>
+                {{ form.colonia }}
+                {% if form.colonia.errors %}
+                  <div class="text-danger small">{{ form.colonia.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="{{ form.codigo_postal.id_for_label }}" class="form-label">Código Postal</label>
+                {{ form.codigo_postal }}
+                {% if form.codigo_postal.errors %}
+                  <div class="text-danger small">{{ form.codigo_postal.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="{{ form.id_municipio.id_for_label }}" class="form-label">Id Municipio</label>
+                {{ form.id_municipio }}
+                {% if form.id_municipio.errors %}
+                  <div class="text-danger small">{{ form.id_municipio.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="{{ form.municipio.id_for_label }}" class="form-label">Municipio</label>
+                {{ form.municipio }}
+                {% if form.municipio.errors %}
+                  <div class="text-danger small">{{ form.municipio.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label for="{{ form.id_estado.id_for_label }}" class="form-label">Id Estado</label>
+                {{ form.id_estado }}
+                {% if form.id_estado.errors %}
+                  <div class="text-danger small">{{ form.id_estado.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label for="{{ form.estado.id_for_label }}" class="form-label">Estado</label>
+                {{ form.estado }}
+                {% if form.estado.errors %}
+                  <div class="text-danger small">{{ form.estado.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label for="{{ form.telefono.id_for_label }}" class="form-label">Teléfono</label>
+                {{ form.telefono }}
+                {% if form.telefono.errors %}
+                  <div class="text-danger small">{{ form.telefono.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label for="{{ form.longitud.id_for_label }}" class="form-label">Longitud</label>
+                {{ form.longitud }}
+                {% if form.longitud.errors %}
+                  <div class="text-danger small">{{ form.longitud.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label for="{{ form.latitud.id_for_label }}" class="form-label">Latitud</label>
+                {{ form.latitud }}
+                {% if form.latitud.errors %}
+                  <div class="text-danger small">{{ form.latitud.errors|striptags }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label for="{{ form.estatus.id_for_label }}" class="form-label">Estatus</label>
+                {{ form.estatus }}
+                {% if form.estatus.errors %}
+                  <div class="text-danger small">{{ form.estatus.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              
+            </div>
+
+            <div class="mt-4 d-flex justify-content-end">
+              <button type="submit" class="btn btn-success me-2">
+                <i class="bi bi-save"></i> Guardar
+              </button>
+              <a href="{% url 'taller_list' %}" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

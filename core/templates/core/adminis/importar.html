@@ -162,14 +162,18 @@
                 tabla.empty();
                 tabla.append(`
                     <tr style="border-bottom: 1px solid rgb(129, 121, 121)">
-                        <td>Registros</td>
-                        <td class='text-center'>Cantidad</td>
+                        <td></td>
+                        <td class='text-center'>Leidos</td>
+                        <td class='text-center'>Insertados</td>
+                        <td class='text-center'>Rechazados</td>
                     </tr>
                 `);
                 tabla.append(`
                     <tr style="font-weight: bold; background-color: #EBEBEB"">
-                        <td>Leidos</td>
+                        <td>Registros</td>
                         <td class='text-center'>${parseInt(response.leidos).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                        <td class='text-center'>${parseInt(response.insertados).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
+                        <td class='text-center'>${parseInt(response.rechazados).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</td>
                     </tr>
                 `);
             },

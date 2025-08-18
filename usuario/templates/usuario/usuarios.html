@@ -7,67 +7,83 @@
 {% endblock %}
 {% block content %}
 {% if user.is_authenticated and usuarios_perm %}
-<div class="container mt-4">
-    <h2 class="text-center">Usuarios</h2>
-    <div class="d-flex justify-content-between mb-3">
-        <a href="{% url 'registro' %}" class="btn btn-success">Nuevo usuario</a>
-    </div>
-    <table class="table table-striped table-bordered mt-3">
-        <thead class="table-dark">
-            <tr class="text-center">
-                <th class="col-4">Nombre</th>
-                <th class="col-2">Usuario</th>
-                <th class="col-3">Correo</th>
-                <th class="col-2">Celular</th>
-                <th class="col-1">Tipo</th>
-                <th class="col-1">Taller</th>
-                <th class="col-1">Estatus</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in usuarios %}
-            <tr>
-                <td class="align-middle">
-                    {% if modifica_usuario_perm %}
-                    <a href="{% url 'mod_usuario' user.id %}" style="text-decoration: none; font-weight: bold; font-style: italic;">
-                     {{ user.last_name|default_if_none:"" }} {{ user.materno|default_if_none:"" }}, {{ user.first_name|default_if_none:"" }}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Usuarios</h4>
+                    <span class="badge bg-light text-dark">Total: {{ total_usuarios }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="col-4">Nombre</th>
+                                    <th class="col-2">Usuario</th>
+                                    <th class="col-3">Correo</th>
+                                    <th class="col-2">Celular</th>
+                                    <th class="col-1">Tipo</th>
+                                    <th class="col-1">Taller</th>
+                                    <th class="col-1">Estatus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in usuarios %}
+                                <tr>
+                                    <td class="align-middle">
+                                        {% if modifica_usuario_perm %}
+                                        <a href="{% url 'mod_usuario' user.id %}" style="text-decoration: none; font-weight: bold; font-style: italic;">
+                                        {{ user.last_name|default_if_none:"" }} {{ user.materno|default_if_none:"" }}, {{ user.first_name|default_if_none:"" }}
+                                        </a>
+                                        {% else %}
+                                        <a href="#" style="text-decoration: none; ">
+                                            {{ user.first_name }} {{ user.last_name }}
+                                        </a>    
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center align-middle">{{ user.username }}</td>
+                                    <td class="align-middle">{{ user.email|default_if_none:"" }}</td>
+                                    <td class="align-middle">{{ user.celular|default_if_none:"" }}</td>
+                                    <td class="text-center align-middle">
+                                        {% if user.is_staff %}
+                                        Staff 
+                                        {% endif %}
+                                        {% if user.is_taller %}
+                                        Taller 
+                                        {% endif %}
+                                        {% if user.is_cliente %}
+                                        Cliente
+                                        {% else %}
+                                         
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle">
+                                    {{ user.empresa.razon_social }}
+                                    </td>                
+                                    <td class="text-center align-middle">
+                                        {% if user.is_active %}
+                                        Activo
+                                        {% else %}
+                                        Sin accesos
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{% url 'registro' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Nuevo usuario
                     </a>
-                    {% else %}
-                    <a href="#" style="text-decoration: none; ">
-                        {{ user.first_name }} {{ user.last_name }}
-                    </a>    
-                    {% endif %}
-                </td>
-                <td class="text-center align-middle">{{ user.username }}</td>
-                <td class="align-middle">{{ user.email|default_if_none:"" }}</td>
-                <td class="align-middle">{{ user.celular|default_if_none:"" }}</td>
-                <td class="text-center align-middle">
-                    {% if user.is_staff %}
-                    Staff 
-                    {% endif %}
-                    {% if user.is_taller %}
-                    Taller 
-                    {% endif %}
-                    {% if user.is_cliente %}
-                    Cliente
-                    {% else %}
-                     
-                    {% endif %}
-                </td>
-                <td class="align-middle">
-                {{ user.taller.razon_social }}
-                </td>                
-                <td class="text-center align-middle">
-                    {% if user.is_active %}
-                    Activo
-                    {% else %}
-                    Sin accesos
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

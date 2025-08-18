@@ -21,7 +21,7 @@ urlpatterns = [
 
      # Vista post-login para redirección
      path('usuarios/', usuarios.as_view(), name='usuarios'),
-     path('registro/', registro, name='registro'),
+     path('registro/', RegistroUsuarioView.as_view(), name='registro'),
      path('mod_usuario/<pk>/', UserUpdateView.as_view(), name='mod_usuario'),
      path('cambiar_contrasena/', Cambiar_contrasena.as_view(), name='cambiar_contrasena'), 
      path('permisos_usuario/', Permisos_usuario.as_view(), name='accesos'),

@@ -1,10 +1,24 @@
 {% extends 'core/adminis/base.html' %}
 
 {% block content %}
-<h2>¿Estás seguro que deseas eliminar este taller?</h2>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Eliminar</button>
-  <a href="{% url 'taller_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body text-center">
+          <h4 class="card-title mb-4">⚠️ Confirmar eliminación</h4>
+          <p class="mb-4">¿Estás seguro que deseas eliminar este taller?<br> Esta acción no se puede deshacer.</p>
+          <p><strong>{{ object.razon_social }}</strong></p>
+          <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-center gap-2">
+              <button type="submit" class="btn btn-danger px-4">Eliminar</button>
+              <a href="{% url 'taller_list' %}" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

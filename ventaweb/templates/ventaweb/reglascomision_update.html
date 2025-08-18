@@ -1,0 +1,145 @@
+{% extends "core/adminis/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Edita Regla de Comisión</h4>
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <br>
+                        <div class="form-check ms-5">
+                            {{ form.talleres }}
+                            <label class="form-check-label" for="{{ form.talleres.id_for_label }}">
+                                {{ form.talleres.label }}
+                            </label>
+                            {% if form.talleres.errors %}
+                                <div class="text-danger small">{{ form.talleres.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.empresa.id_for_label }}" class="form-label">{{ form.empresa.label }}</label>
+                        {{ form.empresa }}
+                        {% if form.empresa.errors %}
+                            <div class="text-danger small">{{ form.empresa.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.marca.id_for_label }}" class="form-label">{{ form.marca.label }}</label>
+                        {{ form.marca }}
+                        {% if form.marca.errors %}
+                            <div class="text-danger small">{{ form.marca.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.rin.id_for_label }}" class="form-label">{{ form.rin.label }}</label>
+                        {{ form.rin }}
+                        {% if form.rin.errors %}
+                            <div class="text-danger small">{{ form.rin.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.tipo.id_for_label }}" class="form-label">{{ form.tipo.label }}</label>
+                        {{ form.tipo }}
+                        {% if form.tipo.errors %}
+                            <div class="text-danger small">{{ form.tipo.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.cantidad.id_for_label }}" class="form-label">{{ form.cantidad.label }}</label>
+                        {{ form.cantidad }}
+                        {% if form.cantidad.errors %}
+                            <div class="text-danger small">{{ form.cantidad.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.estatus.id_for_label }}" class="form-label">{{ form.estatus.label }}</label>
+                        {{ form.estatus }}
+                        {% if form.estatus.errors %}
+                            <div class="text-danger small">{{ form.estatus.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.fecha_inicial.id_for_label }}" class="form-label">{{ form.fecha_inicial.label }}</label>
+                        {{ form.fecha_inicial }}
+                        {% if form.fecha_inicial.errors %}
+                            <div class="text-danger small">{{ form.fecha_inicial.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.fecha_final.id_for_label }}" class="form-label">{{ form.fecha_final.label }}</label>
+                        {{ form.fecha_final }}
+                        {% if form.fecha_final.errors %}
+                            <div class="text-danger small">{{ form.fecha_final.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="{% url 'reglas_list' %}" class="btn btn-secondary me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const talleresCheckbox = document.getElementById('{{ form.talleres.id_for_label }}');
+        const empresaSelect = document.getElementById('{{ form.empresa.id_for_label }}');
+        const marcaSelect = document.getElementById('{{ form.marca.id_for_label }}');
+        const rinSelect = document.getElementById('{{ form.rin.id_for_label }}');
+
+        // Si activas talleres -> limpiar selects
+        talleresCheckbox.addEventListener('change', function() {
+            if(this.checked) {
+                empresaSelect.selectedIndex = 0;
+                marcaSelect.selectedIndex = 0;
+                rinSelect.selectedIndex = 0;
+            }
+        });
+
+        // Si seleccionas cualquier select -> desmarcar checkbox
+        [empresaSelect, marcaSelect, rinSelect].forEach(select => {
+            select.addEventListener('change', function() {
+                if(this.selectedIndex > 0) {
+                    talleresCheckbox.checked = false;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

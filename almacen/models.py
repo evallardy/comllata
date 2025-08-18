@@ -1,12 +1,11 @@
 from django.db import models
 
-from taller.models import Taller, ESTATUS, ACTUALIZADO
+from taller.models import Taller, ESTATUS
 
 class MarcaLlanta(models.Model):
     nombre = models.CharField("Marca",max_length=100)
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True)
-    modificado = models.DateTimeField("Actualizado", auto_now=True)
 
     class Meta:
         verbose_name = 'Marca' 
@@ -24,8 +23,7 @@ class Llanta(models.Model):
     radial = models.IntegerField("Radial", default=0)
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
-    modificado = models.DateTimeField("Actualizado", auto_now=True)
-
+    
     def __str__(self):
         return '%s %s %s/%s R%s' % (self.marca, self.modelo, self.ancho, self.alto, self.rin,)
 
@@ -39,21 +37,18 @@ class Llanta(models.Model):
 
 class Inventario(models.Model):
     id_inventario = models.CharField("Id primario",max_length=64, blank=True, null=True)
-    id_empresa = models.CharField("Id empresa",max_length=64, blank=True, null=True)
-    talleres = models.ForeignKey(Taller, on_delete=models.CASCADE, blank=True, null=True)
-    llantas = models.ForeignKey(Llanta, on_delete=models.CASCADE, blank=True, null=True)
+    empresa = models.ForeignKey(Taller, to_field='id_empresa', on_delete=models.SET_NULL, null=True, blank=True, related_name='llantas')
     producto_clave = models.CharField("Producto/Clave",max_length=100, blank=True, null=True)  #SKU
     descripcion = models.CharField("Descripción", max_length=255, blank=True, null=True)
+    marca = models.CharField("Marca", max_length=100, blank=True, null=True)
     ancho = models.DecimalField("Ancho", decimal_places=2, max_digits=10, default=0)
     alto = models.DecimalField("Alto", decimal_places=2, max_digits=10, default=0)
     rin = models.DecimalField("Rin", decimal_places=2, max_digits=10, default=0)
     existencia = models.IntegerField("Existencia", default=0)
     precio = models.DecimalField("Precio", decimal_places=2, max_digits=10, default=0)
-    actualizado = models.IntegerField("Actualizado", choices=ACTUALIZADO, default=False)
     estatus = models.IntegerField("Estatus", choices=ESTATUS, default=1)
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
-    modificado = models.DateTimeField("Actualizado", auto_now=True, blank=True, null=True)
 
     def __str__(self):
         return '%s' % (self.descripcion)
@@ -65,7 +60,7 @@ class Inventario(models.Model):
     class Meta:
         verbose_name = 'Llanta' 
         verbose_name_plural = 'Llantas' 
-        ordering = ['talleres','ancho', 'alto', 'rin']
+        ordering = ['empresa','descripcion']
 #        unique_together= [('talleres','producto_clave'),('talleres','llantas')]
         db_table = 'Inventario'
 
@@ -94,11 +89,9 @@ class Entradas(models.Model):
 #    rin = models.DecimalField("Rin", decimal_places=2, max_digits=10, default=0)
 #    existencia = models.IntegerField("Existencia", default=0)
 #    precio = models.DecimalField("Precio", decimal_places=2, max_digits=10, default=0)
-#    actualizado = models.IntegerField("Actualizado", choices=ACTUALIZADO, default=False)
 #    estatus = models.IntegerField("Estatus", choices=ESTATUS, default=1)
 #    # Bitácora
 #    creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
-#    modificado = models.DateTimeField("Actualizado", auto_now=True, blank=True, null=True)
 
 #    def __str__(self):
 #        return '%s' % (self.descripcion)
@@ -113,3 +106,32 @@ class Entradas(models.Model):
 #        ordering = ['talleres','producto_clave']
 #        unique_together= [('talleres','producto_clave'),('talleres','llantas')]
 #        db_table = 'InventarioPaso'
+
+
+class Rechazo(models.Model):
+    id_inventario = models.CharField("Id primario",max_length=64, blank=True, null=True)
+    id_empresa = models.CharField("Id empresa",max_length=64, blank=True, null=True)
+    producto_clave = models.CharField("Producto/Clave",max_length=100, blank=True, null=True)  #SKU
+    descripcion = models.CharField("Descripción", max_length=255, blank=True, null=True)
+    ancho = models.DecimalField("Ancho", decimal_places=2, max_digits=10, default=0)
+    alto = models.DecimalField("Alto", decimal_places=2, max_digits=10, default=0)
+    rin = models.DecimalField("Rin", decimal_places=2, max_digits=10, default=0)
+    existencia = models.IntegerField("Existencia", default=0)
+    precio = models.DecimalField("Precio", decimal_places=2, max_digits=10, default=0)
+    estatus = models.IntegerField("Estatus", choices=ESTATUS, default=0)
+    # Bitácora
+    creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
+    
+    def __str__(self):
+        return '%s' % (self.descripcion)
+
+    @property
+    def estatus_nombre(self):
+        return self.get_estatus_display()
+
+    class Meta:
+        verbose_name = 'Llanta' 
+        verbose_name_plural = 'Llantas' 
+        ordering = ['ancho', 'alto', 'rin']
+#        unique_together= [('talleres','producto_clave'),('talleres','llantas')]
+        db_table = 'Rechazo'

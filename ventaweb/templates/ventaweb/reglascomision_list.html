@@ -1,0 +1,81 @@
+{% extends "core/adminis/base.html" %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Reglas de Comisión</h4>
+                    <span class="badge bg-light text-dark">Total: {{ total_reglas }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Talleres</th>
+                                    <th>Empresa</th>
+                                    <th>Marca</th>
+                                    <th>Rin</th>
+                                    <th>Tipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Estatus</th>
+                                    <th>Periodo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for regla in reglas %}
+                                <tr>
+                                    <td class="text-center">{{ regla.id }}</td>
+                                    <td class="text-center">{{ regla.get_talleres_display }}</td>
+                                    <td>{{ regla.empresa|default_if_none:"" }}</td>
+                                    <td>{{ regla.marca|default_if_none:"" }}</td>
+                                    <td class="text-center">{{ regla.rin|default_if_none:"" }}</td>
+                                    <td class="text-center">{{ regla.get_tipo_display }}</td>
+                                    {% if regla.tipo == 0 %}
+                                    <td class="text-end">{{ regla.cantidad }} %</td>
+                                    {% else %}
+                                    <td class="text-end">$ {{ regla.cantidad }}</td>
+                                    {% endif %}
+                                    <td class="text-center">
+                                    {% if regla.estatus == 0 or regla.fecha_final < hoy %}
+                                        <span class="bg-danger text-white" style="padding: 3px; border-radius: 5px;">
+                                            Vencida
+                                        </span>
+                                    {% else %}
+                                        <snap class="bg-success text-white" style="padding: 3px; border-radius: 5px;">
+                                            Vigente
+                                        </snap>
+                                    {% endif %}
+                                    </td>
+                                    <td>{{ regla.fecha_inicial|date:"d/m/Y" }} - {{ regla.fecha_final|date:"d/m/Y" }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'reglas_update' regla.pk %}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="{% url 'reglas_delete' regla.pk %}" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="10" class="text-center text-muted">No hay reglas registradas.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{% url 'reglas_create' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Nueva Regla
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

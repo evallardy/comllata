@@ -14,7 +14,12 @@ class InventarioForm(forms.ModelForm):
             'alto': forms.NumberInput(attrs={'class': 'form-control'}),
             'rin': forms.NumberInput(attrs={'class': 'form-control'}),
             'estatus': forms.Select(attrs={'class': 'form-select'}),
-            'actualizado': forms.Select(attrs={'class': 'form-select'}),
-            'talleres': forms.Select(attrs={'class': 'form-select'}),
-            'llantas': forms.Select(attrs={'class': 'form-select'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(InventarioForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
+        self.fields["empresa"].widget.attrs.update({"class": "form-select"})
+        self.fields["estatus"].widget.attrs.update({"class": "form-select"})

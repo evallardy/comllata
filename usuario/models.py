@@ -10,7 +10,8 @@ class Usuario(AbstractUser):
     celular = models.CharField(max_length=20, blank=True, null=True)
     is_taller = models.BooleanField('Taller', blank=True, null=True, default=False)
     is_cliente = models.BooleanField('Cliente', blank=True, null=True, default=False)
-    taller = models.ForeignKey(Taller, on_delete=models.SET_NULL, null=True, blank=True)
+    empresa = models.ForeignKey(Taller, to_field='id_empresa', on_delete=models.SET_NULL, null=True, blank=True, related_name='usuario_taller')
+#    taller = models.ForeignKey(Taller, on_delete=models.SET_NULL, null=True, blank=True)
     notificar = models.BooleanField('Notificaciones', blank=True, null=True, default=False)
     
     class Meta:

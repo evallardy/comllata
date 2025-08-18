@@ -16,6 +16,8 @@ class TallerListView(BaseAdministracionMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         talleres = Taller.objects.all().order_by('id')  # puedes cambiar el orden
+        total_talleres = talleres.count()
+        context['total_talleres'] = total_talleres
         context['talleres'] = talleres  # Para compatibilidad si ya usas {{ inventarios }}
         return context
 

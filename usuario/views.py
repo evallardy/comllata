@@ -13,6 +13,7 @@ from django.contrib.auth.views import LoginView
 
 from usuario.models import Usuario
 from .forms import UsuarioForm, UsuarioFormEdit, CambiaContrasenaForm, RegistrarseForm
+from core.views import BaseAdministracionMixin
 
 class CustomLoginView(LoginView):
     def get_success_url(self):
@@ -34,7 +35,7 @@ def custom_logout_view(request):
     logout(request)
     return redirect('/')
 
-class usuarios(LoginRequiredMixin, ListView):
+class usuarios(BaseAdministracionMixin, LoginRequiredMixin, ListView):
     model = Usuario
     template_name = 'usuario/usuarios.html'
     context_object_name = 'usuarios'
@@ -48,9 +49,10 @@ class usuarios(LoginRequiredMixin, ListView):
         context['usuarios_perm'] = self.request.user.has_perm('core.usuarios')
         context['crea_usuario_perm'] = self.request.user.has_perm('core.crea_usuario')
         context['modifica_usuario_perm'] = self.request.user.has_perm('core.modifica_usuario')
+        context['total_usuarios'] = Usuario.objects.exclude(username='iagevm').exclude(username='jcamarillo').exclude(username='evallardy').count()
         return context
 
-class UserUpdateView(LoginRequiredMixin, UpdateView):
+class UserUpdateView(BaseAdministracionMixin, LoginRequiredMixin, UpdateView):
     model = Usuario
     form_class = UsuarioFormEdit
     template_name = 'usuario/usuario.html'
@@ -78,7 +80,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         user.is_cliente = request.POST.get('is_cliente') == 'on'
         user.is_staff = request.POST.get('is_staff') == 'on'
         user.is_taller = request.POST.get('is_taller') == 'on'
-        user.taller_id = request.POST.get('taller')
+        user.empresa_id = request.POST.get('empresa')
 
         password = request.POST.get('password')
         # Actualizar la contraseña solo si se proporciona un nuevo valor
@@ -90,20 +92,32 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
         return HttpResponseRedirect(reverse('usuarios'))
 
-@login_required
-def registro(request):
-    data = {
-        'form': UsuarioForm
-    }
-    if request.method == 'POST':
-        formulario = UsuarioForm(data=request.POST)
-        if formulario.is_valid():
-            formulario.save()
-            return redirect(to="usuarios")
-        data["form"] = formulario
-    return render(request, 'usuario/registro.html', data)
+#login_required
+#def registro(request):
+#    data = {
+#        'form': UsuarioForm
+#    }
+#    if request.method == 'POST':
+#        formulario = UsuarioForm(data=request.POST)
+#        if formulario.is_valid():
+#            formulario.save()
+#            return redirect(to="usuarios")
+#        data["form"] = formulario
+#    return render(request, 'usuario/registro.html', data)
 
-class Cambiar_contrasena(LoginRequiredMixin, View):
+class RegistroUsuarioView(BaseAdministracionMixin, LoginRequiredMixin, CreateView):
+    model = Usuario
+    form_class = UsuarioForm
+    template_name = "usuario/registro.html"
+    success_url = reverse_lazy("usuarios")  # Redirige al listado de usuarios
+
+    # Opcional: agregar contexto extra si quieres
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Registrar Usuario"
+        return context
+
+class Cambiar_contrasena(BaseAdministracionMixin, LoginRequiredMixin, View):
     template_name = 'usuario/cambiar_contrasena.html'
     form_class = CambiaContrasenaForm
     success_url = reverse_lazy("index")
@@ -125,7 +139,7 @@ class Cambiar_contrasena(LoginRequiredMixin, View):
             form = self.form_class(request.POST)
             return render(request, self.template_name, {'form': form})
 
-class Permisos_usuario(LoginRequiredMixin, View):
+class Permisos_usuario(BaseAdministracionMixin, LoginRequiredMixin, View):
     template_name = 'usuario/permisos_usuario.html'
     def get(self, request):
         # Obtener todos los usuarios y permisos

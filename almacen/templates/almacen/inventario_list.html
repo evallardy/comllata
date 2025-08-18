@@ -2,77 +2,96 @@
 {% load humanize %}
 
 {% block content %}
-<div class="mt-4">
-  <h2 class="mb-4">Inventario</h2>
-  <a href="{% url 'inventario_create' %}" class="btn btn-primary mb-3">Nuevo producto</a>
-  <table class="table table-striped table-hover">
-    <thead class="table-light">
-        <tr>
-            <th>Descripción</th>
-            <th>Producto/Clave</th>
-            <th>Ancho</th>
-            <th>Alto</th>
-            <th>Rin</th>
-            <th>Precio</th>
-            <th>Existencia</th>
-            <th>Taller</th>
-            <th>Opciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in inventarios %}
-        <tr>
-            <td>{{ item.descripcion|default_if_none:'' }}</td>
-            <td>{{ item.producto_clave|default_if_none:'' }}</td>
-            <td>{{ item.ancho|default_if_none:'' }}</td>
-            <td>{{ item.alto|default_if_none:'' }}</td>
-            <td>{{ item.rin|default_if_none:'' }}</td>
-            <td>${{ item.precio|intcomma }}</td>
-            <td>{{ item.existencia|intcomma }}</td>
-            <td>{{ item.talleres.razon_social|default_if_none:'' }}</td>
-            <td>
-                <a href="{% url 'inventario_update' item.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
-                <a href="{% url 'inventario_delete' item.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6" class="text-center text-muted">No hay registros.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-  </table>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">llantas Registradas</h4>
+                    <span class="badge bg-light text-dark">Total: {{ Llantas_totales }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Taller</th>
+                                    <th class="text-end">Ancho</th>
+                                    <th class="text-end">Alto</th>
+                                    <th class="text-end">Rin</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-end">Exist.</th>
+                                    <th class="text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in inventarios %}
+                                <tr>
+                                    <td>{{ item.descripcion|default_if_none:'' }}</td>
+                                    <td>{{ item.empresa.razon_social|default_if_none:'' }}</td>
+                                    <td class="text-end">{{ item.ancho|default_if_none:'' }}</td>
+                                    <td class="text-end">{{ item.alto|default_if_none:'' }}</td>
+                                    <td class="text-end">{{ item.rin|default_if_none:'' }}</td>
+                                    <td class="text-end">${{ item.precio|intcomma }}</td>
+                                    <td class="text-end">{{ item.existencia|intcomma }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'inventario_update' item.id %}" class="btn btn-outline-primary">Editar</a>
+                                            <a href="{% url 'inventario_delete' item.id %}" class="btn btn-outline-danger">Eliminar</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-3">No hay registros.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{% url 'taller_create' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Nuevo Taller
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
   <!-- Paginación -->
-    <nav aria-label="Paginación de inventario">
-        <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled"> 
-                <span class="page-link">Anterior</span>
-            </li>
-            {% endif %}
+  <nav aria-label="Paginación de inventario" class="mt-4">
+    <ul class="pagination justify-content-center flex-wrap">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"> 
+            <span class="page-link">Anterior</span>
+        </li>
+        {% endif %}
 
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                {% endif %}
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">Siguiente</span>
-            </li>
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
             {% endif %}
-        </ul>
-    </nav>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Siguiente</span>
+        </li>
+        {% endif %}
+    </ul>
+  </nav>
 </div>
 {% endblock %}

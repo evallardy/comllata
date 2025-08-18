@@ -1,0 +1,43 @@
+{% extends "core/adminis/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body text-center">
+          <h4 class="card-title mb-4">⚠️ Confirmar eliminación</h4>
+          <p>¿Estás seguro de que deseas eliminar la regla <strong><br>ID: {{ object.id }}</strong>
+            {% if object.talleres == 1 %}
+            Todos los talleres
+            {% else %}
+            Para el taller 
+            {% endif %}
+            {{ object.empresa|default_if_none:"" }}
+            {% if object.marca %}
+            <br>para la marca {{ object.marca }}
+            {% endif %}
+            {% if object.rin %}
+            <br>con rin {{ object.rin }}
+            {% endif %}
+            <br>comisión 
+            {% if object.tipo == 0 %}
+            {{ object.cantidad }} %
+            {% else %}
+            $ {{ object.cantidad }}
+            {% endif %}
+            por llanta?
+          </p>
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-center gap-2">
+              <button type="submit" class="btn btn-danger px-4">Eliminar</button>
+              <a href="{% url 'reglas_list' %}" class="btn btn-secondary px-4">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

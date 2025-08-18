@@ -65,9 +65,9 @@
                     <!-- Columna derecha: Lista de llantas -->
                     <div class="col-12 col-md-8">
                         <div class="row fw-bold border-bottom pb-2 mb-2 bg-light sticky-top" style="top: 0;">
-                            <div class="col-4 col-sm-5 col-md-3 taller-text">Marca</div>
+                            <div class="col-6 col-sm-6 col-md-5 taller-text">Marca</div>
                             <div class="col-2 col-sm-2 col-md-3 text-end taller-text">Precio</div>
-                            <div class="col-2 col-sm-1 col-md-2 text-end taller-text" style="padding: 0;">Bodega</div>
+<!--                        <div class="col-2 col-sm-1 col-md-2 text-end taller-text" style="padding: 0;">Bodega</div>   -->
                             <div class="col-2 col-sm-2 col-md-2 d-flex justify-content-center taller-text">Solicita</div>
                             <div class="col-2 col-sm-2 col-md-2 "></div>
                         </div>
@@ -75,9 +75,9 @@
                             {% for llanta in llantas %}
                                 <div class="row mb-2 align-items-center"
                                     style="background-color: {% if forloop.counter0|divisibleby:2 %}#dee2e6{% else %}#ffffff{% endif %};">
-                                    <div class="col-4 col-sm-5 col-md-3 taller-text">{{ llanta.descripcion }}</div>
+                                    <div class="col-6 col-sm-6 col-md-5 taller-text">{{ llanta.descripcion }}</div>
                                     <div class="col-2 col-sm-2 col-md-3 text-primary text-end taller-text">${{ llanta.precio|floatformat:2 }}</div>
-                                    <div class="col-2 col-sm-1 col-md-2 text-primary text-end taller-text">{{ llanta.existencia|floatformat:0 }}</div>
+<!--                                <div class="col-2 col-sm-1 col-md-2 text-primary text-end taller-text"> llanta.existencia|floatformat:0 </div>  -->
                                     <div class="col-2 col-sm-2 col-md-2 text-primary d-flex justify-content-center">
                                         <div class="col-10">
                                             <input type="text" class="form-control text-end"
@@ -91,7 +91,7 @@
                                         <button class="btn btn-outline-primary btn-sm taller-text" style="padding: 1px 5px;"
                                             id="id_boton_{{llanta.id}}"
                                             onclick="agregarAlCarrito('{{ llanta.id }}', '{{ llanta.descripcion }}', '{{ llanta.precio }}', 
-                                                '{{llanta.id_inventario}}', '{{llanta.id_empresa}}')">Agregar</button>
+                                                '{{llanta.id_inventario}}', '{{llanta.empresa_id}}')">Agregar</button>
                                     </div>
                                 </div>
                             {% endfor %}

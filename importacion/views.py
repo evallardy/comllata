@@ -1,6 +1,6 @@
 from django.contrib.admin.views.decorators import staff_member_required
-# views.py
 from django.views.decorators.http import require_POST
+from django.db import connection, IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.conf import settings
@@ -148,10 +148,11 @@ def llantas(request):
 
         paginas_totales = int(data['data']['numPages'])
 
-        leidos = 0
+        leidos = insertados = rechazados = 0
 
         # Borra todos los registros
         Inventario.objects.all().delete()
+        Rechazo.objects.all().delete()
 
         # Reinicia el autoincremento del ID en MySQL
         with connection.cursor() as cursor:
@@ -170,23 +171,58 @@ def llantas(request):
 
                 for dato in data['data']['rows']:
                     leidos += 1
-                    Inventario.objects.create(
-                        id_inventario = dato['id'],
-                        id_empresa = dato['botId'],
-                        producto_clave = dato['sku'],
-                        descripcion = dato['name'],
-                        ancho = float(dato['width']),
-                        alto = float(dato['height']),
-                        rin = float(dato['diameter']),
-                        existencia = int(dato['stock']),
-                        precio = float(dato['price']),
-                        estatus=1
-                    )
+                    if leidos == 26798:
+                        a = 0
+                    try:
+                        Inventario.objects.create(
+                            id_inventario=dato['id'],
+                            empresa_id=dato['botId'],  # FK
+                            producto_clave=dato['sku'],
+                            descripcion=dato['name'],
+                            ancho=float(dato['width']),
+                            alto=float(dato['height']),
+                            rin=float(dato['diameter']),
+                            existencia=int(dato['stock']),
+                            precio=float(dato['price']),
+                            estatus=1
+                        )
+                        insertados += 1
+                    except IntegrityError:
+                        # Si la FK no existe, guarda en Rechazo
+                        Rechazo.objects.create(
+                            id_inventario=dato['id'],
+                            id_empresa=dato['botId'],  # No es FK aquí
+                            producto_clave=dato['sku'],
+                            descripcion=dato['name'],
+                            ancho=float(dato['width']),
+                            alto=float(dato['height']),
+                            rin=float(dato['diameter']),
+                            existencia=int(dato['stock']),
+                            precio=float(dato['price'])
+                        )
+                        rechazados += 1
+
+#                for dato in data['data']['rows']:
+#                    leidos += 1
+#                    Inventario.objects.create(
+#                        id_inventario = dato['id'],
+#                        empresa = dato['botId'],
+#                        producto_clave = dato['sku'],
+#                        descripcion = dato['name'],
+#                        ancho = float(dato['width']),
+#                        alto = float(dato['height']),
+#                        rin = float(dato['diameter']),
+#                        existencia = int(dato['stock']),
+#                        precio = float(dato['price']),
+#                        estatus=1
+#                    )
 
         context["leidos"] = leidos
+        context["insertados"] = insertados
+        context["rechazados"] = rechazados
     else:
 
-        return JsonResponse({"error": f"Error {response.status_code}: {response.text}"}, status=response.status_code)
+        return JsonResponse({"error": f"Error {response.status_code}: {response.text}, registro:{leidos}"}, status=response.status_code)
 
     return JsonResponse(context)
 
@@ -200,18 +236,18 @@ def actualizaInventario(request):
     nuevos = 0
     sin_modificacion = 0
 
-    inventario = InventarioPaso.objects.all()
+    inventario = Inventario.objects.all()
 
     for registro in inventario:
         leidos += 1
         llanta = Inventario.objects.filter(id_inventario=registro.id_inventario).first()
-        if registro.id_empresa:
-            taller = Taller.objects.filter(id_empresa=registro.id_empresa).first()
+        if registro.empresa:
+            taller = Taller.objects.filter(id_empresa=registro.empresa_id).first()
             if taller:
                 id_taller = taller.id
         if llanta:
             if (
-                llanta.id_empresa == registro.id_empresa and
+                llanta.empresa_id == registro.empresa_id and
                 llanta.producto_clave == registro.producto_clave and
                 llanta.descripcion == registro.descripcion and
                 llanta.ancho == registro.ancho and
@@ -224,7 +260,7 @@ def actualizaInventario(request):
                 llanta.save()
                 sin_modificacion += 1
             else:
-                llanta.id_empresa = registro.id_empresa
+                llanta.empresa_id = registro.empresa_id
                 llanta.talleres_id = id_taller
                 llanta.producto_clave = registro.producto_clave
                 llanta.descripcion = registro.descripcion
@@ -239,9 +275,9 @@ def actualizaInventario(request):
         else:
             Inventario.objects.create(
                 id_inventario = registro.id_inventario,
-                id_empresa = registro.id_empresa,
+                empresa_id = registro.empresa_id,
                 talleres_id = id_taller,
-                producto_clave = registro.id_empresa,
+                producto_clave = registro.clave,
                 descripcion = registro.descripcion,
                 ancho = registro.ancho,
                 alto = registro.alto,

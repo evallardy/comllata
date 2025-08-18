@@ -7,115 +7,127 @@
 {% endblock %}
 {% block content %}
 {{ form.errors }}
-<div class="container mt-2 row col-12">
-    <div class="col-12">
-        <h2 class="text-center">Nuevo Usuario</h2>
-        <form method="POST" class="row g-3" autocomplete="off">
-            {% csrf_token %}
-            <div class="col-12">
-                <div class="d-flex justify-content-start mb-3">
-                    <a href="{% url 'usuarios' %}" class="btn btn-secondary">Regresar</a>
-                    <button type="submit" class="btn btn-success ms-3">Guardar</button>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Nuevo Usuario</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <div class="col-12">
+                            <div class="d-flex justify-content-start mb-3">
+                                <a href="{% url 'usuarios' %}" class="btn btn-secondary">Regresar</a>
+                                <button type="submit" class="btn btn-success ms-3">Guardar</button>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="col-3">
+                                {{ form.username.label }}
+                                {{ form.username }}
+                            </div>
+                        </div>
+                        <div class="col-12 row">
+                            <div class="col-4">
+                                {{ form.first_name.label }}
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-4">
+                                {{ form.last_name.label }}
+                                {{ form.last_name }}
+                            </div>
+                            <div class="col-4">
+                                {{ form.materno.label }}
+                                {{ form.materno }}
+                            </div>
+                        </div>
+                        <div class="col-12 row">
+                            <div class="col-4">
+                                {{ form.celular.label }}
+                                {{ form.celular }}
+                            </div>
+                            <div class="col-4 row justify-content-center align-items-center">
+                                <div class="col-3 d-flex flex-column align-items-center justify-content-center mt">
+                                    <div class="form-check">
+                                        <label class="form-check-label text-center mt-1"
+                                            for="{{ form.is_active.id_for_label }}"
+                                            style="margin-left: -35px;">Activo</label><br>
+                                        {{ form.is_active }}
+                                    </div>
+                                </div>
+                                <div class="col-3 d-flex flex-column align-items-center justify-content-center">
+                                    <div class="form-check">
+                                        <label class="form-check-label" for="{{ form.is_staff.id_for_label }}"
+                                            style="margin-left: -35px;">Staff</label><br>
+                                        {{ form.is_staff }}
+                                    </div>
+                                </div>
+                                <div class="col-3 d-flex flex-column align-items-center justify-content-center">
+                                    <div class="form-check">
+                                        <label class="form-check-label" for="{{ form.is_cliente.id_for_label }}"
+                                            style="margin-left: -35px;">Cliente</label><br>
+                                        {{ form.is_cliente }}
+                                    </div>
+                                </div>
+                                <div class="col-3 d-flex flex-column align-items-center justify-content-center">
+                                    <div class="form-check">
+                                        <label class="form-check-label" for="{{ form.is_taller.id_for_label }}"
+                                            style="margin-left: -35px;">Taller</label><br>
+                                        {{ form.is_taller }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4" id="campo-taller">
+                                {{ form.empresa.label }}
+                                {{ form.empresa }}
+                            </div>
+                        </div>
+                        <div class="col-12 row">
+                            <div class="col-4">
+                                {{ form.email.label }}
+                                {{ form.email }}
+                            </div>
+                            <div class="col-4">
+                                {{ form.password1.label }}
+                                {{ form.password1 }}
+                            </div>
+                            <div class="col-4">
+                                {{ form.password2.label }}
+                                {{ form.password2 }}
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="col-12">
-              <div class="col-3">
-                  {{ form.username.label }}
-                  {{ form.username }}
-              </div>
-            </div>
-            <div class="col-12 row">
-              <div class="col-4">
-                  {{ form.first_name.label }}
-                  {{ form.first_name }}
-              </div>
-              <div class="col-4">
-                  {{ form.last_name.label }}
-                  {{ form.last_name }}
-              </div>
-              <div class="col-4">
-                  {{ form.materno.label }}
-                  {{ form.materno }}
-              </div>
-            </div>
-            <div class="col-12 row">
-              <div class="col-4">
-                  {{ form.celular.label }}
-                  {{ form.celular }}
-              </div>
-              <div class="col-4 row justify-content-center align-items-center">
-                    <div class="col-3 d-flex flex-column align-items-center justify-content-center mt">
-                      <div class="form-check">
-                        <label class="form-check-label text-center mt-1" for="{{ form.is_active.id_for_label }}" 
-                        style="margin-left: -35px;">Activo</label><br>
-                        {{ form.is_active }}
-                      </div>
-                    </div>
-                    <div class="col-3 d-flex flex-column align-items-center justify-content-center">
-                      <div class="form-check">
-                          <label class="form-check-label" for="{{ form.is_staff.id_for_label }}"
-                            style="margin-left: -35px;">Staff</label><br>
-                          {{ form.is_staff }} 
-                      </div>
-                  </div>
-                  <div class="col-3 d-flex flex-column align-items-center justify-content-center">
-                      <div class="form-check">
-                          <label class="form-check-label" for="{{ form.is_cliente.id_for_label }}"
-                            style="margin-left: -35px;">Cliente</label><br>
-                          {{ form.is_cliente }} 
-                      </div>
-                  </div>
-                  <div class="col-3 d-flex flex-column align-items-center justify-content-center">
-                      <div class="form-check">
-                          <label class="form-check-label" for="{{ form.is_taller.id_for_label }}"
-                            style="margin-left: -35px;">Taller</label><br>
-                          {{ form.is_taller }} 
-                      </div>
-                  </div>
-              </div>
-              <div class="col-4" id="campo-taller">
-                  {{ form.taller.label }}
-                  {{ form.taller }}
-              </div>
-            </div>
-            <div class="col-12 row">
-              <div class="col-4">
-                  {{ form.email.label }}
-                  {{ form.email }}
-              </div>
-              <div class="col-4">
-                  {{ form.password1.label }}
-                  {{ form.password1 }}
-              </div>
-              <div class="col-4">
-                  {{ form.password2.label }}
-                  {{ form.password2 }}
-              </div>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
 <script>
     $("#id_is_active").addClass('checkbox-large');
     $("#id_is_cliente").addClass('checkbox-large');
     $("#id_is_taller").addClass('checkbox-large');
     $("#id_is_staff").addClass('checkbox-large');
 </script>
+
+{% endblock %}
+
 <script>
     $(document).ready(function () {
+        {% block ready %}
         
-         // Solo se puede seleccionar un checkbox de los 3
+        // Solo se puede seleccionar un checkbox de los 3
         $('#id_is_staff, #id_is_cliente, #id_is_taller').on('change', function () {
             if ($(this).is(':checked')) {
                 $('#id_is_staff, #id_is_cliente, #id_is_taller').not(this).prop('checked', false);
             }
-            $('#id_taller').val('');
+            $('#id_empresa').val('');
         });
 
         function toggleTallerField() {
-            if ( !$('#id_is_taller').is(':checked')) {
-                $('#id_taller').val('');  // Establece el valor del combobox a null
+            if (!$('#id_is_taller').is(':checked')) {
+                $('#id_empresa').val('');  // Establece el valor del combobox a null
             }
         }
 
@@ -128,7 +140,7 @@
         });
 
         // Al seleccionar algo en el combobox, activa el checkbox
-        $('#id_taller').change(function () {
+        $('#id_empresa').change(function () {
             if ($(this).val()) {
                 $('#id_is_taller').prop('checked', true);
                 $('#id_is_staff').prop('checked', false);
@@ -137,8 +149,6 @@
                 $('#id_is_taller').prop('checked', false);
             }
         });
-
+        {% endblock %}
     });
 </script>
-
-{% endblock %}

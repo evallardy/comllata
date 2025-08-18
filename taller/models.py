@@ -1,9 +1,5 @@
 from django.db import models
 
-ACTUALIZADO = (
-    (False, 'SI'),
-    (True, 'No'),
-)
 ESTATUS = (
     (0, 'Existe'),
     (1, 'Nuevo'),
@@ -12,7 +8,8 @@ ESTATUS = (
 )
 
 class Taller(models.Model):
-    id_empresa = models.CharField("Id empresa",max_length=64, blank=True, null=True)
+    id_empresa = models.CharField("Id empresa", max_length=64, unique=True)  # único
+#    id_empresa = models.CharField("Id empresa",max_length=64, blank=True, null=True)
     razon_social = models.CharField("Rasón social",max_length=100, blank=True, null=True)
     direccion = models.CharField("Dirección",max_length=256, null=True, blank=True)
     numero_exterior = models.CharField("Núm. ext.",max_length=20, null=True, blank=True)
@@ -30,8 +27,7 @@ class Taller(models.Model):
     estatus = models.IntegerField("Estatus", choices=ESTATUS, default=1)
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
-    modificado = models.DateTimeField("Actualizado", auto_now=True)
-
+    
     def __str__(self):
         return '%s' % (self.razon_social)
 
