@@ -177,7 +177,7 @@ class RegistrarVentaPaypalView(View):
 
                 llanta = Inventario.objects.filter(id_inventario=d['id_inventario']).first()
 
-                importe_a_calcular = Decimal(importe) / (1 + settings.IMPUESTO_IVA)
+                importe_a_calcular = importe / (1 + settings.IMPUESTO_IVA)
                 hoy = timezone.localdate()
 
                 encontro_regla = False
@@ -230,7 +230,7 @@ class RegistrarVentaPaypalView(View):
 
                 if encontro_regla:
                     if tipo_comision == 0:
-                        importe_comision = (Decimal(importe_a_calcular) * Decimal(cantidad_comision)) / 100
+                        importe_comision = (Decimal(importe_a_calcular) * cantidad_comision) / 100
                         estatus_comision = 1
                         porcentaje = cantidad_comision
                     elif tipo_comision == 1:
@@ -243,7 +243,7 @@ class RegistrarVentaPaypalView(View):
                     importe_comision = 0
                     estatus_comision = 0
                 
-                importe_pagar = Decimal(importe) - Decimal(importe_comision)
+                importe_pagar = Decimal(importe) - importe_comision
 
                 venta_detalle.estatus_comision = estatus_comision
                 venta_detalle.deposito = importe_pagar
@@ -557,7 +557,7 @@ class VentaDetalleListView(ListView):
     context_object_name = 'ventas'
 
     def get_queryset(self):
-        empresa_id = self.request.user.taller.empresa_id
+        empresa_id = self.request.user.empresa_id
         return VentaDetalle.objects.filter(estatus=0, empresa_id=empresa_id).select_related('venta').order_by('venta_id')
 
 class SurtirVentaView(View):
