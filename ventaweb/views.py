@@ -702,7 +702,8 @@ class VentaDetalleListView(BaseAdministracionMixin, ListView):
     ordering = ["fecha_entrega"]
 
     def get_queryset(self):
-        return VentaDetalle.objects.filter(estatus=0).order_by('fecha_entrega')
+        empresa_id = self.request.user.empresa_id
+        return VentaDetalle.objects.filter(empresa_id=empresa_id,estatus=0).order_by('fecha_entrega')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
