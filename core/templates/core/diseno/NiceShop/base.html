@@ -137,7 +137,7 @@
           <form class="search-form desktop-search-form" method="POST" action="{% url 'muestraProductos' %}">
             {% csrf_token %}
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Busca tu llanta">
+              <input type="text" class="form-control" placeholder="Busca tu llanta" name="q">
               <button class="btn" type="submit">
                 <i class="bi bi-search"></i>
               </button>
