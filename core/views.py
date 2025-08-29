@@ -311,6 +311,7 @@ class BaseClienteView(TemplateView):
                 'total_general': 0,
                 'descuento': 0,
             }
+            carrito["piezas"] = 0
         else:
             adicionales = {
                 'piezas': carrito["piezas"],
