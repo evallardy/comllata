@@ -35,10 +35,10 @@
                 </div>
             </div>
 
-            <header class="bg-secondary text-white sticky-top py-3 px-4 d-flex justify-content-between align-items-center">
+            <header class="bg-secondary text-white sticky-top py-3 px-4 d-flex justify-content-between align-items-center" style="padding: 0;">
                 <!-- Logo a la izquierda -->
                 <a href="{% url 'administracion' %}" class="text-decoration-none">
-                    <img src="{% static 'core/img/logo-iag.jpg' %}" alt="Logo" width="130" height="32">
+                    <img src="{% static 'core/img/logo.png' %}" alt="Logo" width="130" height="90">
                 </a>
                 <h3>{{ user.taller.razon_social }}</h3>
                 <!-- Nav a la derecha -->
@@ -70,51 +70,53 @@
                 </nav>
             </header>
 
-            <section>
-                <div class="d-flex flex-column flex-grow-1 position-relative" aria-hidden="false">
-                    <section class="text-white py-2 border-bottom" style="background-color: rgb(3, 141, 255);">
-                        <div class="container d-flex align-items-center" style="height: 15px;">
-                            <nav class="ms-auto" aria-label="Navegación secundaria">
-                                <ul class="nav">
-                                    {% if user.is_authenticated and user.is_staff %}
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'taller_list' %}">Talleres</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'inventario_list' %}">Llantas</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'importacion' %}">Importar</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'venta_list_comision' %}">Carga comisión</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'reglas_list' %}">Reglas</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'usuarios' %}">Usuarios</a>
-                                    </li>
-                                    {% endif %}
-                                    {% if user.is_authenticated and user.is_taller %}
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'lista_ventas' %}">Pedidos</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white px-2" href="{% url 'lista_entregadas' %}">Entregados</a>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
-                        </div>
-                    </section>
+            <section class="d-flex">
+                <!-- Menú lateral izquierdo -->
+                <div class="sidebar bg-primary text-white p-3" style="min-width:220px; max-width:220px; min-height:100vh;">
+                    <h5 class="text-white mb-3">Menú</h5>
+                    <ul class="nav flex-column">
+                        {% if user.is_authenticated and user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'taller_list' %}">Talleres</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'inventario_list' %}">Llantas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'importacion' %}">Importar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'venta_list_comision' %}">Carga comisión</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'reglas_list' %}">Reglas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'aviso_list' %}">Mensajes Ctes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'usuarios' %}">Usuarios</a>
+                        </li>
+                        {% endif %}
+                        {% if user.is_authenticated and user.is_taller %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'lista_ventas' %}">Pedidos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'lista_entregadas' %}">Entregados</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="flex-grow-1 p-4">
+                    {% block content %}
+                    
+                    <h2>Bienvenido</h2>
+                    <p>Aquí irá el contenido de cada página.</p>
+                    {% endblock %}
                 </div>
             </section>
 
-            <main class="flex-grow-1 overflow-auto" style="height: 80%;">
-            {% block content %}
-            {% endblock %}
-            </main>
 
             <footer class="bg-dark text-white text-center flex-shrink-0" style="height: 10%;">
                 <section class="d-flex flex-column justify-content-center bg-blue-130">

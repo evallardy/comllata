@@ -1,0 +1,104 @@
+{% extends 'core/diseno/NiceShop/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .product-list-scroll {
+        max-height: 120px; /* Ajusta según diseño */
+        overflow-y: auto;
+        padding-right: 5px; /* Para scroll visible */
+    }
+
+    .product-item-small {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        padding: 2px 0;
+    }
+
+    .product-list-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .product-list-scroll::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 3px;
+    }
+
+    .product-list-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+</style>
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Llantas</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li class="current">Llantas</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- Best Sellers Section -->
+    <section id="best-sellers" class="best-sellers section">
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Productos encontrados</h2>
+        <p>Estos son los talleres en donde encontre tu llanta que solicitas</p>
+        <p>{{ detalle_llanta }}</p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row g-5">
+          {% for id, empresas in empresas_dict.items %}
+          <!-- Product 1 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="product-item">
+              <div class="product-image">
+                <div class="product-badge"></div>
+                <img src="{% static 'core/img/rin/r13.png' %}" alt="Product Image" class="img-fluid" loading="lazy">
+                <div class="product-actions">
+                  <button class="action-btn wishlist-btn">
+                    <i class="bi bi-heart"></i>
+                  </button>
+                  <a href="{% url 'muestraTaller' id %}" class="action-btn quickview-btn">
+                    <i class="bi bi-geo-alt"></i>
+                  </a>
+                </div>
+                <a href="{% url 'muestraProductosTaller' empresas.llave  %}" class="cart-btn">Selecciona</a>
+              </div>
+              <div class="product-info">
+                <div class="product-category">{{ empresas.razon_social }}</div>
+                <div class="product-rating">
+                  <div class="stars">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star"></i>
+                  </div>
+                  <span class="rating-count">(24)</span>
+                </div>
+                <div class="product-list-scroll">
+                    {% for producto in empresas.productos %}
+                        <div class="product-item-small">
+                            <span>{{ producto.descripcion }}</span>
+                            <div class="product-price">${{ producto.precio|floatformat:2 }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Product 1 -->
+          {% endfor %}
+
+        </div>
+
+      </div>
+
+    </section><!-- /Best Sellers Section -->
+
+{% endblock %}    

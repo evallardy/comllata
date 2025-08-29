@@ -1,23 +1,69 @@
 from django.db import models
+from django.utils import timezone
 
 ACTIVO = (
     (False, 'No'),
     (True, 'Si'),
 )
 
-class Aviso(models.Model):
-    aviso = models.CharField("Aviso",max_length=255)
-    fecha_inicial = models.DateField('Inicia prom.')
-    fecha_final = models.DateField('finaliza prom.')
+ICONOS = (
+    ('transporte', '🚚 Transporte'),
+    ('dinero', '💰 Dinero'),
+    ('regalo', '🎁 Regalo'),
+)
+
+TIPO = (
+    (0, 'Clientes'),
+    (1, 'Talleres'),
+    (2, 'Administradores'),
+)
+
+class PromocionEspecial(models.Model):
+    titulo = models.CharField("Titulo", max_length=255, blank=True, null=True)
+    texto = models.CharField("Texto", max_length=255, blank=True, null=True)
+    detalle = models.CharField("Detalle", max_length=255, blank=True, null=True)
+    mas_detalle = models.TextField("Más detalle", blank=True, null=True)
+    fecha_inicial = models.DateTimeField('Inicia prom.', blank=True, null=True)
+    fecha_final = models.DateTimeField('Finaliza prom.', blank=True, null=True)
+
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True)
     modificado = models.DateTimeField("Actualizado", auto_now=True)
 
     class Meta:
-        verbose_name = 'Aviso' 
-        verbose_name_plural = 'Avisos' 
-        ordering = ['fecha_inicial']
+        ordering = ['titulo', 'texto','fecha_inicial']
+        verbose_name = "Promoción"
+        verbose_name_plural = "Promociones"
+        db_table = 'PromocionEspecial'
+
+    def __str__(self):
+        return f"{self.titulo} ({self.fecha_inicial} - {self.fecha_final})"
+
+class Aviso(models.Model):
+    tipo = models.IntegerField('Tipo', choices=TIPO, default=0)
+    aviso = models.CharField("Aviso", max_length=255)
+    icono = models.CharField('Ícono', max_length=80, choices=ICONOS, default=1)
+    fecha_inicial = models.DateField('Inicia prom.', blank=True, null=True)
+    fecha_final = models.DateField('Finaliza prom.', blank=True, null=True)
+
+    # Bitácora
+    creado = models.DateTimeField("Creado", auto_now_add=True)
+    modificado = models.DateTimeField("Actualizado", auto_now=True)
+
+    class Meta:
+        ordering = ['tipo', 'fecha_inicial']
+        verbose_name = "Aviso"
+        verbose_name_plural = "Avisos"
         db_table = 'Aviso'
+
+    def __str__(self):
+        return f"{self.aviso} ({self.fecha_inicial} - {self.fecha_final})"
+
+    @property
+    def is_activo(self):
+        """Retorna True si hoy está dentro del rango de fechas"""
+        hoy = timezone.now().date()
+        return self.fecha_inicial <= hoy <= self.fecha_final
 
 class Vehiculo(models.Model):
     nombre = models.CharField("Vehículo",max_length=60)

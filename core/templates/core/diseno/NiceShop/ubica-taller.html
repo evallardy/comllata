@@ -1,0 +1,107 @@
+{% extends 'core/diseno/NiceShop/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    #mapa {
+      height: 400px;
+      width: 80%;
+    }
+</style>
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">{{ taller.razon_social }}</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">Inicio</a></li>
+            <li><a href="{% url 'muestraProductos' %}">Regresar</a></li>           
+            <li class="current">Ubicación taller</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- Contact 2 Section -->
+    <section id="contact-2" class="contact-2 section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <!-- Contact Info Boxes -->
+        <div class="row gy-4 mb-5">
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="contact-info-box">
+              <div class="icon-box">
+                <i class="bi bi-geo-alt"></i>
+              </div>
+              <div class="info-content">
+                <h4>Direccion</h4>
+                <p>{{ taller.direccion }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="contact-info-box">
+              <div class="icon-box">
+                <i class="bi bi-envelope"></i>
+              </div>
+              <div class="info-content">
+                <h4>Email Address</h4>
+                <p>info@example.com</p>
+                <p>contact@example.com</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="contact-info-box">
+              <div class="icon-box">
+                <i class="bi bi-headset"></i>
+              </div>
+              <div class="info-content">
+                <h4>Hours of Operation</h4>
+                <p>Sunday-Fri: 9 AM - 6 PM</p>
+                <p>Saturday: 9 AM - 4 PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10 col-lg-8">
+            <div id="mapa" style="height: 450px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    </section><!-- /Contact 2 Section -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const lng = parseFloat('{{ taller.latitud }}') || 0;
+    const lat = parseFloat('{{ taller.longitud }}') || 0;
+    const nombre = '{{ taller.razon_social }}';
+
+    // Inicializar mapa
+    const map = L.map('mapa').setView([lat, lng], 16);
+
+    // Capa de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Marcador
+    L.marker([lat, lng])
+      .addTo(map)
+      .bindPopup(nombre)
+      .openPopup();
+});
+</script>
+
+{% endblock %}

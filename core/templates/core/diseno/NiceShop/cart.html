@@ -1,0 +1,302 @@
+{% extends 'core/diseno/NiceShop/base.html' %}
+{% load static %}
+{% load carrito_filters %}
+{% block content %}
+   <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Carrito</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li class="current">Cart</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- Cart Section -->
+    <section id="cart" class="cart section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row">
+          <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+            <div class="cart-items">
+              <div class="cart-header d-none d-lg-block">
+                <div class="row align-items-center">
+                  <div class="col-lg-6">
+                    <h5>Llanta</h5>
+                  </div>
+                  <div class="col-lg-2 text-center">
+                    <h5>precio</h5>
+                  </div>
+                  <div class="col-lg-2 text-center">
+                    <h5>Cantidad</h5>
+                  </div>
+                  <div class="col-lg-2 text-center">
+                    <h5>Total</h5>
+                  </div>
+                </div>
+              </div>
+              <!-- Cart Item -->
+              {% for pk, renglon in carrito.items %}
+              {% if pk|isdigit %}
+              <div class="cart-item">
+                <div class="row align-items-center">
+                  <div class="col-lg-6 col-12 mt-3 mt-lg-0 mb-lg-0 mb-3">
+                    <div class="product-info d-flex align-items-center">
+                      <div class="product-image">
+                        <img src="{% static 'core/img/rin/r13.png' %}" alt="Product" class="img-fluid" loading="lazy">
+                      </div>
+                      <div class="product-details">
+                        <h6 class="product-title">{{ renglon.razon_social }}</h6>
+                        <div class="product-meta">
+                          <span class="product-color">{{ renglon.producto_clave }}</span>
+                          <span class="product-size">{{ renglon.descripcion }}</span>
+                        </div>
+                        <button class="remove-item" type="button" data-id="{{ pk }}">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-center">
+                    <div class="price-tag">
+                      <span class="current-price">{{ renglon.precio }}</span>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-center">
+                    <div class="quantity-selector">
+                      <button class="btn" onclick="actualiza_producto({{ pk }}, -1)">
+                        <i class="bi bi-dash"></i>
+                      </button>
+                      <input type="number" class="quantity-input" value="{{ renglon.cantidad }}" min="1" max="10">
+                      <button class="btn" onclick="actualiza_producto({{ pk }}, 1)">
+                        <i class="bi bi-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 col-12 mt-3 mt-lg-0 text-center">
+                    <div class="item-total">
+                      <span id="id_total_{{pk}}">{{ renglon.total }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              {% endfor %}
+              <!-- End Cart Item -->
+
+              <div class="cart-actions">
+                <div class="row">
+                  <div class="col-lg-6 mb-3 mb-lg-0">
+                    <div class="coupon-form">
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Coupon code">
+                        <button class="btn btn-outline-accent" type="button">Apply Coupon</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6 text-md-end">
+                    <a href="{% url 'carrito' %}" class="btn btn-outline-heading me-2">
+                      <i class="bi bi-arrow-clockwise"></i> Actualiza
+                    </a>
+                    <button class="btn btn-outline-remove" id="vaciar-carrito">
+                      <i class="bi bi-trash"></i> Vacia carrito
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="300">
+            <div class="cart-summary">
+              <h4 class="summary-title">Orden</h4>
+
+              <div class="summary-item">
+                <span class="summary-label">Subtotal</span>
+                <span class="summary-value" id="id_subtotal">${{ adicionales.subtotal }}</span>
+              </div>
+<!--
+              <div class="summary-item shipping-item">
+                <span class="summary-label">Shipping</span>
+                <div class="shipping-options">
+                  <div class="form-check text-end">
+                    <input class="form-check-input" type="radio" name="shipping" id="standard" checked="">
+                    <label class="form-check-label" for="standard">
+                      Standard Delivery - $4.99
+                    </label>
+                  </div>
+                  <div class="form-check text-end">
+                    <input class="form-check-input" type="radio" name="shipping" id="express">
+                    <label class="form-check-label" for="express">
+                      Express Delivery - $12.99
+                    </label>
+                  </div>
+                  <div class="form-check text-end">
+                    <input class="form-check-input" type="radio" name="shipping" id="free">
+                    <label class="form-check-label" for="free">
+                      Free Shipping (Orders over $300)
+                    </label>
+                  </div>
+                </div>
+              </div>
+-->
+              <div class="summary-item">
+                <span class="summary-label">I.V.A.</span>
+                <span class="summary-value" id="id_iva_total">${{ adicionales.iva_total }}</span>
+              </div>
+
+              <div class="summary-item discount">
+                <span class="summary-label">Descuento</span>
+                <span class="summary-value" id="id_descuento">-${{ adicionales.descuento }}</span>
+              </div>
+
+              <div class="summary-total">
+                <span class="summary-label">Total</span>
+                <span class="summary-value" id="id_total_general">${{ adicionales.total_general }}</span>
+              </div>
+
+              <div class="checkout-button">
+                <a href="#" class="btn btn-accent w-100">
+                  Pagar <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+
+              <div class="continue-shopping">
+                <a href="{% url 'muestraProductos' %}" class="btn btn-link w-100">
+                  <i class="bi bi-arrow-left"></i> Continuar comprando
+                </a>
+              </div>
+
+              <div class="payment-methods">
+                <p class="payment-title">Aceptamos</p>
+                <div class="payment-icons">
+                  <i class="bi bi-credit-card"></i>
+                  <i class="bi bi-paypal"></i>
+                  <i class="bi bi-wallet2"></i>
+                  <i class="bi bi-bank"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Cart Section -->
+
+  </main>
+<script>
+document.querySelector("#vaciar-carrito").addEventListener('click', function() {
+    fetch("{% url 'vaciar_carrito' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.message);
+
+        // Actualizar totales en la vista
+        document.querySelector("#id_piezas").innerText = data.piezas;
+        document.querySelector("#id_subtotal").innerText = "$" + formatea_importe(data.subtotal);
+        document.querySelector("#id_iva_total").innerText = "$" + formatea_importe(data.iva_total);
+        document.querySelector("#id_total_general").innerText = "$" + formatea_importe(data.total_general);
+        document.querySelector("#id_descuento").innerText = "-$" + formatea_importe(data.descuento);
+
+        // Opcional: remover todos los renglones de productos del DOM
+        document.querySelectorAll('.cart-item').forEach(item => item.remove());
+    })
+    .catch(error => console.error('Error:', error));
+});  
+document.querySelectorAll('.remove-item').forEach(function(button) {
+    button.addEventListener('click', function() {
+        const pk = this.dataset.id.replace(',','');
+
+        fetch("{% url 'eliminar_del_carrito' 0 %}".replace('/0/', '/' + pk + '/'), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})  // no necesitamos enviar nada más
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();  // <-- convertir la respuesta a JSON
+            } else {
+                throw new Error('Error al actualizar carrito');
+            }
+        })
+        .then(producto  => {
+            document.querySelector("#id_piezas").innerText = producto.piezas;
+            document.querySelector("#id_subtotal").innerText = formatea_importe(producto.subtotal);
+            document.querySelector("#id_iva_total").innerText = formatea_importe(producto.iva_total);
+            document.querySelector("#id_descuento").innerText = formatea_importe(producto.descuento);
+            document.querySelector("#id_total_general").innerText = formatea_importe(producto.total_general);
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+</script>
+<script>
+    function formatea_importe(valor) {
+        return parseFloat(valor).toLocaleString("es-MX", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function actualiza_producto(pk, delta) {
+      // Buscar el input correspondiente al botón que se presionó
+      const selector = event.target.closest('.quantity-selector');
+      const input = selector.querySelector('.quantity-input');
+
+      // Obtener cantidad actual y sumarle incremento
+      let cantidad = parseInt(input.value) || 0;
+      cantidad += delta;
+
+      // Limitar cantidad mínima y máxima
+      const min = parseInt(input.min) || 1;
+      const max = parseInt(input.max) || 10;
+      if (cantidad < min) cantidad = min;
+      if (cantidad > max) cantidad = max;
+
+      // Actualizar input
+      input.value = cantidad;
+
+      // Enviar al servidor
+      fetch(`/agrega_carrito_cantidad/${pk}/${cantidad}/`, {
+          method: 'POST',
+          headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+              'Content-Type': 'application/json'
+          },
+      })
+      .then(response => {
+          if (response.ok) {
+              return response.json();  // <-- convertir la respuesta a JSON
+          } else {
+              throw new Error('Error al actualizar carrito');
+          }
+      })
+      .then(producto  => {
+          document.querySelector(`#id_total_${pk}`).innerText = formatea_importe(producto.producto.total);
+          document.querySelector("#id_piezas").innerText = producto.piezas;
+          document.querySelector("#id_subtotal").innerText = formatea_importe(producto.subtotal);
+          document.querySelector("#id_iva_total").innerText = formatea_importe(producto.iva_total);
+          document.querySelector("#id_descuento").innerText = formatea_importe(producto.descuento);
+          document.querySelector("#id_total_general").innerText = formatea_importe(producto.total_general);
+      })
+      .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock %}

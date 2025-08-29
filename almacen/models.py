@@ -35,7 +35,7 @@ class Llanta(models.Model):
         unique_together= [('marca','modelo','ancho','alto','rin')]
         db_table = 'Llanta'
 
-class Inventario(models.Model):
+class Inventario(models.Model): 
     id_inventario = models.CharField("Id primario",max_length=64, blank=True, null=True)
     empresa = models.ForeignKey(Taller, to_field='id_empresa', on_delete=models.SET_NULL, null=True, blank=True, related_name='llantas')
     producto_clave = models.CharField("Producto/Clave",max_length=100, blank=True, null=True)  #SKU

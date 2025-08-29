@@ -566,7 +566,6 @@ class PedidoDetalleListView(ListView):
         context['total_pendientes'] = VentaDetalle.objects.filter(estatus=0, empresa_id=empresa_id).select_related('venta').order_by('venta_id').count()
         return context
 
-
 class SurtirVentaView(View):
     def post(self, request, venta_id):
         ahora = timezone.now()
