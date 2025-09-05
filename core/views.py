@@ -314,7 +314,7 @@ def home(request):
     return render(request, 'core/cliente/home.html', { 'context': context })
 class BaseClienteView(TemplateView):
     mensaje_cliente = "Mensajes para el cliente"
-    producto = Inventario.objects.all().first()
+    producto = Inventario.objects.all()[:1].get()
     producto_mas_vendido = producto.descripcion
     producto_mas_vendido_id = producto.id
     producto_precios = Inventario.objects.filter(id=producto_mas_vendido_id) \
