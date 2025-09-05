@@ -47,7 +47,7 @@ class Inventario(models.Model):
     existencia = models.IntegerField("Existencia", default=0)
     precio = models.DecimalField("Precio", decimal_places=2, max_digits=10, default=0)
     estatus = models.IntegerField("Estatus", choices=ESTATUS, default=1)
-    imagenes = models.ImageField("Imagen",  upload_to='almacen/', null=True, blank=True)
+    imagen = models.ImageField("Imagen",  upload_to='almacen/', null=True, blank=True)
     imagen1 = models.ImageField("Imagen",  upload_to='almacen1/', null=True, blank=True)
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)

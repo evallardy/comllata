@@ -5,7 +5,7 @@ class InventarioForm(forms.ModelForm):
     class Meta:
         model = Inventario
         fields = ['descripcion', 'producto_clave', 'precio', 'existencia', 'ancho',
-                  'alto', 'rin','estatus', 'imagenes', 'empresa']
+                  'alto', 'rin','estatus', 'imagen', 'empresa']
 
         widgets = {
             'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
@@ -16,7 +16,7 @@ class InventarioForm(forms.ModelForm):
             'alto': forms.NumberInput(attrs={'class': 'form-control'}),
             'rin': forms.NumberInput(attrs={'class': 'form-control'}),
             'estatus': forms.Select(attrs={'class': 'form-select'}),
-            'imagenes': forms.FileInput(attrs={'class': 'form-control'}),
+            'imagen': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
