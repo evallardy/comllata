@@ -10,7 +10,7 @@
           <h4 class="mb-0">{{ view.object.pk|yesno:"Editar Inventario,Nuevo Inventario" }}</h4>
         </div>
         <div class="card-body">
-          <form method="post" novalidate>
+          <form method="post" novalidate  enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row g-3">
 
@@ -88,7 +88,7 @@
                 </div>
               </div>
               <!-- Existencia -->
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <label for="id_existencia" class="form-label">Existencia</label>
                 {{ form.existencia }}
                 {% if form.existencia.errors %}
@@ -97,7 +97,7 @@
               </div>
 
               <!-- Precio -->
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <label for="id_precio" class="form-label">Precio</label>
                 {{ form.precio }}
                 {% if form.precio.errors %}
@@ -106,13 +106,37 @@
               </div>
 
               <!-- Estatus -->
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <label for="id_estatus" class="form-label">Estatus</label>
                 {{ form.estatus }}
                 {% if form.estatus.errors %}
                   <div class="invalid-feedback d-block">{{ form.estatus.errors|striptags }}</div>
                 {% endif %}
               </div>
+
+              <div class="row mt-3"> <!-- contenedor row para columnas -->
+                <!-- Vista previa de la imagen -->
+                <div class="col-md-4">
+                    <label for="id_imagen" class="form-label">Imagen</label>
+                    {% if form.instance.imagen %}
+                        <img src="{{ form.instance.imagen.url }}" alt="Imagen" height="150">
+                    {% else %}
+                        <p class="text-muted">Sin imagen</p>
+                    {% endif %}
+                </div>
+
+                <!-- Campo de carga de archivo -->
+                <div class="col-md-6">
+                    <label for="id_imagen" class="form-label">Selecciona</label>
+                    {{ form.imagen }}
+                    {% if form.imagen.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.imagen.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
             </div>
 
             <div class="mt-4 d-flex justify-content-end">

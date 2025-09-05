@@ -39,6 +39,30 @@ class PromocionEspecial(models.Model):
     def __str__(self):
         return f"{self.titulo} ({self.fecha_inicial} - {self.fecha_final})"
 
+class Recomendacion(models.Model):
+    titulo = models.CharField("Título", max_length=255, blank=True, null=True)
+    mensaje = models.CharField("Mensaje", max_length=255, blank=True, null=True)
+    imagen = models.ImageField('Imagen', upload_to='recomendaciones/', blank=True, null=True)
+
+    # Bitácora
+    creado = models.DateTimeField("Creado", auto_now_add=True)
+    modificado = models.DateTimeField("Actualizado", auto_now=True)
+
+    class Meta:
+        ordering = ['titulo', 'mensaje']
+        verbose_name = "Recomendación"
+        verbose_name_plural = "Recomendaciones"
+        db_table = 'Recomendacion'
+
+    def __str__(self):
+        return f"{self.Titulo} - {self.mensaje}"
+
+    @property
+    def is_activo(self):
+        """Retorna True si hoy está dentro del rango de fechas"""
+        hoy = timezone.now().date()
+        return self.fecha_inicial <= hoy <= self.fecha_final
+
 class Aviso(models.Model):
     tipo = models.IntegerField('Tipo', choices=TIPO, default=0)
     aviso = models.CharField("Aviso", max_length=255)

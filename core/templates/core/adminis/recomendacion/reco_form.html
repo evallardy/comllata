@@ -1,0 +1,59 @@
+{% extends "core/adminis/base.html" %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-primary text-white">
+          <h2>{% if object %}Editar{% else %}Nueva{% endif %} Recomendación</h2>
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row mb-12">
+                    <div class="col-md-9">
+                        <label for="{{ form.tipo.id_for_label }}" class="form-label">{{ form.titulo.label }}</label>
+                        {{ form.titulo }}
+                        {% if form.titulo.errors %}
+                            <div class="text-danger small">{{ form.titulo.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-12">
+                    <div class="col-md-9">
+                        <label for="{{ form.aviso.id_for_label }}" class="form-label">{{ form.mensaje.label }}</label>
+                        {{ form.mensaje }}
+                        {% if form.mensaje.errors %}
+                            <div class="text-danger small">{{ form.mensaje.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <br>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.icono.id_for_label }}" class="form-label">{{ form.imagen.label }}</label>
+                        {{ form.imagen }}
+                        {% if form.imagen.errors %}
+                            <div class="text-danger small">{{ form.imagen.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="{% url 'recomendacion_list' %}" class="btn btn-secondary me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

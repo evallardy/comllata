@@ -13,11 +13,13 @@ class VentaPaypal(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     nombre_completo = models.CharField(max_length=200, blank=True)
     direccion = models.CharField(max_length=300, blank=True)
+    colonia = models.CharField(max_length=300, blank=True)
     ciudad = models.CharField(max_length=100, blank=True)
     estado = models.CharField(max_length=100, blank=True)
     cp = models.CharField(max_length=20, blank=True)
     pais = models.CharField(max_length=10, blank=True)
     fecha_creacion = models.DateTimeField(null=True, blank=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
     fecha_registro = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 

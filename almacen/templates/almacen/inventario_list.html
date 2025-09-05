@@ -22,6 +22,7 @@
                                     <th class="text-end">Rin</th>
                                     <th class="text-end">Precio</th>
                                     <th class="text-end">Exist.</th>
+                                    <th>Foto</th>
                                     <th class="text-center"></th>
                                 </tr>
                             </thead>
@@ -35,6 +36,13 @@
                                     <td class="text-end">{{ item.rin|default_if_none:'' }}</td>
                                     <td class="text-end">${{ item.precio|intcomma }}</td>
                                     <td class="text-end">{{ item.existencia|intcomma }}</td>
+                                    <td>
+                                        {% if item.imagen %}
+                                            <img src="{{ item.imagen.url }}" alt="Imagen" height="70">
+                                        {% else %}
+                                            Sin imagen
+                                        {% endif %}
+                                    </td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm" role="group">
                                             <a href="{% url 'inventario_update' item.id %}" class="btn btn-outline-primary">Editar</a>
@@ -44,7 +52,7 @@
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="8" class="text-center text-muted py-3">No hay registros.</td>
+                                    <td colspan="9" class="text-center text-muted py-3">No hay registros.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -52,8 +60,8 @@
                     </div>
                 </div>
                 <div class="card-footer text-end">
-                    <a href="{% url 'taller_create' %}" class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i> Nuevo Taller
+                    <a href="{% url 'inventario_create' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Nueva llanta
                     </a>
                 </div>
             </div>

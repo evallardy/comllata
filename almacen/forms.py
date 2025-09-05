@@ -4,7 +4,9 @@ from .models import Inventario
 class InventarioForm(forms.ModelForm):
     class Meta:
         model = Inventario
-        fields = '__all__'
+        fields = ['descripcion', 'producto_clave', 'precio', 'existencia', 'ancho',
+                  'alto', 'rin','estatus', 'imagen', 'empresa']
+
         widgets = {
             'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
             'producto_clave': forms.TextInput(attrs={'class': 'form-control'}),
@@ -14,6 +16,7 @@ class InventarioForm(forms.ModelForm):
             'alto': forms.NumberInput(attrs={'class': 'form-control'}),
             'rin': forms.NumberInput(attrs={'class': 'form-control'}),
             'estatus': forms.Select(attrs={'class': 'form-select'}),
+            'imagen': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):

@@ -24,9 +24,31 @@ from django.views.decorators.csrf import csrf_exempt
 
 from almacen.models import *
 from .models import *
-from .forms import AvisoForm
+from .forms import *
 
 # Create your views here.
+
+class RecomendacionListView(ListView):
+    model = Recomendacion
+    template_name = 'core/adminis/recomendacion/reco_list.html'
+    context_object_name = 'recomendaciones'
+
+class RecomendacionCreateView(CreateView):
+    model = Recomendacion
+    form_class = RecomendacionForm
+    template_name = 'core/adminis/recomendacion/reco_form.html'
+    success_url = reverse_lazy('recomendacion_list')
+
+class RecomendacionUpdateView(UpdateView):
+    model = Recomendacion
+    form_class = RecomendacionForm
+    template_name = 'core/adminis/recomendacion/reco_form.html'
+    success_url = reverse_lazy('recomendacion_list')
+
+class RecomendacionDeleteView(DeleteView):
+    model = Recomendacion
+    template_name = 'core/adminis/recomendacion/reco_confirm_delete.html'
+    success_url = reverse_lazy('recomendacion_list')
 
 class AvisoListView(ListView):
     model = Aviso
@@ -79,6 +101,14 @@ def agrega_carrito(request, pk):
     carrito[str(pk)] = {
         'id_taller': llanta.empresa.id,
         'razon_social': llanta.empresa.razon_social,
+        'direccion' : llanta.empresa.direccion,
+        'numero_exterior' : llanta.empresa.numero_exterior,
+        'numero_interior' : llanta.empresa.numero_interior,
+        'colonia' : llanta.empresa.colonia,
+        'codigo_postal' : llanta.empresa.codigo_postal,
+        'municipio' : llanta.empresa.municipio,
+        'estado' : llanta.empresa.estado,
+        'telefono' : llanta.empresa.telefono,
         'descripcion': llanta.descripcion,
         'producto_clave': llanta.producto_clave,
         'cantidad': int(cantidad),
@@ -322,7 +352,9 @@ class BaseClienteView(TemplateView):
             }
 
 
-        context = super().get_context_data(**kwargs)
+
+        avisos = Aviso.objects.all()
+        context["avisos"] = [aviso for aviso in avisos if aviso.is_activo]
         context["mensaje_cliente"] = self.mensaje_cliente
         context["anio_actual"] = '2025'
         context["producto_mas_vendido"] = self.producto_mas_vendido
@@ -361,6 +393,13 @@ class MuestraTaller(BaseClienteView, TemplateView):
 
 class Carrito(BaseClienteView, TemplateView):
     template_name = 'core/diseno/NiceShop/cart.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+class FormaPago(BaseClienteView, TemplateView):
+    template_name = 'core/diseno/NiceShop/checkout.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -583,8 +622,11 @@ class BuscarLlantaView(BaseClienteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["procesado"] = False  # Para saber si ya se ejecutó
-        avisos = Aviso.objects.all()
-        context["avisos"] = [aviso for aviso in avisos if aviso.is_activo]
+
+        recomendaciones = Recomendacion.objects.all()[:5]
+
+        context["recomendaciones"] = recomendaciones
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -738,6 +780,8 @@ class BuscarLlantaView(BaseClienteView):
                         " o puedes darme las medidas de la llanta de tu auto",
                 }
             opcion_seleccionada.append(datos)
+
+        recomendaciones = Recomendacion.objects.all()[:5]
         
         context = {
             'opcion_seleccionada': opcion_seleccionada,
@@ -745,7 +789,8 @@ class BuscarLlantaView(BaseClienteView):
             'presenta': presenta,
             'cantidad': cantidad,
             'texto1':texto1,
-            'inventario_por_taller':inventario_por_taller
+            'inventario_por_taller':inventario_por_taller,
+            'recomendaciones': recomendaciones,
         }
 
         return render(request, self.template_name, {'context': context})

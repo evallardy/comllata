@@ -1,5 +1,4 @@
 import bcrypt
-from django.utils.timezone import localtime
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
@@ -18,6 +17,9 @@ from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.urls import reverse_lazy
 from decimal import Decimal, ROUND_HALF_UP
+from django.db import transaction
+from datetime import datetime
+import pytz
 
 
 from .models import *
@@ -25,7 +27,7 @@ from .forms import ReglasComisionForm
 from core.views import generar_codigo, encrypta_codigo, valida_codigo
 from almacen.models import *
 from ventaweb.models import *
-from core.views import BaseAdministracionMixin
+from core.views import BaseAdministracionMixin, BaseClienteView, vaciar_carrito
 
 # python manage.py runsslserver --certificate localhost.pem --key localhost-key.pem
 
@@ -81,228 +83,291 @@ def verificar_codigo_entrega(request):
     else:
         return JsonResponse({'status': 'error', 'mensaje': 'Código incorrecto.'})
 
+class ConfirmaOrdenView(BaseClienteView, View):
+    template_name = 'core/diseno/NiceShop/order-confirmation.html'
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
 @method_decorator(csrf_exempt, name='dispatch')
-class RegistrarVentaPaypalView(View):
+class RegistrarVentaPaypalView(BaseClienteView, View):
     def post(self, request):
-        usuario = request.user if request.user.is_authenticated else None
+        carrito_venta = {}
+        with transaction.atomic():
+            usuario = request.user if request.user.is_authenticated else None
 
-        try:
-            datos = json.loads(request.body)
+            try:
+                datos = json.loads(request.body)
+                
+                total_calculado = 0
+                carrito = request.session.get('carrito', {})
+                
+                detalles = []
+                
+                # Validar y calcular el total desde la base de datos
+                for producto_id, item in carrito.items():
+                    if producto_id.isdigit():
+                        descripcion = item.get('descripcion', '')
+                        cantidad = int(item.get('cantidad', 0))
+                        precio = float(item.get('precio', 0))
+                        id_taller = item.get('id_taller', '')
+                        
+                        taller = Taller.objects.filter(id=id_taller).first()
 
-            total_calculado = 0
-            carrito = datos.get('carrito', {})
-            detalles = []
+                        razon_social = taller.razon_social
 
-            # Validar y calcular el total desde la base de datos
-            for producto_id, item in carrito.items():
-                descripcion = item.get('descripcion', '')
-                cantidad = int(item.get('cantidad', 0))
-                precio = float(item.get('precio', 0))
-                id_inventario = item.get('inventario', '')
-                empresa_id = item.get('empresa_id', '')
+                        direccion = taller.direccion
+                        numero_exterior = taller.numero_exterior
+                        numero_interior = taller.numero_interior
+                        colonia = taller.colonia
+                        codigo_postal = taller.codigo_postal
+                        municipio = taller.municipio
+                        estado = taller.estado
+                        telefono = taller.telefono
+                        id_empresa = taller.id_empresa
+                        
+                        inventario = Inventario.objects.filter(id=producto_id).first()
 
-                taller = Taller.objects.filter(id_empresa=empresa_id).first()
+                        if not inventario:
+                            return JsonResponse({'status': 'error', 'error': f'Producto {producto_id} no encontrado del taller {id_taller}'})
 
-                razon_social = taller.razon_social
+                        # Validar que el precio coincida
+                        if float(inventario.precio) != precio:
+                            return JsonResponse({'status': 'error', 'error': f'Precio no válido para {descripcion} del taller {id_taller}'})
+                        
+                        importe = cantidad * precio
+                        total_calculado += importe
 
-                inventario = Inventario.objects.filter(id_inventario=id_inventario).first()
+                        detalles.append({
+                            'id_inventario': producto_id,
+                            'id_taller': id_taller,
+                            'razon_social': razon_social,
+                            'descripcion': descripcion,
+                            'cantidad': cantidad,
+                            'precio_unitario': precio,
+                            'importe': importe,
+                            'id_empresa': id_empresa,
+                        })
+                
+                total_enviado = datos.get('total', 0)
 
-                if not inventario:
-                    return JsonResponse({'status': 'error', 'error': f'Producto {id_inventario} no encontrado del taller {empresa_id}'})
+    ##########  Quitar para produccion  ##########
+    #            total_enviado = total_calculado
+    #            datos['order_id'] = 2
+    ##############################################
 
-                # Validar que el precio coincida
-                if float(inventario.precio) != precio:
-                    return JsonResponse({'status': 'error', 'error': f'Precio no válido para {descripcion} del taller {empresa_id}'})
+                # Validar total enviado vs calculado
+                if round(total_calculado, 2) != round(float(total_enviado), 2):
+                    return JsonResponse({'status': 'error', 'error': f'Total {total_enviado} no coincide con el calculado {total_calculado}, {cantidad}, {precio}'})
 
-                importe = cantidad * precio
-                total_calculado += importe
-
-                detalles.append({
-                    'id_inventario': id_inventario,
-                    'empresa_id': empresa_id,
-                    'razon_social': razon_social,
-                    'descripcion': descripcion,
-                    'cantidad': cantidad,
-                    'precio_unitario': precio,
-                    'importe': importe
-                })
-
-            total_enviado = datos.get('total', 0)
-
-##########  Quitar para produccion  ##########
-#            total_enviado = total_calculado
-#            datos['order_id'] = 2
-##############################################
-
-            # Validar total enviado vs calculado
-            if round(total_calculado, 2) != round(float(total_enviado), 2):
-                return JsonResponse({'status': 'error', 'error': f'Total {total_enviado} no coincide con el calculado {total_calculado}, {cantidad}, {precio}'})
-
-            venta = VentaPaypal.objects.create(
-                paypal_order_id = datos['order_id'],
-                nombre_cliente = datos['nombre'],
-                email_cliente = datos['email'],
-                nombre_completo = datos.get('nombre_completo', ''),
-                direccion = datos.get('direccion', ''),
-                ciudad = datos.get('ciudad', ''),
-                estado = datos.get('estado', ''),
-                cp = datos.get('cp', ''),
-                pais = datos.get('pais', ''),
-                fecha_creacion = datos['fecha_creacion'],
-                total = round(total_calculado, 2),
-                comprador=request.user if request.user.is_authenticated else None
-            )
-
-            compras = []
-
-            for d in detalles:
-
-                token = generar_codigo()
-                token_hash = encrypta_codigo(token)
-
-                importe=d['importe']
-
-                venta_detalle = VentaDetalle.objects.create(
-                    venta=venta,
-                    id_inventario=d['id_inventario'],
-                    empresa_id=d['empresa_id'],
-                    razon_social=d['razon_social'],
-                    descripcion=d['descripcion'],
-                    cantidad=d['cantidad'],
-                    precio_unitario=d['precio_unitario'],
-                    importe=importe,
-                    usuario=usuario,
-                    token_hash=token_hash
+                venta = VentaPaypal.objects.create(
+                    paypal_order_id = datos['order_id'],
+                    nombre_cliente = datos['nombre'],
+                    email_cliente = datos['email'],
+                    nombre_completo = datos.get('nombre_completo', ''),
+                    direccion = datos.get('direccion', ''),
+                    colonia = datos.get('colonia', ''),
+                    ciudad = datos.get('ciudad', ''),
+                    estado = datos.get('estado', ''),
+                    cp = datos.get('cp', ''),
+                    pais = datos.get('pais', ''),
+                    fecha_creacion = datos['fecha_creacion'],
+                    telefono = datos.get('telefono', ''),
+                    total = round(total_calculado, 2),
+                    comprador=request.user if request.user.is_authenticated else None
                 )
+                
+                compras = []
 
-                razon_social_titulo = razon_social.upper()
+                for d in detalles:
 
-                llanta = Inventario.objects.filter(id_inventario=d['id_inventario']).first()
+                    token = generar_codigo()
+                    token_hash = encrypta_codigo(token)
 
-                importe_a_calcular = importe / (1 + settings.IMPUESTO_IVA)
-                hoy = timezone.localdate()
+                    importe=d['importe']
 
-                encontro_regla = False
+                    venta_detalle = VentaDetalle.objects.create(
+                        venta=venta,
+                        id_inventario=d['id_inventario'],
+                        razon_social=d['razon_social'],
+                        descripcion=d['descripcion'],
+                        cantidad=d['cantidad'],
+                        precio_unitario=d['precio_unitario'],
+                        importe=importe,
+                        usuario=usuario,
+                        token_hash=token_hash,
+                        empresa_id=d['id_empresa']
+                    )
+                    
+                    razon_social_titulo = razon_social.upper()
 
-                regla_taller_marca = ReglasComision.objects.filter(
-                                        empresa_id=d['empresa_id'],
-                                        marca=llanta.marca, 
-                                        fecha_inicial__lte=hoy,
-                                        fecha_final__gte=hoy,
-                                    ).first()
-                if regla_taller_marca:
-                    tipo_comision = regla_taller_marca.tipo
-                    cantidad_comision = regla_taller_marca.cantidad
-                    encontro_regla = True
-                else:
-                    regla_taller_rin = ReglasComision.objects.filter(
-                                            empresa_id=d['empresa_id'],
-                                            rin=llanta.rin,
+                    llanta = Inventario.objects.filter(pk=d['id_inventario']).first()
+
+                    importe_a_calcular = Decimal(importe) / (1 + settings.IMPUESTO_IVA)
+                    hoy = timezone.localdate()
+
+                    encontro_regla = False
+
+                    regla_taller_marca = ReglasComision.objects.filter(
+                                            empresa_id=d['id_empresa'],
+                                            marca=llanta.marca, 
                                             fecha_inicial__lte=hoy,
                                             fecha_final__gte=hoy,
                                         ).first()
-                    if regla_taller_rin:
-                        tipo_comision = regla_taller_rin.tipo
-                        cantidad_comision = regla_taller_rin.cantidad
+                    if regla_taller_marca:
+                        tipo_comision = regla_taller_marca.tipo
+                        cantidad_comision = regla_taller_marca.cantidad
                         encontro_regla = True
                     else:
-                        regla_taller = ReglasComision.objects.filter(
-                                            empresa_id=d['empresa_id'],
-                                            fecha_inicial__lte=hoy,
-                                            fecha_final__gte=hoy,
-                                        ).first()
-                        if regla_taller:
-                            tipo_comision = regla_taller.tipo
-                            cantidad_comision = regla_taller.cantidad
-                            encontro_regla = True
-                        else:
-                            regla_talleres = ReglasComision.objects.filter(
-                                                talleres=1,
+                        regla_taller_rin = ReglasComision.objects.filter(
+                                                empresa_id=d['id_empresa'],
+                                                rin=llanta.rin,
                                                 fecha_inicial__lte=hoy,
                                                 fecha_final__gte=hoy,
                                             ).first()
-                            if regla_talleres:
-                                tipo_comision = regla_talleres.tipo
-                                cantidad_comision = regla_talleres.cantidad
+                        if regla_taller_rin:
+                            tipo_comision = regla_taller_rin.tipo
+                            cantidad_comision = regla_taller_rin.cantidad
+                            encontro_regla = True
+                        else:
+                            regla_taller = ReglasComision.objects.filter(
+                                                empresa_id=d['id_empresa'],
+                                                fecha_inicial__lte=hoy,
+                                                fecha_final__gte=hoy,
+                                            ).first()
+                            if regla_taller:
+                                tipo_comision = regla_taller.tipo
+                                cantidad_comision = regla_taller.cantidad
                                 encontro_regla = True
+                            else:
+                                regla_talleres = ReglasComision.objects.filter(
+                                                    talleres=1,
+                                                    fecha_inicial__lte=hoy,
+                                                    fecha_final__gte=hoy,
+                                                ).first()
+                                if regla_talleres:
+                                    tipo_comision = regla_talleres.tipo
+                                    cantidad_comision = regla_talleres.cantidad
+                                    encontro_regla = True
 
-                porcentaje = 0
-
-                if encontro_regla:
-                    if tipo_comision == 0:
-                        importe_comision = (Decimal(importe_a_calcular) * cantidad_comision) / 100
-                        estatus_comision = 1
-                        porcentaje = cantidad_comision
-                    elif tipo_comision == 1:
-                        importe_comision = cantidad_comision
-                        estatus_comision = 1
+                    porcentaje = 0
+                    
+                    if encontro_regla:
+                        if tipo_comision == 0:
+                            importe_comision = (Decimal(importe_a_calcular) * cantidad_comision) / 100
+                            estatus_comision = 1
+                            porcentaje = cantidad_comision
+                        elif tipo_comision == 1:
+                            importe_comision = cantidad_comision
+                            estatus_comision = 1
+                        else:
+                            importe_comision = 0
+                            estatus_comision = 0
                     else:
                         importe_comision = 0
                         estatus_comision = 0
-                else:
-                    importe_comision = 0
-                    estatus_comision = 0
-                
-                importe_pagar = Decimal(importe) - importe_comision
+                    
+                    importe_pagar = Decimal(importe) - importe_comision
 
-                venta_detalle.estatus_comision = estatus_comision
-                venta_detalle.deposito = importe_pagar
-                venta_detalle.comision = importe_comision
-                venta_detalle.porcentaje = porcentaje
-                
-                venta_detalle.save()
+                    venta_detalle.estatus_comision = estatus_comision
+                    venta_detalle.deposito = importe_pagar
+                    venta_detalle.comision = importe_comision
+                    venta_detalle.porcentaje = porcentaje
+                    
+                    venta_detalle.save()
 
-
-                compras.append({
-                    'id': venta_detalle.id,
-                    'descripcion': venta_detalle.descripcion,
-                    'cantidad': venta_detalle.cantidad,
-                    'token': token,
-                    'taller': razon_social_titulo,
-                })
+                    
+                    compras.append({
+                        'id': venta_detalle.id,
+                        'descripcion': venta_detalle.descripcion,
+                        'cantidad': venta_detalle.cantidad,
+                        'token': token,
+                        'taller': razon_social_titulo,
+                    })
 
 
-                if venta_detalle.cantidad == 1:
-                    mensaje_llanta = ' tu llanta '
-                    mensaje_recoger = ' recoger'
-                else:
-                    mensaje_llanta = ' tus llantas '
-                    mensaje_recoger = ' recogerlas'
+                    if venta_detalle.cantidad == 1:
+                        mensaje_llanta = ' tu llanta '
+                        mensaje_recoger = ' recoger'
+                    else:
+                        mensaje_llanta = ' tus llantas '
+                        mensaje_recoger = ' recogerlas'
 
-                mensaje_html = f'''
-                    <div style="font-size: 18px;">La compra de {mensaje_llanta} con medidas:<br><br> 
-                    <code>{venta_detalle.descripcion or ""}</code><br><br> 
-                    quedó registrada en el taller:<br><br>
-                    <code>{razon_social or ""}</code><br><br>
-                    Número de venta: <br><br>
-                    <code>{venta_detalle.id}</code><br><br>
-                    Además presenta este código:<br><br>
-                    <code>{token}</code><br><br>
-                    Para que pases a {mensaje_recoger} en:<br><br>
-                    <code>
-                        {taller.direccion or ""}, 
-                        {taller.numero_exterior or ""} 
-                        {taller.numero_interior or ""} 
-                        {taller.colonia or ""}<br>
-                        {taller.codigo_postal or ""} 
-                        {taller.municipio or ""} 
-                        {taller.estado or ""}<br>
-                        teléfono {taller.telefono or ""}
-                    </code><br><br>
-                    NO ES NECESARIO RESPONDER A ESTE CORREO
-                    </div>
-                '''
-                correos = [venta.email_cliente]
-                if not envia_correo(
-                    'Tu pedido ha sido registrado',
-                    correos,
-                    mensaje_html):
-                    return JsonResponse({'status': 'error', 'error': 'No se pudo enviar el correo'})                    
-            
-            return JsonResponse({'status': 'ok', 'compras': compras})
+                    mensaje_html = f'''
+                        <div style="font-size: 18px;">La compra de {mensaje_llanta} con medidas:<br><br> 
+                        <code>{venta_detalle.descripcion or ""}</code><br><br> 
+                        quedó registrada en el taller:<br><br>
+                        <code>{razon_social or ""}</code><br><br>
+                        Número de venta: <br><br>
+                        <code>{venta_detalle.id}</code><br><br>
+                        Además presenta este código:<br><br>
+                        <code>{token}</code><br><br>
+                        Para que pases a {mensaje_recoger} en:<br><br>
+                        <code>
+                            {taller.direccion or ""}, 
+                            {taller.numero_exterior or ""} 
+                            {taller.numero_interior or ""} 
+                            {taller.colonia or ""}<br>
+                            {taller.codigo_postal or ""} 
+                            {taller.municipio or ""} 
+                            {taller.estado or ""}<br>
+                            teléfono {taller.telefono or ""}
+                        </code><br><br>
+                        NO ES NECESARIO RESPONDER A ESTE CORREO
+                        </div>
+                    '''
+                    correos = [venta.email_cliente]
+                    if not envia_correo(
+                        'Tu pedido ha sido registrado',
+                        correos,
+                        mensaje_html):
+                        return JsonResponse({'status': 'error', 'error': 'No se pudo enviar el correo'})                    
+                carrito = request.session.get('carrito', {})
+                carrito['venta'] = {
+                    'paypal_order_id' : datos['order_id'],
+                    'nombre_cliente' : datos['nombre'],
+                    'email_cliente' : datos['email'],
+                    'nombre_completo' : datos.get('nombre_completo', ''),
+                    'direccion' : datos.get('direccion', ''),
+                    'colonia' : datos.get('colonia', ''),
+                    'ciudad' : datos.get('ciudad', ''),
+                    'estado' : datos.get('estado', ''),
+                    'cp' : datos.get('cp', ''),
+                    'pais' : datos.get('pais', ''),
+                    'fecha_creacion' : datos['fecha_creacion'],
+                    'telefono' : datos.get('telefono', ''),
+                    'total' : round(total_calculado, 2),
+                    'comprador':request.user if request.user.is_authenticated else None
+                }
 
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'error': str(e)})
+                carrito_venta = {key: carrito[key] for key in ['piezas', 'subtotal', 'iva_total', 'total_general', 'descuento', 'venta']}
+
+                fecha_str = carrito_venta['venta']['fecha_creacion']
+
+                # Convertir la fecha ISO a datetime (timezone-aware en UTC)
+                fecha_dt = datetime.fromisoformat(fecha_str.replace("Z", "+00:00"))
+
+                # Convertirla a la zona horaria local de Django (definida en settings.py, ej. America/Mexico_City)
+                fecha_local = timezone.localtime(fecha_dt)
+
+                # Guardar con formato legible
+                carrito_venta['venta']['fecha_creacion'] = fecha_local.strftime("%Y-%m-%d %H:%M:%S")
+
+                for key, value in carrito.items():
+                    if str(key).isdigit(): 
+                        carrito_venta[key] = value
+
+                request.session['carrito_venta'] = carrito_venta
+                request.session.modified = True
+
+                vaciar_carrito(request)
+
+                return JsonResponse({'status': 'ok', 'compras': compras})
+
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'error': str(e)})
 
 def envia_correo(subject, recipient_list, html_message):
     try:

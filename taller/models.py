@@ -25,6 +25,7 @@ class Taller(models.Model):
     longitud = models.CharField("Longitud",max_length=100, null=True, blank=True)
     latitud = models.CharField("Latitud",max_length=100, null=True, blank=True)
     estatus = models.IntegerField("Estatus", choices=ESTATUS, default=1)
+    imagen = models.ImageField("Imagen",  upload_to='talleres/', null=True, blank=True)
     # Bitácora
     creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
     

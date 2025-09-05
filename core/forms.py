@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 
-from .models import Aviso
+from .models import Aviso, Recomendacion
 
 class AvisoForm(forms.ModelForm):
     class Meta:
@@ -38,3 +38,14 @@ class AvisoForm(forms.ModelForm):
         else:
             self.add_error(None, "Falta fecha inicial o fecha final.")
         return cleaned_data
+    
+class RecomendacionForm(forms.ModelForm):
+    class Meta:
+        model = Recomendacion
+        fields = ['titulo', 'mensaje', 'imagen']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'mensaje': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'imagen': forms.FileInput(attrs={'class': 'form-select'}),
+        }
+
