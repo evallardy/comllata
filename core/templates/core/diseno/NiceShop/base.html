@@ -222,19 +222,20 @@
       </div>
     </div>
 
-    <!-- Mobile Search Form -->
-    <div class="collapse" id="mobileSearch">
-      <div class="container">
-        <form class="search-form">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search for products">
-            <button class="btn" type="submit">
-              <i class="bi bi-search"></i>
-            </button>
-          </div>
-        </form>
+      <!-- Mobile Search Form -->
+      <div class="collapse" id="mobileSearch">
+        <div class="container">
+          <form class="search-form desktop-search-form" method="POST" action="{% url 'muestraProductos' %}">
+            {% csrf_token %}
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Busca tu llanta" name="q">
+              <button class="btn" type="submit">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
 
   </header>
 

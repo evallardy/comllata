@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 
-from .models import Aviso, Recomendacion
+from .models import Aviso, Recomendacion, Consulta
 
 class AvisoForm(forms.ModelForm):
     class Meta:
@@ -49,3 +49,14 @@ class RecomendacionForm(forms.ModelForm):
             'imagen': forms.FileInput(attrs={'class': 'form-select'}),
         }
 
+class ConsultaForm(forms.ModelForm):
+    class Meta:
+        model = Consulta
+        fields = ['nombre', 'correo', 'asunto', 'contenido', 'respuesta']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'correo': forms.TextInput(attrs={'class': 'form-control'}),
+            'asunto': forms.TextInput(attrs={'class': 'form-control'}),
+            'contenido': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'respuesta': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        }

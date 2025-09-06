@@ -134,3 +134,23 @@ class MenuOpciones(models.Model):
         ordering = ['menus','orden']
         unique_together= ['menus','orden']
         db_table = 'MenuOpciones'
+
+class Consulta(models.Model):
+    nombre = models.CharField("Nombre", max_length=80, blank=True, null=True)
+    correo = models.CharField("Correo", max_length=255, blank=True, null=True)
+    asunto = models.CharField("Asunto", max_length=255, blank=True, null=True)
+    contenido = models.TextField("Contenido", blank=True, null=True)
+    respuesta = models.TextField("Respuesta", blank=True, null=True)
+
+    # Bitácora
+    creado = models.DateTimeField("Creado", auto_now_add=True)
+    modificado = models.DateTimeField("Actualizado", auto_now=True)
+
+    class Meta:
+        ordering = ['-creado']
+        verbose_name = "Consulta"
+        verbose_name_plural = "Consultas"
+        db_table = 'Consulta'
+
+    def __str__(self):
+        return f"{self.asunto} - {self.creado}"

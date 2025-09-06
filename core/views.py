@@ -28,6 +28,28 @@ from .forms import *
 
 # Create your views here.
 
+class ConsultaListView(ListView):
+    model = Consulta
+    template_name = 'core/adminis/consultas/cons_list.html'
+    context_object_name = 'consultas'
+
+class ConsultaCreateView(CreateView):
+    model = Consulta
+    form_class = ConsultaForm
+    template_name = 'core/adminis/consultas/cons_form.html'
+    success_url = reverse_lazy('consulta_list')
+
+class ConsultaUpdateView(UpdateView):
+    model = Consulta
+    form_class = ConsultaForm
+    template_name = 'core/adminis/consultas/cons_form.html'
+    success_url = reverse_lazy('consulta_list')
+
+class ConsultaDeleteView(DeleteView):
+    model = Consulta
+    template_name = 'core/adminis/consultas/cons_confirm_delete.html'
+    success_url = reverse_lazy('consulta_list')
+
 class RecomendacionListView(ListView):
     model = Recomendacion
     template_name = 'core/adminis/recomendacion/reco_list.html'
@@ -423,6 +445,32 @@ class Contact(BaseClienteView, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+    
+    def post(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Intentar obtener el usuario a actualizar
+
+        venta = Consulta.objects.create(
+            nombre = request.POST.get('name'),
+            correo = request.POST.get('email'),
+            asunto = request.POST.get('subject'),
+            contenido = request.POST.get('message'),
+        )
+
+        return redirect('contact_gracias')
+
+class ContactGracias(BaseClienteView, TemplateView):
+    model = Consulta
+    template_name = 'core/diseno/NiceShop/gracias_consulta.html'
+    context_object_name = 'consultas'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        
+
+        return context
+    
 
 class MuestraProductosTaller(BaseClienteView, TemplateView):
     template_name = 'core/diseno/NiceShop/muestra-productos-taller.html'
