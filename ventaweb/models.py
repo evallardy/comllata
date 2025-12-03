@@ -95,11 +95,19 @@ class ReglasComision(models.Model):
     estatus = models.IntegerField('Estatus', choices=ESTATUS_REGLA, default=1)
     fecha_inicial = models.DateField('Inicia', blank=True, null=True)
     fecha_final = models.DateField('Termina', blank=True, null=True)
-    creado = models.DateTimeField("Creado", auto_now=True, blank=True, null=True)
-    modificado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
+    creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
+    modificado = models.DateTimeField("Modificado", auto_now=True, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.id_inventario} ({self.ancho})/({self.alto}) ({self.rin}) {self.empresa.razon_social} {self.get_tipo_display} ({self.cantidad})"
+        empresa_nombre = self.empresa.razon_social if self.empresa else "Todos los talleres"
+        marca_info = f"Marca: {self.marca}" if self.marca else ""
+        rin_info = f"Rin: {self.rin}" if self.rin else ""
+        tipo_info = self.get_tipo_display()
+        
+        parts = [p for p in [marca_info, rin_info] if p]
+        detalle = " - ".join(parts) if parts else "Regla general"
+        
+        return f"{empresa_nombre} - {detalle} - {tipo_info} ({self.cantidad})"
     
     class Meta:
         verbose_name = 'Regla' 
