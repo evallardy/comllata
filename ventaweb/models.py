@@ -95,8 +95,8 @@ class ReglasComision(models.Model):
     estatus = models.IntegerField('Estatus', choices=ESTATUS_REGLA, default=1)
     fecha_inicial = models.DateField('Inicia', blank=True, null=True)
     fecha_final = models.DateField('Termina', blank=True, null=True)
-    creado = models.DateTimeField("Creado", auto_now=True, blank=True, null=True)
-    modificado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
+    creado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
+    modificado = models.DateTimeField("Modificado", auto_now=True, blank=True, null=True)
 
     def __str__(self):
         empresa_nombre = self.empresa.razon_social if self.empresa else "Todos los talleres"
