@@ -99,7 +99,15 @@ class ReglasComision(models.Model):
     modificado = models.DateTimeField("Creado", auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.id_inventario} ({self.ancho})/({self.alto}) ({self.rin}) {self.empresa.razon_social} {self.get_tipo_display} ({self.cantidad})"
+        empresa_nombre = self.empresa.razon_social if self.empresa else "Todos los talleres"
+        marca_info = f"Marca: {self.marca}" if self.marca else ""
+        rin_info = f"Rin: {self.rin}" if self.rin else ""
+        tipo_info = self.get_tipo_display()
+        
+        parts = [p for p in [marca_info, rin_info] if p]
+        detalle = " - ".join(parts) if parts else "Regla general"
+        
+        return f"{empresa_nombre} - {detalle} - {tipo_info} ({self.cantidad})"
     
     class Meta:
         verbose_name = 'Regla' 
